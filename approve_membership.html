@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — RMUTK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --black: #111110;
+            --white: #FAFAF8;
+            --gold: #D4A574;
+            --gold-dark: #92400E;
+            --gold-pale: #FEF3C7;
+            --gray-50: #FAFAF8;
+            --gray-100: #F5F4F2;
+            --gray-200: #E7E5E4;
+            --gray-300: #D6D3D1;
+            --gray-400: #A8A29E;
+            --gray-600: #57534E;
+            --gray-800: #292524;
+            --green: #2D6A4F;
+            --green-bg: #D1FAE5;
+            --red: #C0392B;
+            --red-bg: #FEE2E2;
+            --shadow-sm: 0 1px 4px rgba(17, 17, 16, 0.08);
+            --shadow: 0 4px 16px rgba(17, 17, 16, 0.10);
+        }
+
+        html,
+        body {
+            min-height: 100vh;
+            font-family: 'Noto Sans Thai', 'IBM Plex Sans Thai', sans-serif;
+            background: var(--gray-100);
+            color: var(--black);
+        }
+
+        /* ══ TOPBAR ══ */
+        .topbar {
+            background: var(--black);
+            color: var(--white);
+            padding: 0 28px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .topbar-logo svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .topbar-title {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .topbar-title span {
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            color: var(--gold);
+            font-weight: 400;
+            display: block;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .admin-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(250, 250, 248, 0.08);
+            border: 1px solid rgba(250, 250, 248, 0.12);
+            border-radius: 20px;
+            padding: 5px 12px 5px 8px;
+        }
+
+        .admin-avatar {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--gold), #b8864e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .admin-name {
+            font-size: 12px;
+            color: rgba(250, 250, 248, 0.8);
+        }
+
+        .btn-logout {
+            background: rgba(192, 57, 43, 0.15);
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            color: #F87171;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(192, 57, 43, 0.25);
+        }
+
+        /* ══ MAIN LAYOUT ══ */
+        .main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        /* ══ PAGE TITLE ══ */
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title-badge {
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            background: var(--gold);
+            color: var(--black);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            align-self: center;
+        }
+
+        /* ══ TABS ══ */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-400);
+            padding: 9px 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--gray-600);
+            background: var(--gray-100);
+        }
+
+        .tab-btn.active {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .tab-badge {
+            background: var(--gold);
+            color: var(--black);
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .tab-btn.active .tab-badge {
+            background: rgba(212, 165, 116, 0.9);
+        }
+
+        /* ══ TOOLBAR ══ */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+            max-width: 380px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+            display: flex;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 9px 12px 9px 38px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--black);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .filter-select {
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 9px 32px 9px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            color: var(--black);
+            outline: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23A8A29E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:focus {
+            border-color: var(--gold);
+        }
+
+        .toolbar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ══ STATS ROW ══ */
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-sm);
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .stat-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .stat-dot.pending {
+            background: #F59E0B;
+        }
+
+        .stat-dot.approved {
+            background: #10B981;
+        }
+
+        .stat-dot.rejected {
+            background: #EF4444;
+        }
+
+        .stat-num {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        /* ══ MEMBER CARDS ══ */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .member-card {
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, border-color 0.2s;
+            animation: fadeIn 0.3s ease both;
+        }
+
+        .member-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--gray-300);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .member-card.approved-card {
+            border-left: 4px solid #10B981;
+        }
+
+        .member-card.rejected-card {
+            border-left: 4px solid #EF4444;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .card-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #E7E5E4, #D6D3D1);
+            color: var(--gray-600);
+            object-fit: cover;
+        }
+
+        .card-avatar.tutor-av {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: var(--gold-dark);
+        }
+
+        .card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-name {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .role-pill {
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .role-pill.student {
+            background: #E0F2FE;
+            color: #0369A1;
+        }
+
+        .role-pill.tutor {
+            background: var(--gold-pale);
+            color: var(--gold-dark);
+        }
+
+        .role-pill.admin {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .meta-item svg {
+            color: var(--gray-400);
+            flex-shrink: 0;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: var(--gray-100);
+            margin: 14px 0;
+        }
+
+        .card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .status-chip.pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-chip.approved {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-chip.rejected {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .card-date {
+            font-size: 11px;
+            color: var(--gray-400);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-reject,
+        .btn-approve,
+        .btn-sm {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reject {
+            background: var(--red-bg);
+            color: var(--red);
+            border: 1.5px solid rgba(192, 57, 43, 0.2);
+        }
+
+        .btn-reject:hover {
+            background: #FECACA;
+        }
+
+        .btn-approve {
+            background: var(--black);
+            color: var(--white);
+            box-shadow: 0 2px 8px rgba(17, 17, 16, 0.2);
+        }
+
+        .btn-approve:hover {
+            background: #2D2C2B;
+            transform: translateY(-1px);
+        }
+
+        .btn-approve:disabled,
+        .btn-reject:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ══ EMPTY STATE ══ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-400);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--gray-600);
+        }
+
+        .empty-desc {
+            font-size: 13px;
+        }
+
+        /* ══ LOADING ══ */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-400);
+        }
+
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ══ TOAST ══ */
+        .toast-wrap {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--black);
+            color: var(--white);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            animation: toastIn 0.3s cubic-bezier(.22, 1, .36, 1) both;
+            pointer-events: all;
+            min-width: 240px;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10B981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #EF4444;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ══ CONFIRM DIALOG ══ */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 17, 16, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay.show {
+            display: flex;
+        }
+
+        .dialog {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px 28px 24px;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s cubic-bezier(.22, 1, .36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dialog-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .dialog-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dialog-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .dialog-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: var(--gray-100);
+            border: 1.5px solid var(--gray-200);
+            color: var(--gray-600);
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-confirm-reject {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-confirm-approve {
+            background: var(--black);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-confirm-reject:hover,
+        .btn-confirm-approve:hover {
+            opacity: 0.85;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .main {
+                padding: 20px 14px 60px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .tab-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .card-top {
+                gap: 10px;
+            }
+
+            .card-meta {
+                gap: 10px;
+            }
+
+            .stats-row {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ TOPBAR ══ -->
+    <nav class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="#111110" stroke-width="1.8" stroke-linejoin="round" />
+                    <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="#111110" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="topbar-title">
+                RMUTK Tutor
+                <span>Admin Dashboard</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="admin-chip">
+                <div class="admin-avatar" id="adminAvatar">A</div>
+                <div class="admin-name" id="adminNameDisplay">Admin</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+        </div>
+    </nav>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+
+        <div class="page-title">
+            จัดการระบบ
+            <span class="page-title-badge">Admin</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('members')" id="tab-members">
+                <svg viewBox="0 0 24 24" fill="none" width="15" height="15">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" />
+                    <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.6" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" />
+                </svg>
+                อนุมัติสมาชิก
+                <span class="tab-badge" id="badge-members">—</span>
+            </button>
+            <a class="tab-btn" href="approved_class.html" id="tab-classes">
+                <svg viewBox="0 0 24 24" fill="none" width="15" height="15">
+                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                อนุมัติ คลาส
+            </a>
+            <a class="tab-btn" href="approved_photo.html" id="tab-images">
+                <svg viewBox="0 0 24 24" fill="none" width="15" height="15">
+                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6" />
+                    <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.4" />
+                    <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                อนุมัติ รูป
+            </a>
+        </div>
+
+        <!-- ══ TAB: MEMBERS ══ -->
+        <div id="panel-members">
+
+            <!-- Stats -->
+            <div class="stats-row" id="memberStats">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-dot pending"></div>
+                    </div>
+                    <div>
+                        <div class="stat-num" id="countPending">—</div>
+                        <div class="stat-label">รอ อนุมัติ</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-dot approved"></div>
+                    </div>
+                    <div>
+                        <div class="stat-num" id="countApproved">—</div>
+                        <div class="stat-label">อนุมัติแล้ว</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-dot rejected"></div>
+                    </div>
+                    <div>
+                        <div class="stat-num" id="countRejected">—</div>
+                        <div class="stat-label">ไม่อนุมัติ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="search-wrap">
+                    <div class="search-icon">
+                        <svg viewBox="0 0 24 24" fill="none" width="15" height="15">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.7" />
+                            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <input class="search-input" type="text" placeholder="ค้นหาชื่อ / รหัสนักศึกษา / อีเมล…"
+                        id="memberSearch" oninput="renderMembers()" />
+                </div>
+                <select class="filter-select" id="memberFilter" onchange="renderMembers()">
+                    <option value="all">ทั้งหมด</option>
+                    <option value="pending">รออนุมัติ</option>
+                    <option value="approved">อนุมัติแล้ว</option>
+                    <option value="rejected">ไม่อนุมัติ</option>
+                </select>
+                <select class="filter-select" id="roleFilter" onchange="renderMembers()">
+                    <option value="all">ทุกบทบาท</option>
+                    <option value="นักเรียน">นักเรียน</option>
+                    <option value="ติวเตอร์">ติวเตอร์</option>
+                </select>
+                <div class="toolbar-right">
+                    <button class="btn-sm btn-approve" style="padding:8px 14px;font-size:12px;" onclick="loadMembers()">
+                        <svg viewBox="0 0 24 24" fill="none" width="13" height="13">
+                            <path d="M1 4v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        รีเฟรช
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="cards-list" id="memberList">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <div>กำลังโหลดข้อมูลสมาชิก…</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══ TAB: CLASSES (placeholder) ══ -->
+        <div id="panel-classes" style="display:none;">
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <div class="empty-title">อนุมัติ คลาส</div>
+                <div class="empty-desc">ยังไม่มีคลาสที่รออนุมัติในขณะนี้</div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: IMAGES (placeholder) ══ -->
+        <div id="panel-images" style="display:none;">
+            <div class="empty-state">
+                <div class="empty-icon">🖼️</div>
+                <div class="empty-title">อนุมัติ รูปภาพ</div>
+                <div class="empty-desc">ยังไม่มีรูปภาพที่รออนุมัติในขณะนี้</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ CONFIRM DIALOG ══ -->
+    <div class="overlay" id="confirmOverlay">
+        <div class="dialog">
+            <div class="dialog-icon" id="dialogIcon">⚠️</div>
+            <div class="dialog-title" id="dialogTitle">ยืนยันการดำเนินการ</div>
+            <div class="dialog-desc" id="dialogDesc">คุณแน่ใจหรือไม่?</div>
+            <div class="dialog-actions">
+                <button class="btn-cancel" onclick="closeDialog()">ยกเลิก</button>
+                <button class="btn-confirm-approve" id="dialogConfirmBtn" onclick="confirmAction()">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TOAST ══ -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- ══ SCRIPT ══ -->
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWziRdbb58GNr1y5sE9wWQJDPwhnm6xd1olLaa_GsFkFNJEuoVr6-xdJa1vWblI4X2/exec";
+
+        // ── Auth guard ──
+        const adminName = sessionStorage.getItem("adminName") || "Admin";
+        const adminLoggedIn = sessionStorage.getItem("adminLoggedIn");
+        if (!adminLoggedIn) {
+            window.location.href = "admin.html";
+        }
+        document.getElementById("adminNameDisplay").textContent = adminName;
+        document.getElementById("adminAvatar").textContent = adminName.charAt(0).toUpperCase();
+
+        function logout() {
+            sessionStorage.removeItem("adminLoggedIn");
+            sessionStorage.removeItem("adminName");
+            window.location.href = "admin.html";
+        }
+
+        // ── Tab switching ──
+        function switchTab(tab) {
+            ["members", "classes", "images"].forEach(t => {
+                document.getElementById("panel-" + t).style.display = t === tab ? "block" : "none";
+                document.getElementById("tab-" + t).classList.toggle("active", t === tab);
+            });
+        }
+
+        // ── Toast ──
+        function showToast(msg, type = "success") {
+            const wrap = document.getElementById("toastWrap");
+            const el = document.createElement("div");
+            el.className = "toast " + type;
+            el.innerHTML = (type === "success" ? "✅ " : "❌ ") + msg;
+            wrap.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        // ── Members data ──
+        // สถานะดึงมาจาก Sheets โดยตรง ไม่เก็บใน localStorage
+        let allMembers = [];
+
+        // แปลงสถานะจาก Sheets → key ภายใน
+        function normalizeStatus(raw) {
+            const s = String(raw || "").trim();
+            if (s === "อนุมัติ") return "approved";
+            if (s === "ไม่อนุมัติ") return "rejected";
+            return "pending"; // รออนุมัติ หรือว่าง
+        }
+
+        // ── โหลดข้อมูลจาก Sheets จริง ──
+        async function loadMembers() {
+            document.getElementById("memberList").innerHTML = `
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <div>กำลังโหลดข้อมูลสมาชิก…</div>
+      </div>`;
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=getMembers&t=${Date.now()}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.status === "success" && Array.isArray(data.members)) {
+                    // แนบ statusKey ที่ normalize แล้วไว้ในแต่ละ member
+                    allMembers = data.members.map(m => ({
+                        ...m,
+                        statusKey: normalizeStatus(m.status)
+                    }));
+                } else {
+                    showToast("โหลดข้อมูลไม่สำเร็จ: " + (data.message || ""), "error");
+                    allMembers = [];
+                }
+            } catch (e) {
+                showToast("เชื่อมต่อ API ไม่ได้ กรุณาตรวจสอบ URL", "error");
+                allMembers = [];
+            }
+            updateStats();
+            renderMembers();
+        }
+
+        // ── Stats นับจากข้อมูลจริง ──
+        function updateStats() {
+            const pending = allMembers.filter(m => m.statusKey === "pending").length;
+            const approved = allMembers.filter(m => m.statusKey === "approved").length;
+            const rejected = allMembers.filter(m => m.statusKey === "rejected").length;
+            document.getElementById("countPending").textContent = pending;
+            document.getElementById("countApproved").textContent = approved;
+            document.getElementById("countRejected").textContent = rejected;
+            document.getElementById("badge-members").textContent = pending || "0";
+        }
+
+        // ── Render การ์ดสมาชิก ──
+        function renderMembers() {
+            const q = document.getElementById("memberSearch").value.trim().toLowerCase();
+            const filter = document.getElementById("memberFilter").value;
+            const roleF = document.getElementById("roleFilter").value;
+
+            const list = allMembers.filter(m => {
+                if (filter !== "all" && m.statusKey !== filter) return false;
+                if (roleF !== "all" && m.role !== roleF) return false;
+                if (q && !m.fullName.toLowerCase().includes(q) &&
+                    !m.studentId.toLowerCase().includes(q) &&
+                    !(m.email || "").toLowerCase().includes(q)) return false;
+                return true;
+            });
+
+            const container = document.getElementById("memberList");
+            if (list.length === 0) {
+                container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">ไม่พบข้อมูล</div>
+          <div class="empty-desc">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</div>
+        </div>`;
+                return;
+            }
+
+            const statusLabel = { pending: "รออนุมัติ", approved: "อนุมัติแล้ว", rejected: "ไม่อนุมัติ" };
+
+            container.innerHTML = list.map((m, i) => {
+                const sk = m.statusKey;
+                const isTutor = m.role === "ติวเตอร์";
+                const initial = m.fullName.charAt(0);
+                const cardClass = sk === "approved" ? "approved-card" : sk === "rejected" ? "rejected-card" : "";
+                const isPending = sk === "pending";
+                // escape ชื่อสำหรับใส่ใน onclick attribute
+                const safeName = m.fullName.replace(/'/g, "\\'");
+
+                return `
+      <div class="member-card ${cardClass}" id="card-${m.studentId}" style="animation-delay:${i * 0.04}s">
+        <div class="card-top">
+          <div class="card-avatar ${isTutor ? "tutor-av" : ""}">${initial}</div>
+          <div class="card-info">
+            <div class="card-name">
+              ${m.fullName}
+              <span class="role-pill ${isTutor ? "tutor" : "student"}">${m.role}</span>
+            </div>
+            <div class="card-meta">
+              <div class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/></svg>
+                ${m.studentId}
+              </div>
+              ${m.email ? `<div class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.6"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.6"/></svg>
+                ${m.email}
+              </div>` : ""}
+              ${m.faculty ? `<div class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.6"/></svg>
+                ${m.faculty}
+              </div>` : ""}
+            </div>
+          </div>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-bottom">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="status-chip ${sk}">
+              <span class="status-dot"></span>${statusLabel[sk]}
+            </span>
+            ${m.date ? `<span class="card-date">สมัคร ${m.date}</span>` : ""}
+          </div>
+          <div class="card-actions">
+            <button class="btn-reject"
+              onclick="askAction('${m.studentId}','reject','${safeName}')"
+              ${!isPending ? "disabled" : ""}>
+              ✕ ไม่อนุมัติ
+            </button>
+            <button class="btn-approve"
+              onclick="askAction('${m.studentId}','approve','${safeName}')"
+              ${!isPending ? "disabled" : ""}>
+              ✓ อนุมัติ
+            </button>
+          </div>
+        </div>
+      </div>`;
+            }).join("");
+        }
+
+        // ── Confirm dialog ──
+        let pendingAction = null;
+
+        function askAction(studentId, action, name) {
+            pendingAction = { studentId, action, name };
+            const isApprove = action === "approve";
+            document.getElementById("dialogIcon").textContent = isApprove ? "✅" : "🚫";
+            document.getElementById("dialogTitle").textContent = isApprove ? "ยืนยันการอนุมัติ" : "ยืนยันการไม่อนุมัติ";
+            document.getElementById("dialogDesc").textContent = isApprove
+                ? `คุณต้องการอนุมัติสมาชิก "${name}" ใช่หรือไม่?`
+                : `คุณต้องการไม่อนุมัติสมาชิก "${name}" ใช่หรือไม่?`;
+            const btn = document.getElementById("dialogConfirmBtn");
+            btn.textContent = isApprove ? "อนุมัติ" : "ไม่อนุมัติ";
+            btn.className = isApprove ? "btn-confirm-approve" : "btn-confirm-reject";
+            document.getElementById("confirmOverlay").classList.add("show");
+        }
+
+        function closeDialog() {
+            document.getElementById("confirmOverlay").classList.remove("show");
+            pendingAction = null;
+        }
+
+        // ── ส่งสถานะกลับไปอัปเดต Sheets จริง ──
+        async function confirmAction() {
+    if (!pendingAction) return;
+    const { studentId, action, name } = pendingAction;
+    const newStatus = action === "approve" ? "อนุมัติ" : "ไม่อนุมัติ";
+
+    closeDialog();
+    const card = document.getElementById("card-" + studentId);
+    if (card) card.style.opacity = "0.5";
+
+    try {
+        // ✅ เปลี่ยนจาก POST เป็น GET เพื่อหลีกเลี่ยง CORS
+        const url = `${APPS_SCRIPT_URL}?action=updateMemberStatus&studentId=${encodeURIComponent(studentId)}&status=${encodeURIComponent(newStatus)}&t=${Date.now()}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.status === "success") {
+            const member = allMembers.find(m => m.studentId === studentId);
+            if (member) {
+                member.status = newStatus;
+                member.statusKey = normalizeStatus(newStatus);
+            }
+            updateStats();
+            renderMembers();
+            showToast(
+                action === "approve" ? `✅ อนุมัติ "${name}" สำเร็จ` : `🚫 ไม่อนุมัติ "${name}" แล้ว`,
+                action === "approve" ? "success" : "error"
+            );
+        } else {
+            if (card) card.style.opacity = "";
+            showToast("เกิดข้อผิดพลาด: " + (data.message || ""), "error");
+        }
+    } catch (e) {
+        if (card) card.style.opacity = "";
+        showToast("เชื่อมต่อ API ไม่ได้ กรุณาลองใหม่", "error");
+    }
+}
+
+        // Close dialog on backdrop click
+        document.getElementById("confirmOverlay").addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) closeDialog();
+        });
+
+        // ── Init ──
+        loadMembers();
+    </script>
+
+</body>
+
+</html>

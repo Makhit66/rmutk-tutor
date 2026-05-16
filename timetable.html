@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ตารางสอน RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans Thai', 'IBM Plex Sans Thai', sans-serif;
+      background: #f4f5f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page-wrap {
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 14px;
+      padding: 0 2px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .status-dot.loading {
+      background: #f59e0b;
+      animation: blink 1s infinite;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.3
+      }
+    }
+
+    /* ── WEEK NAV ── */
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .week-btn {
+      width: 34px;
+      height: 34px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      transition: border-color 0.15s;
+    }
+
+    .week-btn:hover {
+      border-color: #C4A35A;
+      color: #C4A35A;
+    }
+
+    .week-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .btn-today {
+      padding: 8px 16px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .btn-today:hover {
+      background: #333;
+    }
+
+    /* ── TIMETABLE CARD ── */
+    .timetable-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8e8e6;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    /* ── TABLE ── */
+    .timetable {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .timetable thead tr th {
+      background: #ebebeb;
+      padding: 14px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      text-align: center;
+      border-right: 1px solid #ddd;
+    }
+
+    .timetable thead tr th:last-child {
+      border-right: none;
+    }
+
+    .timetable thead tr th.today-col {
+      background: #fffbf0;
+      color: #C4A35A;
+    }
+
+    .timetable tbody tr td {
+      border-top: 1px solid #e8e8e6;
+      border-right: 1px solid #e8e8e6;
+      padding: 0;
+      vertical-align: top;
+      min-height: 120px;
+      /* เพิ่มจาก 72px → 120px */
+      height: 120px;
+      /* เพิ่มจาก 72px → 120px */
+    }
+
+    .timetable tbody tr td:last-child {
+      border-right: none;
+    }
+
+    /* เวลา column */
+    .td-time {
+      width: 110px;
+      background: #fafafa;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      font-weight: 400;
+      vertical-align: middle !important;
+      padding: 8px 6px !important;
+      white-space: nowrap;
+      height: 120px;
+      /* เพิ่มให้ตรงกัน */
+    }
+
+
+    /* class block */
+    .td-cell {
+      position: relative;
+      min-height: 72px;
+    }
+
+    .class-block {
+      position: absolute;
+      inset: 4px;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .class-block .cb-subject {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .class-block .cb-room {
+      font-size: 11px;
+      font-weight: 400;
+      margin-top: 2px;
+      opacity: 0.85;
+    }
+
+    .class-block .cb-tutor {
+      font-size: 10px;
+      font-weight: 400;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+
+    .class-block .cb-student {
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    /* สีตาม index */
+    .color-0 {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .color-1 {
+      background: #dcfce7;
+      color: #166534;
+      border-left: 3px solid #22c55e;
+    }
+
+    .color-2 {
+      background: #fef9c3;
+      color: #854d0e;
+      border-left: 3px solid #eab308;
+    }
+
+    .color-3 {
+      background: #fce7f3;
+      color: #9d174d;
+      border-left: 3px solid #ec4899;
+    }
+
+    .color-4 {
+      background: #ede9fe;
+      color: #5b21b6;
+      border-left: 3px solid #8b5cf6;
+    }
+
+    .color-5 {
+      background: #ffedd5;
+      color: #9a3412;
+      border-left: 3px solid #f97316;
+    }
+
+    /* multiple bookings in same cell */
+    .cell-stack {
+      position: absolute;
+      inset: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow-y: auto;
+      max-height: 112px;
+      /* 120px - 8px (inset top+bottom) */
+    }
+
+    .cell-stack .class-block {
+      position: relative;
+      inset: auto;
+      flex-shrink: 0;
+    }
+
+    /* empty cell */
+    .empty-cell {
+      width: 100%;
+      height: 100%;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e5e5;
+      font-size: 18px;
+    }
+
+    /* ── LOADING SKELETON ── */
+    .skeleton-row td {
+      background: #f5f5f5;
+    }
+
+    .skeleton-block {
+      margin: 8px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #888;
+      padding: 0 2px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* ── NO DATA ── */
+    .no-data-cell {
+      text-align: center;
+      padding: 48px;
+      color: #bbb;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+
+      .timetable thead tr th,
+      .timetable tbody tr td {
+        font-size: 11px;
+        padding: 6px 4px;
+      }
+
+      .td-time {
+        width: 70px;
+        font-size: 10px;
+      }
+
+      .class-block {
+        padding: 4px 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ── ACTION BUTTONS ── -->
+  <div class="dashboard-action-buttons">
+    <a href="tutor-dashboard.html" class="dashboard-action-btn">หน้าหลัก</a>
+    <a href="Timetable.html" class="dashboard-action-btn active">ตารางสอน</a>
+    <a href="tutor.html" class="dashboard-action-btn">PROFILE</a>
+  </div>
+
+  <!-- ── PAGE ── -->
+  <div class="page-wrap">
+
+    <!-- STATUS -->
+    <div class="status-bar">
+      <div class="status-dot loading" id="statusDot"></div>
+      <span id="statusText">กำลังโหลดข้อมูล...</span>
+    </div>
+
+    <!-- WEEK NAV -->
+    <div class="week-nav">
+      <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+      <span class="week-label" id="weekLabel">—</span>
+      <button class="week-btn" onclick="changeWeek(1)">›</button>
+      <button class="btn-today" onclick="goToday()">สัปดาห์นี้</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="timetable-card">
+      <table class="timetable">
+        <thead>
+          <tr id="tableHead">
+            <th>เวลา \ วัน</th>
+            <th>จันทร์</th>
+            <th>อังคาร</th>
+            <th>พุธ</th>
+            <th>พฤหัสบดี</th>
+            <th>ศุกร์</th>
+            <th>เสาร์</th>
+            <th>อาทิตย์</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <!-- skeleton -->
+          <tr class="skeleton-row">
+            <td class="td-time">08:00 – 09:00</td>
+            <td>
+              <div class="skeleton-block"></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="skeleton-row">
+            <td class="td-time">09:00 – 10:00</td>
+            <td></td>
+            <td>
+              <div class="skeleton-block"></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr class="skeleton-row">
+            <td class="td-time">10:00 – 11:00</td>
+            <td></td>
+            <td></td>
+            <td>
+              <div class="skeleton-block"></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#3b82f6;"></div>
+        <span>การจองที่ยืนยันแล้ว</span>
+      </div>
+      <div class="legend-item" style="color:#ccc;">
+        <span>แสดงเฉพาะสัปดาห์ที่เลือก · ดึงจาก Sheet "จอง" สถานะ "ยืนยัน"</span>
+      </div>
+    </div>
+
+  </div><!-- end .page-wrap -->
+
+  <script>
+    /* ════════════════════════════════════════
+       CONFIG
+    ════════════════════════════════════════ */
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    const DAY_TH = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
+    const MON_TH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+      "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+
+    const TIME_SLOTS = [
+      "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+      "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"
+    ];
+
+    const COLORS = [
+      "color-0", "color-1", "color-2", "color-3", "color-4", "color-5"
+    ];
+
+    let weekOffset = 0;
+    let allBookings = [];   // สถานะ "ยืนยัน"
+    let colorMap = {};   // subject → color class
+
+    /* ════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════ */
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderHeader();
+      loadBookings();
+    });
+
+    /* ════════════════════════════════════════
+       DATE HELPERS
+    ════════════════════════════════════════ */
+    function getMonday(offset = 0) {
+      const t = new Date();
+      const d = t.getDay();
+      const diff = d === 0 ? -6 : 1 - d;
+      const m = new Date(t);
+      m.setDate(t.getDate() + diff + offset * 7);
+      m.setHours(0, 0, 0, 0);
+      return m;
+    }
+
+    function getWeekDays(monday) {
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        return d;
+      });
+    }
+
+    function isToday(d) {
+      const t = new Date();
+      return d.getDate() === t.getDate() &&
+        d.getMonth() === t.getMonth() &&
+        d.getFullYear() === t.getFullYear();
+    }
+
+    function fmt(d) { return `${d.getDate()} ${MON_TH[d.getMonth()]}`; }
+
+    function weekLabel(days) {
+      return `${fmt(days[0])} – ${fmt(days[6])} ${days[6].getFullYear() + 543}`;
+    }
+
+    /* ════════════════════════════════════════
+       PARSE DATE (รองรับหลาย format)
+    ════════════════════════════════════════ */
+    function parseDate(str) {
+      if (!str || str === "undefined" || str === "null") return null;
+      str = str.trim();
+
+      // Format 1: ISO "2024-05-06T10:00"
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(str)) {
+        const d = new Date(str);
+        return isNaN(d) ? null : d;
+      }
+
+      // Format 2: "06/05/2567 10:00" หรือ "06/05/2024 10:00"
+      const m2 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+      if (m2) {
+        let y = parseInt(m2[3]);
+        if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m2[2]) - 1, parseInt(m2[1]),
+          parseInt(m2[4]), parseInt(m2[5]));
+      }
+
+      // Format 3: "2024-05-06 10:00"
+      const m3 = str.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})/);
+      if (m3) {
+        let y = parseInt(m3[1]);
+        if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m3[2]) - 1, parseInt(m3[3]),
+          parseInt(m3[4]), parseInt(m3[5]));
+      }
+
+      // Format 4: "06/05/2567" (ไม่มีเวลา → 08:00)
+      const m4 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m4) {
+        let y = parseInt(m4[3]);
+        if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m4[2]) - 1, parseInt(m4[1]), 8, 0);
+      }
+
+      // Fallback
+      const fb = new Date(str);
+      return isNaN(fb) ? null : fb;
+    }
+
+    /* ════════════════════════════════════════
+       GET TIME SLOT KEY
+    ════════════════════════════════════════ */
+    function getSlotKey(date) {
+      const h = date.getHours();
+      for (let i = TIME_SLOTS.length - 1; i >= 0; i--) {
+        const sh = parseInt(TIME_SLOTS[i].split(":")[0]);
+        if (h >= sh) return TIME_SLOTS[i];
+      }
+      return TIME_SLOTS[0];
+    }
+
+    function slotLabel(slot) {
+      const [h] = slot.split(":").map(Number);
+      return `${slot} – ${String(h + 1).padStart(2, "0")}:00`;
+    }
+
+    /* ════════════════════════════════════════
+       COLOR MAP (วิชา → สี)
+    ════════════════════════════════════════ */
+    let colorIdx = 0;
+    function getColor(subject) {
+      if (!colorMap[subject]) {
+        colorMap[subject] = COLORS[colorIdx % COLORS.length];
+        colorIdx++;
+      }
+      return colorMap[subject];
+    }
+
+    /* ════════════════════════════════════════
+       LOAD BOOKINGS
+    ════════════════════════════════════════ */
+    async function loadBookings() {
+      setStatus("loading", "กำลังโหลดข้อมูลจาก Sheets...");
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getBookings`);
+        const data = await res.json();
+        if (data.status !== "success") throw new Error(data.message || "API Error");
+
+        // กรองเฉพาะสถานะ "ยืนยัน"
+        allBookings = (data.bookings || []).filter(b =>
+          String(b.status || "").trim() === "ยืนยัน"
+        );
+
+        console.log("📦 raw bookings:", data.bookings?.length);
+        console.log("✅ ยืนยัน:", allBookings.length);
+
+        setStatus("ok",
+          allBookings.length > 0
+            ? `โหลดสำเร็จ — พบ ${allBookings.length} การจองที่ยืนยันแล้ว`
+            : `ยังไม่มีการจองที่ยืนยัน (ทั้งหมด ${data.bookings?.length || 0} รายการ)`
+        );
+
+        renderTable();
+
+      } catch (err) {
+        setStatus("error", "โหลดไม่สำเร็จ: " + err.message);
+        document.getElementById("tbody").innerHTML = `
+          <tr>
+            <td class="no-data-cell" colspan="8">
+              ❌ ไม่สามารถโหลดข้อมูลได้
+              <span style="font-size:11px;color:#ddd;">${err.message}</span>
+            </td>
+          </tr>`;
+        console.error(err);
+      }
+    }
+
+    /* ════════════════════════════════════════
+       RENDER HEADER
+    ════════════════════════════════════════ */
+    function renderHeader() {
+      const monday = getMonday(weekOffset);
+      const days = getWeekDays(monday);
+      document.getElementById("weekLabel").textContent = weekLabel(days);
+
+      const head = document.getElementById("tableHead");
+      head.innerHTML = `<th>เวลา \\ วัน</th>` + days.map((d, i) => `
+        <th class="${isToday(d) ? "today-col" : ""}">
+          ${DAY_TH[i]}
+          <div style="font-size:10px;font-weight:400;color:#aaa;margin-top:2px;">${fmt(d)}</div>
+        </th>
+      `).join("");
+    }
+
+    /* ════════════════════════════════════════
+       RENDER TABLE
+    ════════════════════════════════════════ */
+    // ════════════════════════════════════════
+//  RENDER TABLE
+// ════════════════════════════════════════
+function renderTable() {
+  const monday    = getMonday(weekOffset);
+  const days      = getWeekDays(monday);
+  const weekStart = new Date(monday);
+  const weekEnd   = new Date(monday);
+  weekEnd.setDate(monday.getDate() + 7);
+
+  // สร้าง grid[slotKey][dayIdx] = [booking, ...]
+  const grid = {};
+  TIME_SLOTS.forEach(s => {
+    grid[s] = {};
+    days.forEach((_, i) => { grid[s][i] = []; });
+  });
+
+  allBookings.forEach(b => {
+    const date = parseDate(b.dateTime);
+    if (!date) return;
+    if (date < weekStart || date >= weekEnd) return;
+
+    const jsDay = date.getDay();
+    const di    = jsDay === 0 ? 6 : jsDay - 1;
+    const slot  = getSlotKey(date);
+
+    if (grid[slot] && grid[slot][di] !== undefined) {
+      grid[slot][di].push(b);
+    }
+  });
+
+  // ── MERGE: วิชา+ห้องเดียวกัน → บล็อกเดียว ──
+  function mergeBookings(bookings) {
+    const map = new Map();
+    bookings.forEach(b => {
+      // key = วิชา|ห้อง|ติวเตอร์
+      const key = `${(b.subjects||"").trim()}|${(b.location||"").trim()}|${(b.tutorName||"").trim()}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          subjects:   b.subjects  || "—",
+          location:   b.location  || "—",
+          tutorName:  b.tutorName || "—",
+          students:   []
+        });
+      }
+      // เพิ่มชื่อนักเรียน (ไม่ซ้ำ)
+      const name = (b.studentName || "").trim();
+      const entry = map.get(key);
+      if (name && !entry.students.includes(name)) {
+        entry.students.push(name);
+      }
+    });
+    return [...map.values()];
+  }
+
+  // หา slots ที่มีข้อมูล
+  const activeSlots = TIME_SLOTS.filter(s =>
+    days.some((_, di) => grid[s][di].length > 0)
+  );
+
+  const tbody = document.getElementById("tbody");
+
+  if (activeSlots.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td class="no-data-cell" colspan="8">
+          📭 ไม่มีการสอนในสัปดาห์นี้
+          <span style="font-size:11px;color:#ddd;">
+            ลองกดปุ่ม ‹ › เพื่อดูสัปดาห์อื่น
+          </span>
+        </td>
+      </tr>`;
+    return;
+  }
+
+  tbody.innerHTML = activeSlots.map(slot => {
+    const cells = days.map((d, di) => {
+      const bookings = grid[slot][di];
+      const todayCls = isToday(d) ? ' style="background:#fffdf5"' : "";
+
+      if (!bookings.length) {
+        return `<td class="td-cell"${todayCls}>
+                  <div class="empty-cell"></div>
+                </td>`;
+      }
+
+      // ── merge แล้วสร้าง block ──
+      const merged = mergeBookings(bookings);
+
+      const blocks = merged.map(m => {
+        const colorCls = getColor(m.subjects);
+
+        // แสดงนักเรียนหลายคน
+        const studentsHtml = m.students.length > 0
+          ? m.students.map(s =>
+              `<div class="cb-student">🎓 ${s}</div>`
+            ).join("")
+          : `<div class="cb-student">🎓 —</div>`;
+
+        return `
+          <div class="class-block ${colorCls}">
+            <div class="cb-subject">📚 ${m.subjects}</div>
+            <div class="cb-room">📍 ${m.location}</div>
+            <div class="cb-tutor">👤 ${m.tutorName}</div>
+            ${studentsHtml}
+          </div>`;
+      }).join("");
+
+      return `
+        <td class="td-cell"${todayCls}>
+          <div class="cell-stack">${blocks}</div>
+        </td>`;
+    }).join("");
+
+    return `
+      <tr>
+        <td class="td-time">${slotLabel(slot)}</td>
+        ${cells}
+      </tr>`;
+  }).join("");
+}
+
+    /* ════════════════════════════════════════
+       WEEK NAV
+    ════════════════════════════════════════ */
+    function changeWeek(d) {
+      weekOffset += d;
+      renderHeader();
+      renderTable();
+    }
+
+    function goToday() {
+      weekOffset = 0;
+      renderHeader();
+      renderTable();
+    }
+
+    /* ════════════════════════════════════════
+       STATUS
+    ════════════════════════════════════════ */
+    function setStatus(type, text) {
+      const dot = document.getElementById("statusDot");
+      dot.className = "status-dot" + (type !== "ok" ? " " + type : "");
+      document.getElementById("statusText").textContent = text;
+    }
+  </script>
+</body>
+
+</html>

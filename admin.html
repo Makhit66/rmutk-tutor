@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — จับคู่ติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:     #111110;
+      --white:     #FAFAF8;
+      --gold:      #D4A574;
+      --gold-dark: #92400E;
+      --gold-pale: #FEF3C7;
+      --red:       #C0392B;
+      --red-pale:  #FEE2E2;
+      --green:     #2D6A4F;
+      --gray-100:  #F5F5F4;
+      --gray-200:  #E7E5E4;
+      --gray-400:  #A8A29E;
+      --gray-600:  #57534E;
+      --shadow:    0 4px 24px rgba(17,17,16,0.10);
+      --shadow-lg: 0 12px 48px rgba(17,17,16,0.18);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Noto Sans Thai', 'IBM Plex Sans Thai', sans-serif;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* ── Background pattern ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(212,165,116,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(212,165,116,0.08) 0%, transparent 50%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 48px,
+          rgba(255,255,255,0.025) 48px,
+          rgba(255,255,255,0.025) 49px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 48px,
+          rgba(255,255,255,0.025) 48px,
+          rgba(255,255,255,0.025) 49px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    /* ── Brand ── */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      text-decoration: none;
+    }
+    .brand-badge {
+      width: 40px; height: 40px;
+      background: var(--gold);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-badge svg { width: 22px; height: 22px; }
+    .brand-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+    .brand-text span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--gray-400);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(250,250,248,0.04);
+      border: 1px solid rgba(250,250,248,0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Card header strip ── */
+    .card-header {
+      background: linear-gradient(135deg, #1a1a19 0%, #232320 100%);
+      border-bottom: 1px solid rgba(212,165,116,0.2);
+      padding: 28px 32px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .admin-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--gold) 0%, #b8864e 100%);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .admin-icon svg { width: 22px; height: 22px; }
+    .card-header-text {}
+    .card-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(212,165,116,0.15);
+      border: 1px solid rgba(212,165,116,0.3);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Form body ── */
+    .card-body {
+      padding: 32px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-400);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .form-label span { color: var(--gold); }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      pointer-events: none;
+      display: flex;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(250,250,248,0.06);
+      border: 1.5px solid rgba(250,250,248,0.12);
+      border-radius: 10px;
+      padding: 12px 14px 12px 42px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--white);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-input::placeholder { color: rgba(250,250,248,0.25); }
+    .form-input:focus {
+      border-color: rgba(212,165,116,0.6);
+      background: rgba(212,165,116,0.06);
+      box-shadow: 0 0 0 3px rgba(212,165,116,0.12);
+    }
+    .form-input.error { border-color: rgba(192,57,43,0.6); }
+
+    /* password toggle */
+    .toggle-pw {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--gray-400);
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--gold); }
+
+    /* ── Error texts ── */
+    .form-error {
+      font-size: 12px;
+      color: #F87171;
+      margin-top: 6px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+    .form-error.show { display: flex; }
+
+    .error-box {
+      background: rgba(192,57,43,0.1);
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #F87171;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .error-box.show { display: flex; }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold) 0%, #c4934a 100%);
+      color: var(--black);
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(212,165,116,0.3);
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit:hover:not(:disabled) {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(212,165,116,0.4);
+    }
+    .btn-submit:active:not(:disabled) { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-submit.loading .btn-label { opacity: 0; }
+    .btn-submit.loading .spinner { display: block; }
+
+    .spinner {
+      display: none;
+      position: absolute;
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(17,17,16,0.25);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0;
+      color: rgba(250,250,248,0.2);
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(250,250,248,0.08);
+    }
+
+    /* ── Back link ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+      padding: 4px 0;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    /* ── Success state ── */
+    .success-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 12px 0;
+      animation: fadeIn 0.4s ease both;
+    }
+    .success-view.show { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .success-ring {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(212,165,116,0.2), rgba(212,165,116,0.05));
+      border: 2px solid rgba(212,165,116,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .success-ring svg { width: 28px; height: 28px; }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .success-name {
+      font-size: 14px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .success-desc {
+      font-size: 13px;
+      color: var(--gray-400);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .btn-go {
+      background: linear-gradient(135deg, var(--gold), #c4934a);
+      color: var(--black);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-go:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── Footer ── */
+    .page-footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: rgba(250,250,248,0.2);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    /* ── Security badge ── */
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(250,250,248,0.25);
+      margin-top: 16px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    @media (max-width: 480px) {
+      .card-header { padding: 22px 22px 18px; }
+      .card-body { padding: 24px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Brand -->
+  <a class="brand" href="index.html">
+    <div class="brand-badge">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="#111110" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="#111110" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      จับคู่ติวเตอร์ RMUTK
+      <span>Admin Portal</span>
+    </div>
+  </a>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="admin-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" stroke="#111110" stroke-width="1.8"/>
+          <path d="M3 21v-1a9 9 0 0118 0v1" stroke="#111110" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M17 8l2 2-4 4" stroke="#111110" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="card-header-text">
+        <div class="card-badge">ADMINISTRATOR</div>
+        <div class="card-title">เข้าสู่ระบบ Admin</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+
+      <!-- Form view -->
+      <div id="formView">
+
+        <!-- General error -->
+        <div class="error-box" id="errGeneral">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16" flex-shrink="0">
+            <circle cx="12" cy="12" r="10" stroke="#F87171" stroke-width="1.6"/>
+            <path d="M12 8v4M12 16h.01" stroke="#F87171" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="errGeneralText">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่</span>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label class="form-label" for="adminUsername">รหัส Admin <span>*</span></label>
+          <div class="input-wrap">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </div>
+            <input
+              class="form-input" type="text" id="adminUsername"
+              placeholder="กรอกรหัส Admin"
+              autocomplete="username"
+              onkeydown="if(event.key==='Enter') document.getElementById('adminPassword').focus()"
+            />
+          </div>
+          <div class="form-error" id="errUsername">
+            <svg viewBox="0 0 24 24" fill="none" width="12" height="12"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            กรุณากรอกรหัส Admin
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="adminPassword">รหัสผ่าน <span>*</span></label>
+          <div class="input-wrap">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <input
+              class="form-input" type="password" id="adminPassword"
+              placeholder="รหัสผ่านของคุณ"
+              autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') handleAdminLogin()"
+              style="padding-right: 44px;"
+            />
+            <button class="toggle-pw" type="button" onclick="togglePassword()" tabindex="-1" id="toggleBtn">
+              <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" width="16" height="16" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error" id="errPassword">
+            <svg viewBox="0 0 24 24" fill="none" width="12" height="12"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            กรุณากรอกรหัสผ่าน
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-submit" id="loginBtn" onclick="handleAdminLogin()">
+          <div class="spinner"></div>
+          <span class="btn-label">เข้าสู่ระบบ Admin</span>
+        </button>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24" fill="none" width="12" height="12">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          เฉพาะผู้ดูแลระบบที่ได้รับอนุญาตเท่านั้น
+        </div>
+
+        <div class="divider">หรือ</div>
+
+        <div style="text-align:center;">
+          <a class="back-link" href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+              <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            กลับไปหน้าหลัก
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Success view -->
+      <div class="success-view" id="successView">
+        <div class="success-ring">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">เข้าสู่ระบบสำเร็จ</div>
+        <div class="success-name" id="adminWelcome">ยินดีต้อนรับ, Admin</div>
+        <div class="success-desc">กำลังพาคุณไปยังแดชบอร์ดผู้ดูแลระบบ…</div>
+        <button class="btn-go" onclick="goToDashboard()">ไปยังแดชบอร์ด →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page-footer">© 2567 RMUTK Tutor System · Admin Access</div>
+
+</div>
+
+<!-- ════ SCRIPT ════ -->
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+  // ── Hardcoded admin credentials (เปลี่ยนตามต้องการ) ──
+  // หรือจะใช้ sheet "สมาชิก" โดยตรวจ role === "admin" ก็ได้
+  const ADMIN_CREDENTIALS = [
+    { username: "admin", password: "admin1234" },
+    { username: "rmutk_admin", password: "rmutk2567" }
+  ];
+
+  let showPw = false;
+
+  function togglePassword() {
+    showPw = !showPw;
+    const input = document.getElementById("adminPassword");
+    input.type = showPw ? "text" : "password";
+    document.getElementById("eyeOpen").style.display  = showPw ? "none"  : "block";
+    document.getElementById("eyeClosed").style.display = showPw ? "block" : "none";
+  }
+
+  function showErr(id, show) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("show", show);
+  }
+
+  function setInputError(inputId, hasError) {
+    const el = document.getElementById(inputId);
+    if (el) el.classList.toggle("error", hasError);
+  }
+
+  async function handleAdminLogin() {
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
+
+    // reset errors
+    showErr("errUsername", false);
+    showErr("errPassword", false);
+    showErr("errGeneral", false);
+    setInputError("adminUsername", false);
+    setInputError("adminPassword", false);
+
+    let valid = true;
+    if (!username) { showErr("errUsername", true); setInputError("adminUsername", true); valid = false; }
+    if (!password) { showErr("errPassword", true); setInputError("adminPassword", true); valid = false; }
+    if (!valid) return;
+
+    // Loading
+    const btn = document.getElementById("loginBtn");
+    btn.classList.add("loading");
+    btn.disabled = true;
+
+    // ── Option A: ตรวจสอบจาก hardcoded credentials ──
+    await new Promise(r => setTimeout(r, 900)); // simulate delay
+    const matched = ADMIN_CREDENTIALS.find(c => c.username === username && c.password === password);
+
+    if (matched) {
+      onLoginSuccess(username);
+      return;
+    }
+
+    // ── Option B: ตรวจสอบจาก Google Sheets (role === "แอดมิน") ──
+    // uncomment บรรทัดด้านล่างเพื่อใช้งาน + comment ส่วน Option A ออก
+    /*
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=login&studentId=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=แอดมิน`);
+      const data = await res.json();
+      if (data.status === "success") {
+        onLoginSuccess(data.fullName || username);
+        return;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    */
+
+    // Login failed
+    btn.classList.remove("loading");
+    btn.disabled = false;
+    document.getElementById("errGeneralText").textContent = "รหัส Admin หรือรหัสผ่านไม่ถูกต้อง";
+    showErr("errGeneral", true);
+    document.getElementById("adminPassword").value = "";
+    document.getElementById("adminPassword").focus();
+  }
+
+  function onLoginSuccess(name) {
+    // Save session
+    sessionStorage.setItem("adminLoggedIn", "true");
+    sessionStorage.setItem("adminName", name);
+
+    // Show success
+    document.getElementById("formView").style.display = "none";
+    document.getElementById("adminWelcome").textContent = `ยินดีต้อนรับ, ${name}`;
+    document.getElementById("successView").classList.add("show");
+  }
+
+  function goToDashboard() {
+    window.location.href = "approve_membership.html";
+  }
+
+  // Keyboard shortcut: Enter anywhere
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const active = document.activeElement;
+      if (active && active.id === "adminUsername") return; // let field handle
+      handleAdminLogin();
+    }
+  });
+
+  // Check if already logged in
+  if (sessionStorage.getItem("adminLoggedIn") === "true") {
+    const name = sessionStorage.getItem("adminName") || "Admin";
+    document.getElementById("formView").style.display = "none";
+    document.getElementById("adminWelcome").textContent = `ยินดีต้อนรับ, ${name}`;
+    document.getElementById("successView").classList.add("show");
+  }
+</script>
+
+</body>
+</html>

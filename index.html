@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>จับคู่ติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a class="nav-logo" href="#">
+        <div class="nav-logo-badge">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        จับคู่ติวเตอร์ RMUTK
+      </a>
+      <a href="courses.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#92400E;background:#FEF3C7;border:1.5px solid #F59E0B;padding:6px 14px;border-radius:20px;text-decoration:none;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#FDE68A'" onmouseout="this.style.background='#FEF3C7'">
+        📚 ดูรายวิชา
+      </a>
+    </div>
+    <button class="btn-nav" id="openModalBtn">สมัครสมาชิก</button>
+
+  </nav>
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+    <div class="hero-eyebrow">ระบบจับคู่ภายในมหาวิทยาลัย</div>
+    <h1 class="hero-title">
+      ยินดีต้อนรับ —<br />
+      <span>เลือกบทบาทของคุณ</span>
+    </h1>
+    <p class="hero-sub">เชื่อมต่อนักศึกษากับติวเตอร์คุณภาพ<br />ภายใน มทร.กรุงเทพ</p>
+
+    <div class="role-grid">
+      <!-- Tutor card -->
+      <a class="role-card tutor" href="#" onclick="openTutorLoginModal(); return false;">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#92400E" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="9" cy="7" r="4" stroke="#92400E" stroke-width="1.6"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#92400E" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="role-title">ติวเตอร์</div>
+        <div class="role-desc">สอนเพื่อน แบ่งปันความรู้<br />สร้างประสบการณ์ และรายได้เสริม</div>
+        <div class="role-btn">
+          เข้าสู่ระบบ
+          <div class="role-btn-arrow">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2 8L8 2M8 2H4M8 2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </a>
+
+      <!-- Student card -->
+      <a class="role-card student" href="#" onclick="openLoginModal(); return false;">
+        <div class="role-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#1A1A1A" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#1A1A1A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="role-title">นักเรียน</div>
+        <div class="role-desc">ค้นหาติวเตอร์ที่ใช่<br />จองเวลา และเรียนได้ทันที</div>
+        <div class="role-btn">
+          เข้าสู่ระบบ
+          <div class="role-btn-arrow">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2 8L8 2M8 2H4M8 2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num" id="statTutors">—</div>
+        <div class="stat-label">ติวเตอร์พร้อม</div>
+      </div>
+      <div class="stats-divider"></div>
+      <div class="stat">
+        <div class="stat-num" id="statBookings">—</div>
+        <div class="stat-label">คู่ที่จับได้แล้ว</div>
+      </div>
+      <div class="stats-divider"></div>
+      <div class="stat">
+        <div class="stat-num" id="statRating">—</div>
+        <div class="stat-label">คะแนนเฉลี่ย</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © 2567 ระบบจับคู่ติวเตอร์ มทร.กรุงเทพ · พัฒนาโดยนักศึกษา เพื่อนักศึกษา
+  </footer>
+
+  <!-- ══════════════ REGISTER MODAL ══════════════ -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">สมัครสมาชิก</div>
+        <button class="modal-close" id="closeModalBtn" aria-label="ปิด">✕</button>
+      </div>
+
+      <div class="modal-form" id="modalForm">
+        <div class="form-group">
+          <label class="form-label" for="fullName">ชื่อ – นามสกุล <span>*</span></label>
+          <input class="form-input" type="text" id="fullName" placeholder="เช่น สมชาย ใจดี" autocomplete="name" />
+          <div class="form-error" id="errFullName">กรุณากรอกชื่อ-นามสกุล</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="studentId">รหัสนักศึกษา <span>*</span></label>
+          <input class="form-input" type="text" id="studentId" placeholder="เช่น 640123456789" maxlength="12" />
+          <div class="form-error" id="errStudentId">รหัสนักศึกษาต้องเป็นตัวเลข 12 หลัก</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">อีเมลมหาวิทยาลัย <span>*</span></label>
+          <input class="form-input" type="email" id="email" placeholder="student@rmutk.ac.th" autocomplete="email" />
+          <div class="form-error" id="errEmail">กรุณาใช้อีเมล @rmutk.ac.th เท่านั้น</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">รหัสผ่าน <span>*</span></label>
+          <input class="form-input" type="password" id="password" placeholder="อย่างน้อย 8 ตัวอักษร" autocomplete="new-password" />
+          <div class="form-error" id="errPassword">รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่าน <span>*</span></label>
+          <input class="form-input" type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" autocomplete="new-password" />
+          <div class="form-error" id="errConfirm">รหัสผ่านไม่ตรงกัน</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">บทบาท <span>*</span></label>
+          <div class="role-toggle">
+            <button class="role-toggle-btn" id="btnRoleStudent" onclick="setRole('นักเรียน')">
+              🎓 นักเรียน
+            </button>
+            <button class="role-toggle-btn gold" id="btnRoleTutor" onclick="setRole('ติวเตอร์')">
+              ✏️ ติวเตอร์
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+          <div class="spinner"></div>
+          <span class="btn-label">สมัครสมาชิก</span>
+        </button>
+      </div>
+
+      <div class="modal-success" id="modalSuccess">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="#2D6A4F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">สมัครสมาชิกสำเร็จ! 🎉</div>
+        <div class="success-desc" id="successDesc">บันทึกข้อมูลของคุณเรียบร้อยแล้ว<br />ยินดีต้อนรับสู่ระบบ มทร.กรุงเทพ</div>
+        <button class="btn-close-success" onclick="closeModal()">ปิด</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ LOGIN MODAL (นักเรียน) ══════════════ -->
+  <div class="modal-overlay" id="loginOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+
+      <div class="modal-header">
+        <div class="modal-header-inner">
+          <div class="modal-role-badge">🎓 นักเรียน</div>
+          <div class="modal-title" id="loginTitle">เข้าสู่ระบบนักเรียน</div>
+        </div>
+        <button class="modal-close" id="closeLoginBtn" aria-label="ปิด">✕</button>
+      </div>
+
+      <div class="modal-form" id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginStudentId">รหัสนักศึกษา <span>*</span></label>
+          <input class="form-input" type="text" id="loginStudentId" placeholder="เช่น 6401234567" maxlength="10"
+            onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()" />
+          <div class="form-error" id="errLoginStudentId">กรุณากรอกรหัสนักศึกษา</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">รหัสผ่าน <span>*</span></label>
+          <div class="input-password-wrap">
+            <input class="form-input" type="password" id="loginPassword" placeholder="รหัสผ่านของคุณ" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') handleLogin()" />
+            <button class="toggle-pw" type="button" onclick="togglePw('loginPassword', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error" id="errLoginPassword">กรุณากรอกรหัสผ่าน</div>
+        </div>
+
+        <div class="form-error-box" id="errLoginGeneral" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+            <circle cx="12" cy="12" r="10" stroke="#C0392B" stroke-width="1.6"/>
+            <path d="M12 8v4M12 16h.01" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="errLoginGeneralText">รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง</span>
+        </div>
+
+        <button class="btn-submit" id="loginBtn" onclick="handleLogin()">
+          <div class="spinner"></div>
+          <span class="btn-label">เข้าสู่ระบบ</span>
+        </button>
+
+        <div class="login-footer-link">
+          ยังไม่มีบัญชี? <a href="#" onclick="switchToRegister(); return false;">สมัครสมาชิก</a>
+        </div>
+      </div>
+
+      <div class="modal-success" id="loginSuccess">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="#2D6A4F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">เข้าสู่ระบบสำเร็จ! 👋</div>
+        <div class="success-desc" id="loginSuccessDesc">ยินดีต้อนรับกลับสู่ระบบ</div>
+        <button class="btn-close-success" onclick="closeLoginModal()">ไปยังหน้าหลัก</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ LOGIN MODAL (ติวเตอร์) ══════════════ -->
+  <!-- ✅ FIX: ย้ายออกมานอก loginOverlay แล้ว -->
+  <div class="modal-overlay" id="tutorLoginOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorLoginTitle">
+
+      <div class="modal-header">
+        <div class="modal-header-inner">
+          <div class="modal-role-badge tutor-badge">✏️ ติวเตอร์</div>
+          <div class="modal-title" id="tutorLoginTitle">เข้าสู่ระบบติวเตอร์</div>
+        </div>
+        <button class="modal-close" id="closeTutorLoginBtn" aria-label="ปิด">✕</button>
+      </div>
+
+      <div class="modal-form" id="tutorLoginForm">
+        <div class="form-group">
+          <label class="form-label" for="tutorLoginStudentId">รหัสนักศึกษา <span>*</span></label>
+          <input class="form-input" type="text" id="tutorLoginStudentId"
+            placeholder="เช่น 6401234567" maxlength="10"
+            onkeydown="if(event.key==='Enter') document.getElementById('tutorLoginPassword').focus()" />
+          <div class="form-error" id="errTutorLoginStudentId">กรุณากรอกรหัสนักศึกษา</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tutorLoginPassword">รหัสผ่าน <span>*</span></label>
+          <div class="input-password-wrap">
+            <input class="form-input" type="password" id="tutorLoginPassword"
+              placeholder="รหัสผ่านของคุณ" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') handleTutorLogin()" />
+            <button class="toggle-pw" type="button"
+              onclick="togglePw('tutorLoginPassword', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                  stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error" id="errTutorLoginPassword">กรุณากรอกรหัสผ่าน</div>
+        </div>
+
+        <div class="form-error-box" id="errTutorLoginGeneral" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+            <circle cx="12" cy="12" r="10" stroke="#C0392B" stroke-width="1.6"/>
+            <path d="M12 8v4M12 16h.01" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="errTutorLoginGeneralText">รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง</span>
+        </div>
+
+        <button class="btn-submit btn-submit-gold" id="tutorLoginBtn" onclick="handleTutorLogin()">
+          <div class="spinner"></div>
+          <span class="btn-label">เข้าสู่ระบบ</span>
+        </button>
+
+        <div class="login-footer-link">
+          ยังไม่มีบัญชี? <a href="#" onclick="switchToRegisterTutor(); return false;">สมัครสมาชิก</a>
+        </div>
+      </div>
+
+      <div class="modal-success" id="tutorLoginSuccess">
+        <div class="success-icon success-icon-gold">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="#7A5C1E" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">เข้าสู่ระบบสำเร็จ! 🎉</div>
+        <div class="success-desc" id="tutorLoginSuccessDesc">ยินดีต้อนรับกลับสู่ระบบ</div>
+        <button class="btn-close-success btn-close-gold" onclick="closeTutorLoginModal()">
+          ไปยังหน้าหลัก
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ JAVASCRIPT ══════════════ -->
+  <script>
+    // ⚠️ วาง exec URL ที่นี่
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0K-gG8x3F9hE2AwmMplBpWUczzvx-lqHWXIeRXigIPp-zyin69lwYG0GHW2CrSweQ/exec";
+    let selectedRole = "นักเรียน";
+
+    // ════ REGISTER MODAL ════
+    function openModal(role) {
+      selectedRole = role || "นักเรียน";
+      setRole(selectedRole);
+      resetForm();
+      document.getElementById("modalOverlay").classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => document.getElementById("fullName").focus(), 300);
+    }
+
+    function closeModal() {
+      document.getElementById("modalOverlay").classList.remove("active");
+      document.body.style.overflow = "";
+      setTimeout(resetForm, 300);
+    }
+
+    document.getElementById("modalOverlay").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("openModalBtn").addEventListener("click", () => openModal("นักเรียน"));
+
+    function setRole(role) {
+      selectedRole = role;
+      const btnStudent = document.getElementById("btnRoleStudent");
+      const btnTutor   = document.getElementById("btnRoleTutor");
+      if (role === "ติวเตอร์") {
+        btnTutor.classList.add("active", "gold");
+        btnStudent.classList.remove("active");
+      } else {
+        btnStudent.classList.add("active");
+        btnStudent.classList.remove("gold");
+        btnTutor.classList.remove("active", "gold");
+      }
+    }
+
+    function resetForm() {
+      ["fullName","studentId","email","password","confirmPassword"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      ["errFullName","errStudentId","errEmail","errPassword","errConfirm"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+      });
+      document.getElementById("modalForm").classList.remove("hide");
+      document.getElementById("modalSuccess").classList.remove("show");
+      const btn = document.getElementById("submitBtn");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+
+    function validate() {
+      let ok = true;
+      const fullName        = document.getElementById("fullName").value.trim();
+      const studentId       = document.getElementById("studentId").value.trim();
+      const email           = document.getElementById("email").value.trim();
+      const password        = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      const showErr = (id, show) => document.getElementById(id).classList.toggle("show", show);
+
+      showErr("errFullName", !fullName);
+      if (!fullName) ok = false;
+      showErr("errStudentId", !/^\d{12}$/.test(studentId));
+      if (!/^\d{12}$/.test(studentId)) ok = false;
+      const emailValid = /^[^\s@]+@rmutk\.ac\.th$/.test(email);
+      showErr("errEmail", !emailValid);
+      if (!emailValid) ok = false;
+      showErr("errPassword", password.length < 8);
+      if (password.length < 8) ok = false;
+      showErr("errConfirm", password !== confirmPassword);
+      if (password !== confirmPassword) ok = false;
+
+      return ok;
+    }
+
+    async function handleSubmit() {
+      if (!validate()) return;
+
+      const btn = document.getElementById("submitBtn");
+      btn.classList.add("loading");
+      btn.disabled = true;
+
+      const payload = {
+        action: "register",
+        fullName:  document.getElementById("fullName").value.trim(),
+        studentId: document.getElementById("studentId").value.trim(),
+        email:     document.getElementById("email").value.trim(),
+        password:  document.getElementById("password").value,
+        role:      selectedRole
+      };
+
+      const isValidUrl = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+
+      if (!isValidUrl) {
+        await new Promise(r => setTimeout(r, 1200));
+        showSuccess(payload.fullName, payload.role);
+        return;
+      }
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        showSuccess(payload.fullName, payload.role);
+      } catch (err) {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
+    }
+
+    function showSuccess(name, role) {
+      document.getElementById("successDesc").innerHTML =
+        `บันทึกข้อมูลของ <strong>${name}</strong> เรียบร้อยแล้ว<br />ยินดีต้อนรับสู่ระบบในฐานะ ${role}`;
+      document.getElementById("modalForm").classList.add("hide");
+      document.getElementById("modalSuccess").classList.add("show");
+    }
+
+    // ════ LOGIN MODAL (นักเรียน) ════
+    function openLoginModal() {
+      resetLoginForm();
+      document.getElementById("loginOverlay").classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => document.getElementById("loginStudentId").focus(), 300);
+    }
+
+    function closeLoginModal() {
+      document.getElementById("loginOverlay").classList.remove("active");
+      document.body.style.overflow = "";
+      setTimeout(resetLoginForm, 300);
+    }
+
+    document.getElementById("loginOverlay").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) closeLoginModal();
+    });
+    document.getElementById("closeLoginBtn").addEventListener("click", closeLoginModal);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        closeLoginModal();
+        closeTutorLoginModal();
+      }
+    });
+
+    function resetLoginForm() {
+      ["loginStudentId","loginPassword"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      ["errLoginStudentId","errLoginPassword"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+      });
+      document.getElementById("errLoginGeneral").style.display = "none";
+      document.getElementById("loginForm").classList.remove("hide");
+      document.getElementById("loginSuccess").classList.remove("show");
+      const btn = document.getElementById("loginBtn");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+
+    async function handleLogin() {
+      const studentId = document.getElementById("loginStudentId").value.trim();
+      const password  = document.getElementById("loginPassword").value;
+
+      let ok = true;
+      const showErr = (id, show) => document.getElementById(id).classList.toggle("show", show);
+
+      showErr("errLoginStudentId", !studentId);
+      if (!studentId) ok = false;
+      showErr("errLoginPassword", !password);
+      if (!password) ok = false;
+      if (!ok) return;
+
+      document.getElementById("errLoginGeneral").style.display = "none";
+
+      const btn = document.getElementById("loginBtn");
+      btn.classList.add("loading");
+      btn.disabled = true;
+
+      const isValidUrl = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+
+      if (!isValidUrl) {
+        await new Promise(r => setTimeout(r, 1200));
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("errLoginGeneralText").textContent = "⚠️ Demo mode: URL ยังไม่ถูกต้อง";
+        document.getElementById("errLoginGeneral").style.display = "flex";
+        return;
+      }
+
+      try {
+        // ✅ FIX: เพิ่ม &role=นักเรียน ใน request
+        const res = await fetch(
+          APPS_SCRIPT_URL +
+          "?action=login" +
+          "&studentId=" + encodeURIComponent(studentId) +
+          "&password="  + encodeURIComponent(password) +
+          "&role="      + encodeURIComponent("นักเรียน")
+        );
+        const data = await res.json();
+
+        btn.classList.remove("loading");
+        btn.disabled = false;
+
+        if (data.status === "success") {
+          // บันทึกข้อมูลลง localStorage
+          localStorage.setItem("userRole", "นักเรียน");
+          localStorage.setItem("fullName", data.fullName || studentId);
+          localStorage.setItem("studentId", studentId);
+
+          document.getElementById("loginSuccessDesc").innerHTML =
+            `ยินดีต้อนรับกลับสู่ระบบ <strong>${data.fullName || studentId}</strong>`;
+          document.getElementById("loginForm").classList.add("hide");
+          document.getElementById("loginSuccess").classList.add("show");
+
+          setTimeout(() => { window.location.href = "profile.html"; }, 1500);
+
+        } else if (data.status === "pending") {
+          document.getElementById("errLoginGeneral").style.display = "flex";
+          document.getElementById("errLoginGeneral").style.background = "#FEF9C3";
+          document.getElementById("errLoginGeneral").style.borderColor = "#FDE047";
+          document.getElementById("errLoginGeneral").style.color = "#713F12";
+          document.getElementById("errLoginGeneralText").innerHTML =
+            `<strong>⏳ รออนุมัติ</strong><br><span style="font-size:12px;font-weight:400;">บัญชีของคุณอยู่ระหว่างการตรวจสอบ<br>กรุณารอ Admin อนุมัติก่อนเข้าสู่ระบบ</span>`;
+
+        } else if (data.status === "rejected") {
+          document.getElementById("errLoginGeneral").style.display = "flex";
+          document.getElementById("errLoginGeneral").style.background = "#FEE2E2";
+          document.getElementById("errLoginGeneral").style.borderColor = "#FCA5A5";
+          document.getElementById("errLoginGeneral").style.color = "#7F1D1D";
+          document.getElementById("errLoginGeneralText").innerHTML =
+            `<strong>🚫 ไม่ได้รับอนุมัติ</strong><br><span style="font-size:12px;font-weight:400;">บัญชีของคุณถูกปฏิเสธ<br>กรุณาติดต่อ Admin เพื่อสอบถาม</span>`;
+
+        } else {
+          document.getElementById("errLoginGeneral").style.display = "flex";
+          document.getElementById("errLoginGeneral").style.background = "";
+          document.getElementById("errLoginGeneral").style.borderColor = "";
+          document.getElementById("errLoginGeneral").style.color = "";
+          document.getElementById("errLoginGeneralText").innerHTML =
+            data.message || "รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง";
+          document.getElementById("loginPassword").value = "";
+          document.getElementById("loginPassword").focus();
+        }
+      } catch (err) {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("errLoginGeneralText").textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+        document.getElementById("errLoginGeneral").style.display = "flex";
+      }
+    }
+
+    function switchToRegister() {
+      closeLoginModal();
+      setTimeout(() => openModal("นักเรียน"), 300);
+    }
+
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      btn.style.color = isHidden ? "var(--black)" : "var(--gray-400)";
+    }
+
+    // ════ TUTOR LOGIN MODAL ════
+    function openTutorLoginModal() {
+      resetTutorLoginForm();
+      document.getElementById("tutorLoginOverlay").classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => document.getElementById("tutorLoginStudentId").focus(), 300);
+    }
+
+    function closeTutorLoginModal() {
+      document.getElementById("tutorLoginOverlay").classList.remove("active");
+      document.body.style.overflow = "";
+      setTimeout(resetTutorLoginForm, 300);
+    }
+
+    document.getElementById("tutorLoginOverlay").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) closeTutorLoginModal();
+    });
+    document.getElementById("closeTutorLoginBtn").addEventListener("click", closeTutorLoginModal);
+
+    function resetTutorLoginForm() {
+      ["tutorLoginStudentId", "tutorLoginPassword"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      ["errTutorLoginStudentId", "errTutorLoginPassword"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+      });
+      document.getElementById("errTutorLoginGeneral").style.display = "none";
+      document.getElementById("tutorLoginForm").classList.remove("hide");
+      document.getElementById("tutorLoginSuccess").classList.remove("show");
+      const btn = document.getElementById("tutorLoginBtn");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+
+    async function handleTutorLogin() {
+      const studentId = document.getElementById("tutorLoginStudentId").value.trim();
+      const password  = document.getElementById("tutorLoginPassword").value;
+
+      let ok = true;
+      const showErr = (id, show) =>
+        document.getElementById(id).classList.toggle("show", show);
+
+      showErr("errTutorLoginStudentId", !studentId);
+      if (!studentId) ok = false;
+      showErr("errTutorLoginPassword", !password);
+      if (!password) ok = false;
+      if (!ok) return;
+
+      document.getElementById("errTutorLoginGeneral").style.display = "none";
+
+      const btn = document.getElementById("tutorLoginBtn");
+      btn.classList.add("loading");
+      btn.disabled = true;
+
+      const isValidUrl =
+        APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") &&
+        APPS_SCRIPT_URL.endsWith("/exec");
+
+      if (!isValidUrl) {
+        await new Promise(r => setTimeout(r, 1200));
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("errTutorLoginGeneralText").textContent =
+          "⚠️ Demo mode: URL ยังไม่ถูกต้อง";
+        document.getElementById("errTutorLoginGeneral").style.display = "flex";
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          APPS_SCRIPT_URL +
+          "?action=login" +
+          "&studentId=" + encodeURIComponent(studentId) +
+          "&password="  + encodeURIComponent(password) +
+          "&role="      + encodeURIComponent("ติวเตอร์")
+        );
+        const data = await res.json();
+
+        btn.classList.remove("loading");
+        btn.disabled = false;
+
+        if (data.status === "success") {
+          localStorage.setItem("userRole", "ติวเตอร์");
+          localStorage.setItem("fullName", data.fullName || studentId);
+          localStorage.setItem("studentId", studentId);
+          
+          document.getElementById("tutorLoginSuccessDesc").innerHTML =
+            `ยินดีต้อนรับกลับสู่ระบบ <strong>${data.fullName || studentId}</strong>`;
+          document.getElementById("tutorLoginForm").classList.add("hide");
+          document.getElementById("tutorLoginSuccess").classList.add("show");
+          
+          setTimeout(() => {
+            closeTutorLoginModal();
+            window.location.href = "tutor.html";
+          }, 1500);
+
+        } else if (data.status === "pending") {
+          document.getElementById("errTutorLoginGeneral").style.display = "flex";
+          document.getElementById("errTutorLoginGeneral").style.background = "#FEF9C3";
+          document.getElementById("errTutorLoginGeneral").style.borderColor = "#FDE047";
+          document.getElementById("errTutorLoginGeneral").style.color = "#713F12";
+          document.getElementById("errTutorLoginGeneralText").innerHTML =
+            `<strong>⏳ รออนุมัติ</strong><br><span style="font-size:12px;font-weight:400;">บัญชีของคุณอยู่ระหว่างการตรวจสอบ<br>กรุณารอ Admin อนุมัติก่อนเข้าสู่ระบบ</span>`;
+
+        } else if (data.status === "rejected") {
+          document.getElementById("errTutorLoginGeneral").style.display = "flex";
+          document.getElementById("errTutorLoginGeneral").style.background = "#FEE2E2";
+          document.getElementById("errTutorLoginGeneral").style.borderColor = "#FCA5A5";
+          document.getElementById("errTutorLoginGeneral").style.color = "#7F1D1D";
+          document.getElementById("errTutorLoginGeneralText").innerHTML =
+            `<strong>🚫 ไม่ได้รับอนุมัติ</strong><br><span style="font-size:12px;font-weight:400;">บัญชีของคุณถูกปฏิเสธ<br>กรุณาติดต่อ Admin เพื่อสอบถาม</span>`;
+
+        } else {
+          document.getElementById("errTutorLoginGeneral").style.display = "flex";
+          document.getElementById("errTutorLoginGeneral").style.background = "";
+          document.getElementById("errTutorLoginGeneral").style.borderColor = "";
+          document.getElementById("errTutorLoginGeneral").style.color = "";
+          document.getElementById("errTutorLoginGeneralText").innerHTML =
+            data.message || "รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง";
+          document.getElementById("tutorLoginPassword").value = "";
+          document.getElementById("tutorLoginPassword").focus();
+        }
+      } catch (err) {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("errTutorLoginGeneralText").textContent =
+          "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+        document.getElementById("errTutorLoginGeneral").style.display = "flex";
+      }
+    }
+
+    function switchToRegisterTutor() {
+      closeTutorLoginModal();
+      setTimeout(() => openModal("ติวเตอร์"), 300);
+    }
+
+    // ════ LIVE STATS ════
+    function animateCount(el, target, decimals, suffix) {
+      const duration = 1000;
+      const start = performance.now();
+      const from = 0;
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const value = from + (target - from) * ease;
+        el.textContent = value.toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    async function loadStats() {
+      const elTutors   = document.getElementById("statTutors");
+      const elBookings = document.getElementById("statBookings");
+      const elRating   = document.getElementById("statRating");
+
+      try {
+        // เรียก 3 API พร้อมกัน
+        const [resTutors, resBookings, resReviews] = await Promise.all([
+          fetch(APPS_SCRIPT_URL + "?action=getTutors"),
+          fetch(APPS_SCRIPT_URL + "?action=getBookings"),
+          fetch(APPS_SCRIPT_URL + "?action=getReviews")
+        ]);
+
+        const [dataTutors, dataBookings, dataReviews] = await Promise.all([
+          resTutors.json(),
+          resBookings.json(),
+          resReviews.json()
+        ]);
+
+        // ── จำนวนติวเตอร์ ──
+        const tutorCount = (dataTutors.status === "success" && Array.isArray(dataTutors.tutors))
+          ? dataTutors.tutors.length : 0;
+        animateCount(elTutors, tutorCount, 0, "+");
+
+        // ── จำนวนการจอง (คู่ที่จับ) ──
+        const bookingCount = (dataBookings.status === "success" && Array.isArray(dataBookings.bookings))
+          ? dataBookings.bookings.length : 0;
+        animateCount(elBookings, bookingCount, 0, "");
+
+        // ── คะแนนเฉลี่ย ──
+        let avgRating = 0;
+        if (dataReviews.status === "success" && Array.isArray(dataReviews.reviews) && dataReviews.reviews.length > 0) {
+          const scores = dataReviews.reviews
+            .map(r => parseFloat(r["คะแนนเฉลี่ย"] || r["avgScore"] || 0))
+            .filter(s => s > 0);
+          if (scores.length > 0) {
+            avgRating = scores.reduce((a, b) => a + b, 0) / scores.length;
+          }
+        }
+        if (avgRating > 0) {
+          animateCount(elRating, avgRating, 1, "★");
+        } else {
+          elRating.textContent = "—★";
+        }
+
+      } catch (err) {
+        // fallback เงียบๆ ถ้า API error
+        elTutors.textContent   = "—";
+        elBookings.textContent = "—";
+        elRating.textContent   = "—★";
+        console.warn("loadStats error:", err);
+      }
+    }
+
+    // โหลด stats ทันทีที่หน้าพร้อม
+    const isValidUrl = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+    if (isValidUrl) loadStats();
+  </script>
+</body>
+</html>

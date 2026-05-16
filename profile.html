@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โปรไฟล์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .profile-form-select {
+      padding: 12px 14px;
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--white);
+      color: var(--black);
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%236B6860' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .profile-form-select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(196, 163, 90, 0.1);
+    }
+    .profile-form-select option[value=""] { color: var(--gray-400); }
+
+    /* input แบบ read-only */
+    .profile-form-input[readonly] {
+      background: var(--gray-100, #f5f5f5);
+      color: var(--gray-500, #888);
+      cursor: not-allowed;
+    }
+
+    /* toast notification */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    #toast.success { background: #2d6a4f; }
+    #toast.error   { background: #a93226; }
+
+    /* loading overlay */
+    #loadingOverlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 8888;
+      font-size: 15px;
+      color: #555;
+    }
+    #loadingOverlay.hidden { display: none; }
+
+    /* Profile Avatar Upload */
+    .profile-avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .profile-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--gray-100, #f5f5f5);
+    }
+
+    .profile-avatar-upload {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--gold, #C4A35A);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .profile-avatar-upload:hover {
+      background: var(--gold-dark, #B89043);
+    }
+
+    /* QR Code Section */
+    .qr-code-section {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .qr-code-box {
+      width: 150px;
+      height: 150px;
+      border: 2px solid var(--gray-300);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--gray-50, #fafafa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-code-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-qr-upload {
+      background: var(--gold, #C4A35A);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.3s;
+      white-space: nowrap;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-qr-upload:hover {
+      background: var(--gold-dark, #B89043);
+    }
+
+    .btn-qr-upload:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay">กำลังโหลดข้อมูล...</div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <div class="profile-container">
+
+    <!-- ─── TABS ─── -->
+    <div class="profile-header">
+      <div class="profile-tabs">
+        <a href="courses.html"  class="profile-tab">รายวิชา</a>
+        <a href="schedule.html" class="profile-tab">ตารางวัน</a>
+        <a href="student.html"  class="profile-tab">ดูติวเตอร์</a>
+        <a href="profile.html"  class="profile-tab active">PROFILE</a>
+        <a href="history.html"  class="profile-tab">ประวัติ</a>
+      </div>
+    </div>
+
+    <!-- ─── LOGIN GATE ─── -->
+    <div id="loginGate" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 64px);gap:20px;text-align:center;padding:48px 24px;">
+      <div style="font-size:56px;line-height:1;">🔒</div>
+      <div style="font-size:22px;font-weight:700;color:#1a1a1a;">กรุณาเข้าสู่ระบบก่อน</div>
+      <div style="font-size:14px;color:#888;max-width:320px;line-height:1.7;">คุณต้องเข้าสู่ระบบเพื่อดูข้อมูลโปรไฟล์ของคุณ</div>
+      <a href="index.html" style="display:inline-block;padding:13px 36px;background:#1a1a1a;color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#C4A35A'" onmouseout="this.style.background='#1a1a1a'">ไปหน้าเข้าสู่ระบบ →</a>
+    </div>
+
+    <!-- ─── PROFILE MAIN ─── -->
+    <div class="profile-main">
+      <div class="profile-content-wrapper">
+
+        <!-- Header Top -->
+        <div class="profile-header-top">
+          <div class="profile-title-section">
+            <span class="profile-title">โปรไฟล์ 《PROFILE》</span>
+          </div>
+        </div>
+
+        <!-- Profile Layout -->
+        <div class="profile-layout">
+
+          <!-- LEFT SIDE -->
+          <div class="profile-left">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar-wrapper">
+                <img id="profileImage" class="profile-avatar-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='%23d4d4d4'%3E%3Ccircle cx='100' cy='100' r='100'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%23f5f5f5'/%3E%3Cpath d='M 50 150 Q 100 180 150 150' fill='%23f5f5f5'/%3E%3C/svg%3E" alt="Profile">
+                <label class="profile-avatar-upload" title="คลิกเพื่ออัปโหลดรูป">
+                  <input type="file" id="profileImageInput" accept="image/*" style="display:none;">
+                  <span>📷 เปลี่ยนรูป</span>
+                </label>
+              </div>
+              <div class="profile-basic-info">
+                <div class="profile-name" id="displayName">ผู้ใช้</div>
+                <div style="font-size:12px; color: var(--gray-400, #aaa); margin-top:4px;" id="displayFaculty"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE -->
+          <div class="profile-right">
+
+            <!-- ชื่อ (read-only — ดึงจาก Sheets) -->
+            <div class="profile-form-group">
+              <label class="profile-form-label">ชื่อ - นามสกุล</label>
+              <input type="text" class="profile-form-input" id="inputName" readonly placeholder="—">
+            </div>
+
+            <!-- รหัสนักศึกษา (read-only) -->
+            <div class="profile-form-group">
+              <label class="profile-form-label">รหัสนักศึกษา</label>
+              <input type="text" class="profile-form-input" id="inputStudentId" readonly placeholder="—">
+            </div>
+
+            <!-- อีเมล (read-only) -->
+            <div class="profile-form-group">
+              <label class="profile-form-label">อีเมล</label>
+              <input type="text" class="profile-form-input" id="inputEmail" readonly placeholder="—">
+            </div>
+
+            <!-- คณะ (แก้ไขได้) -->
+            <div class="profile-form-group">
+              <label class="profile-form-label">คณะ</label>
+              <select class="profile-form-select" id="selectFaculty">
+                <option value="">-- เลือกคณะ --</option>
+                <option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option>
+                <option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option>
+                <option value="คณะเทคโนโลยีคหกรรมศาสตร์">คณะเทคโนโลยีคหกรรมศาสตร์</option>
+                <option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option>
+                <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
+                <option value="คณะอุตสาหกรรมสิ่งทอและออกแบบแฟชั่น">คณะอุตสาหกรรมสิ่งทอและออกแบบแฟชั่น</option>
+                <option value="คณะสถาปัตยกรรมศาสตร์และการออกแบบ">คณะสถาปัตยกรรมศาสตร์และการออกแบบ</option>
+              </select>
+            </div>
+
+            <!-- QR CODE อัปโหลด -->
+            <div class="profile-form-group">
+              <label class="profile-form-label">สถานะบัญชี</label>
+              <div id="statusBadge" style="
+                display:inline-block; padding:6px 14px; border-radius:999px;
+                font-size:12px; font-weight:600; background:#FEF3C7; color:#92400E;">
+                กำลังตรวจสอบ...
+              </div>
+            </div>
+
+            <!-- QR CODE อัปโหลด -->
+              <div class="qr-code-section">
+                <div class="qr-code-box">
+                  <img id="qrCodeImage" class="qr-code-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f5f5f5'/%3E%3Ctext x='100' y='110' text-anchor='middle' font-size='14' fill='%23999'%3Eยังไม่มี QR Code%3C/text%3E%3C/svg%3E" alt="QR Code">
+                </div>
+                <label class="btn-qr-upload">
+                  <input type="file" id="qrCodeInput" accept="image/*" style="display:none;">
+                  📤 อัปโหลด QR Code
+                </label>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: right;">
+              <button class="btn-submit" id="btnConfirm">ยืนยัน</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ─── CONFIG ───
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0K-gG8x3F9hE2AwmMplBpWUczzvx-lqHWXIeRXigIPp-zyin69lwYG0GHW2CrSweQ/exec";
+
+    // ─── TOAST ───
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "show " + type;
+      setTimeout(() => { t.className = ""; }, 3000);
+    }
+
+    // ─── LOGOUT ───
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // ─── LOAD PROFILE (JSONP) ───
+    function loadProfile() {
+      const studentId = localStorage.getItem("studentId") || "";
+
+      if (!studentId) {
+        document.getElementById("loadingOverlay").classList.add("hidden");
+        document.getElementById("loginGate").style.display = "flex";
+        return;
+      }
+
+      const cb = "__profileCb_" + Date.now();
+      const timer = setTimeout(() => {
+        delete window[cb];
+        document.getElementById("loadingOverlay").classList.add("hidden");
+        showToast("โหลดโปรไฟล์หมดเวลา", "error");
+      }, 10000);
+
+      window[cb] = function(data) {
+        clearTimeout(timer);
+        delete window[cb];
+        document.getElementById("loadingOverlay").classList.add("hidden");
+
+        if (data && data.status === "success") {
+          document.getElementById("inputName").value      = data.fullName  || "";
+          document.getElementById("inputStudentId").value = data.studentId || "";
+          document.getElementById("inputEmail").value     = data.email     || "";
+          document.getElementById("displayName").textContent    = data.fullName || "ผู้ใช้";
+          document.getElementById("displayFaculty").textContent = data.faculty  || "";
+
+          localStorage.setItem("fullName",  data.fullName  || "");
+          localStorage.setItem("studentId", data.studentId || "");
+          localStorage.setItem("faculty",   data.faculty   || "");
+
+          const sel = document.getElementById("selectFaculty");
+          if (data.faculty) {
+            for (let i = 0; i < sel.options.length; i++) {
+              if (sel.options[i].value === data.faculty) { sel.selectedIndex = i; break; }
+            }
+          }
+        } else {
+          showToast("ไม่พบข้อมูลผู้ใช้ในระบบ", "error");
+        }
+      };
+
+      const s = document.createElement("script");
+      s.src = `${APPS_SCRIPT_URL}?action=getProfile&studentId=${encodeURIComponent(studentId)}&callback=${cb}&t=${Date.now()}`;
+      s.onerror = () => {
+        clearTimeout(timer);
+        document.getElementById("loadingOverlay").classList.add("hidden");
+        showToast("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้", "error");
+      };
+      document.head.appendChild(s);
+    }
+
+    // ─── SAVE PROFILE (faculty + images via JSONP) ───
+    document.getElementById("btnConfirm").addEventListener("click", async () => {
+      const faculty   = document.getElementById("selectFaculty").value;
+      const studentId = localStorage.getItem("studentId") || "";
+
+      if (!faculty) { showToast("กรุณาเลือกคณะ", "error"); return; }
+
+      const btn = document.getElementById("btnConfirm");
+      btn.disabled = true;
+      btn.textContent = "กำลังบันทึก...";
+
+      try {
+        // ── 1. บันทึกคณะผ่าน JSONP GET ──
+        await jsonpGet(`${APPS_SCRIPT_URL}?action=saveProfile&studentId=${encodeURIComponent(studentId)}&faculty=${encodeURIComponent(faculty)}`);
+        localStorage.setItem("faculty", faculty);
+        document.getElementById("displayFaculty").textContent = faculty;
+
+        // ── 2. อัปโหลดรูปถ้ามี ──
+        const profileFile = document.getElementById("profileImageInput").files[0];
+        const qrFile      = document.getElementById("qrCodeInput").files[0];
+
+        if (profileFile || qrFile) {
+          btn.textContent = "กำลังอัปโหลดรูป...";
+
+          const toBase64 = (file) => new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload  = () => res(r.result.split(",")[1]);
+            r.onerror = rej;
+            r.readAsDataURL(file);
+          });
+
+          // ส่งผ่าน POST mode:no-cors (Apps Script รับ POST ได้ แต่ response จะ opaque)
+          // จึงใช้ no-cors แล้วรอ 2 วิ แล้ว reload รูป
+          const payload = { action: "saveImages", studentId };
+          if (profileFile) {
+            payload.profileImage     = await toBase64(profileFile);
+            payload.profileImageType = profileFile.type;
+          }
+          if (qrFile) {
+            payload.qrImage     = await toBase64(qrFile);
+            payload.qrImageType = qrFile.type;
+          }
+
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            mode:   "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body:   JSON.stringify(payload)
+          });
+
+          showToast("บันทึกและอัปโหลดรูปสำเร็จ ✓", "success");
+          // รอ 2 วิ แล้ว reload รูปและสถานะจาก Sheet
+          setTimeout(() => loadImagesFromDrive(studentId), 2000);
+        } else {
+          showToast("บันทึกคณะสำเร็จ ✓", "success");
+          setTimeout(() => loadImagesFromDrive(studentId), 1000);
+        }
+
+      } catch (err) {
+        console.error(err);
+        showToast("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "ยืนยัน";
+      }
+    });
+
+    // ── helper: JSONP GET ──
+    function jsonpGet(url) {
+      return new Promise((resolve, reject) => {
+        const cb = "__cb_" + Date.now();
+        const t  = setTimeout(() => { delete window[cb]; reject(new Error("timeout")); }, 10000);
+        window[cb] = (data) => { clearTimeout(t); delete window[cb]; resolve(data); };
+        const s = document.createElement("script");
+        s.src = url + "&callback=" + cb + "&t=" + Date.now();
+        s.onerror = () => { clearTimeout(t); reject(new Error("script error")); };
+        document.head.appendChild(s);
+      });
+    }
+
+    // ─── โหลดรูปจาก Sheet "รูปภาพ" (JSONP) ───
+    function loadImagesFromDrive(studentId) {
+      if (!studentId) return;
+
+      const cb = "__imgCb_" + Date.now();
+      const timer = setTimeout(() => { delete window[cb]; loadSavedImages(); }, 10000);
+
+      window[cb] = function(data) {
+        clearTimeout(timer);
+        delete window[cb];
+        if (data && data.status === "success") {
+          const memberStatus = data.memberStatus || "";
+          updateStatusBadge(memberStatus);
+
+          // แสดงรูปเฉพาะเมื่อสถานะเป็น "อนุมัติ" เท่านั้น
+          if (memberStatus === "อนุมัติ") {
+            if (data.profileImageUrl) {
+              document.getElementById("profileImage").src = data.profileImageUrl;
+              localStorage.setItem("profileImageUrl", data.profileImageUrl);
+            }
+            if (data.qrImageUrl) {
+              document.getElementById("qrCodeImage").src = data.qrImageUrl;
+              localStorage.setItem("qrImageUrl", data.qrImageUrl);
+            }
+          } else {
+            // ล้างรูปเก่าออก ไม่แสดงจนกว่าจะอนุมัติ
+            localStorage.removeItem("profileImageUrl");
+            localStorage.removeItem("qrImageUrl");
+          }
+        } else {
+          loadSavedImages();
+        }
+      };
+
+      const s = document.createElement("script");
+      s.src = `${APPS_SCRIPT_URL}?action=getImages&studentId=${encodeURIComponent(studentId)}&callback=${cb}&t=${Date.now()}`;
+      s.onerror = () => { clearTimeout(timer); loadSavedImages(); };
+      document.head.appendChild(s);
+    }
+
+    function updateStatusBadge(status) {
+      const badge = document.getElementById("statusBadge");
+      if (!badge) return;
+      const map = {
+        "อนุมัติ":    { text: "✅ อนุมัติแล้ว",   bg: "#D1FAE5", color: "#065F46" },
+        "ไม่อนุมัติ": { text: "❌ ไม่อนุมัติ",    bg: "#FEE2E2", color: "#991B1B" },
+        "รออนุมัติ":  { text: "⏳ รออนุมัติ",     bg: "#FEF3C7", color: "#92400E" }
+      };
+      const s = map[status] || { text: "⏳ รออนุมัติ", bg: "#FEF3C7", color: "#92400E" };
+      badge.textContent       = s.text;
+      badge.style.background  = s.bg;
+      badge.style.color       = s.color;
+    }
+
+    // ─── INIT ───
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProfile();
+      setupImageUploadHandlers();
+      // โหลดรูปจาก Drive ก่อน ถ้าไม่ได้ค่อย fallback localStorage
+      const sid = localStorage.getItem("studentId") || "";
+      if (sid) {
+        loadImagesFromDrive(sid);
+      } else {
+        loadSavedImages();
+      }
+    });
+
+    function setupImageUploadHandlers() {
+      // Profile Image Upload
+      const profileImageInput = document.getElementById("profileImageInput");
+      if (profileImageInput) {
+        profileImageInput.addEventListener("change", handleProfileImageChange);
+      }
+
+      // Profile Avatar Click to Upload
+      const avatarWrapper = document.querySelector(".profile-avatar-wrapper");
+      if (avatarWrapper) {
+        avatarWrapper.addEventListener("click", () => {
+          document.getElementById("profileImageInput").click();
+        });
+      }
+
+      // QR Code Upload Input
+      const qrCodeInput = document.getElementById("qrCodeInput");
+      if (qrCodeInput) {
+        qrCodeInput.addEventListener("change", handleQrCodeChange);
+      }
+
+      // QR Code Upload Button Click
+      const btnQrUpload = document.querySelector(".btn-qr-upload");
+      if (btnQrUpload) {
+        btnQrUpload.addEventListener("click", () => {
+          document.getElementById("qrCodeInput").click();
+        });
+      }
+    }
+
+    function handleProfileImageChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        showToast("รูปภาพต้องไม่เกิน 2MB", "error");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        showToast("กรุณาเลือกรูปภาพ", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target.result;
+        localStorage.setItem("profileImage", imageData);
+        document.getElementById("profileImage").src = imageData;
+        showToast("อัปโหลดรูปโปรไฟล์สำเร็จ ✓", "success");
+      };
+      reader.onerror = () => {
+        showToast("ไม่สามารถอ่านรูปภาพ", "error");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleQrCodeChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        showToast("รูป QR Code ต้องไม่เกิน 2MB", "error");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        showToast("กรุณาเลือกรูปภาพ", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target.result;
+        localStorage.setItem("qrCodeImage", imageData);
+        document.getElementById("qrCodeImage").src = imageData;
+        showToast("อัปโหลด QR Code สำเร็จ ✓", "success");
+      };
+      reader.onerror = () => {
+        showToast("ไม่สามารถอ่านรูปภาพ", "error");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadSavedImages() {
+      // ไม่โหลดรูปจาก localStorage — รูปจะแสดงเฉพาะเมื่อ API ยืนยันสถานะ "อนุมัติ" แล้วเท่านั้น
+    }
+  </script>
+
+</body>
+</html>

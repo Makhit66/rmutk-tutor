@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โปรไฟล์ติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ══ PAGE SHELL ══ */
+    body { background: #f2f2f0; }
+
+    .page-wrap {
+      padding-top: 64px;
+      min-height: 100vh;
+    }
+
+
+
+    /* ══ CONTENT AREA ══ */
+    .content-area {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 40px 60px;
+    }
+
+    /* ── page title row ── */
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .btn-back {
+      width: 36px; height: 36px;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      font-size: 18px; font-weight: 700;
+      cursor: pointer; color: #444;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-back:hover { border-color: #C4A35A; color: #C4A35A; }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border: 2.5px solid #1a1a1a;
+      padding: 6px 18px;
+      border-radius: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ══ THREE-COLUMN GRID ══ */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr 260px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── LEFT COLUMN ── */
+    .col-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Hexagon avatar */
+    .hex-wrap {
+      position: relative;
+      width: 160px;
+      height: 184px;
+      cursor: pointer;
+    }
+    .hex-shape {
+      width: 160px;
+      height: 184px;
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      background: linear-gradient(160deg, #b8dff5 30%, #6aaa3a 100%);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      transition: filter .2s;
+    }
+    .hex-wrap:hover .hex-shape { filter: brightness(0.92); }
+    .hex-shape img { width: 100%; height: 100%; object-fit: cover; }
+    .hex-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #fff; gap: 6px;
+    }
+    .hex-placeholder svg { width: 48px; height: 48px; opacity: 0.85; }
+    .hex-placeholder span { font-size: 12px; font-weight: 500; }
+
+    .hex-upload-btn {
+      position: absolute;
+      bottom: 8px; right: 0;
+      background: #C4A35A;
+      color: #fff;
+      border: none; border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      transition: background .15s;
+    }
+    .hex-upload-btn:hover { background: #b89043; }
+
+    .display-name {
+      font-size: 16px; font-weight: 700; color: #1a1a1a;
+      text-align: center;
+    }
+    .display-id {
+      font-size: 12px; color: #aaa;
+      text-align: center;
+    }
+
+    /* rating stars */
+    .rating-box {
+      background: #fff;
+      border: 1.5px solid #f0d98a;
+      border-radius: 12px;
+      padding: 12px 20px;
+      text-align: center;
+      width: 100%;
+    }
+    .rating-stars-big { font-size: 22px; letter-spacing: 3px; }
+
+    /* subject badge pill */
+    .subject-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff8ec;
+      border: 1.5px solid #f0d98a;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #a07830;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ── MIDDLE COLUMN ── */
+    .col-mid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .form-block { display: flex; flex-direction: column; gap: 6px; }
+    .form-block.full { grid-column: 1 / -1; }
+
+    .form-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    .form-inp, .form-sel {
+      padding: 11px 14px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #fff;
+      width: 100%;
+      transition: border-color .15s, box-shadow .15s;
+      appearance: none;
+    }
+    .form-inp:focus, .form-sel:focus {
+      outline: none;
+      border-color: #C4A35A;
+      box-shadow: 0 0 0 3px rgba(196,163,90,0.12);
+    }
+    .form-inp[readonly] {
+      background: #f5f4f0;
+      color: #aaa;
+      cursor: default;
+    }
+    .form-inp::placeholder { color: #ccc; }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: "▾";
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: #aaa; pointer-events: none;
+      font-size: 13px;
+    }
+    .form-sel { padding-right: 34px; cursor: pointer; }
+
+    .subject-hint {
+      font-size: 10px; color: #bbb;
+      margin-top: 3px; text-align: center;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* QR section */
+    .qr-card {
+      background: #fff;
+      border: 2px solid #e5e3dc;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+    .qr-lbl {
+      font-size: 11px; font-weight: 700;
+      color: #aaa; letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .qr-frame {
+      width: 150px; height: 150px;
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      background: #fafafa;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      font-size: 48px;
+    }
+    .qr-frame img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #333; color: #fff;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; z-index: 9999;
+      opacity: 0; transition: all .35s ease;
+      pointer-events: none; white-space: nowrap;
+    }
+    #toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #2e7d32; }
+    #toast.error   { background: #c62828; }
+    #toast.warning { background: #e65100; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1100px) {
+      .profile-grid { grid-template-columns: 200px 1fr; }
+      .col-right { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+      .qr-card { flex: 1; min-width: 200px; }
+    }
+    @media (max-width: 700px) {
+      .profile-grid { grid-template-columns: 1fr; }
+      .col-left { flex-direction: row; align-items: flex-start; flex-wrap: wrap; }
+      .content-area { padding: 20px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast"></div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="content-area">
+
+      <!-- title row -->
+      <div class="page-title-row">
+        <button class="btn-back" onclick="window.location.href='student.html'">←</button>
+        <div class="page-title">โปรไฟล์ติวเตอร์《PROFILE》</div>
+      </div>
+
+      <!-- 3-column grid -->
+      <div class="profile-grid">
+
+        <!-- ── LEFT ── -->
+        <div class="col-left">
+
+          <!-- Hexagon avatar -->
+          <div class="hex-wrap" id="hexWrap" onclick="document.getElementById('avatarInput').click()">
+            <div class="hex-shape" id="hexShape">
+              <div class="hex-placeholder" id="hexPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.4">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>รูปติวเตอร์</span>
+              </div>
+            </div>
+            <button class="hex-upload-btn" onclick="event.stopPropagation(); document.getElementById('avatarInput').click()">
+              📷 เปลี่ยนรูป
+            </button>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
+
+          <div class="display-name" id="displayName">⏳ กำลังโหลด...</div>
+          <div class="display-id"   id="displayId">รหัสนักศึกษา</div>
+
+          <!-- Rating -->
+          <div class="rating-box">
+            <div class="rating-stars-big" id="ratingStars">☆☆☆☆☆</div>
+          </div>
+
+          <!-- Subject count pill -->
+          <div class="subject-pill">
+            📚 <span id="subjectCount">0</span> วิชาที่รับติว
+          </div>
+
+        </div>
+
+        <!-- ── MIDDLE ── -->
+        <div class="col-mid">
+
+          <div class="form-block">
+            <div class="form-lbl">ชื่อ — นามสกุล</div>
+            <input type="text" id="fullName" class="form-inp" placeholder="ชื่อเต็ม" readonly />
+          </div>
+
+          <div class="form-block">
+            <div class="form-lbl">วันและเวลาที่ว่าง</div>
+            <input type="text" id="availability" class="form-inp"
+                   placeholder="เช่น จ-ศ 18:00-20:00" />
+          </div>
+
+          <!-- <div class="form-block">
+            <div class="form-lbl">รหัสนักศึกษา</div>
+            <input type="text" id="studentId" class="form-inp" placeholder="รหัสนักศึกษา" readonly />
+          </div> -->
+
+          <div class="form-block">
+            <div class="form-lbl">สถานที่รับติว</div>
+            <input type="text" id="location" class="form-inp" placeholder="ระบุสถานที่/ช่องทาง" />
+          </div>
+
+          <div class="form-block">
+            <div class="form-lbl">วิชาที่รับติว</div>
+            <input type="text" id="subjects" class="form-inp"
+                   placeholder="⏳ กำลังโหลด..." readonly />
+            <div class="subject-hint">📋 ดึงจากคลาสที่เปิดสอนอัตโนมัติ</div>
+          </div>
+
+          <div class="form-block">
+            <div class="form-lbl">คณะที่สังกัดอยู่</div>
+            <div class="select-wrap">
+              <select id="faculty" class="form-sel">
+                <option value="">-- เลือกคณะ --</option>
+                <option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option>
+                <option value="คณะเทคโนโลยีอุตสาหกรรม">คณะเทคโนโลยีอุตสาหกรรม</option>
+                <option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option>
+                <option value="คณะศึกษาศาสตร์">คณะศึกษาศาสตร์</option>
+                <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
+                <option value="คณะอุตสาหกรรมสิ่งทอ">คณะอุตสาหกรรมสิ่งทอ</option>
+                <option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-block">
+            <div class="form-lbl">สไตล์การติว</div>
+            <input type="text" id="style" class="form-inp"
+                   placeholder="เช่น ตัวต่อตัว, กลุ่ม" />
+          </div>
+
+          <div class="form-block">
+            <div class="form-lbl">เอกวิชา</div>
+            <input type="text" id="specialty" class="form-inp"
+                   placeholder="สาขาวิชาเอก" />
+          </div>
+
+        </div>
+
+        <!-- ── RIGHT ── -->
+        <div class="col-right">
+
+          <!-- QR card (display only) -->
+          <div class="qr-card">
+            <div class="qr-lbl">QR CODE</div>
+            <div class="qr-frame" id="qrFrame">
+              <span id="qrPlaceholder">📱</span>
+              <img id="qrImg" style="display:none" alt="QR Code">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    /* ── Toast ── */
+    let _tt;
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className   = "show " + type;
+      clearTimeout(_tt);
+      _tt = setTimeout(() => { t.className = ""; }, 3000);
+    }
+
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+    /* ── Init ── */
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTutorData();
+      loadTutorSubjects();
+      setupFacultyAutoSave();
+      // loadSavedImages() ถูกเรียกใน loadTutorData() แทน เพื่อให้รู้ studentId ที่ถูกต้อง
+    });
+
+    /* ── Load avatar & QR จาก Sheets โดยรับ studentId เป็น parameter ── */
+    async function loadSavedImages(studentId) {
+      // ถ้าไม่ส่งมา ให้ใช้จาก localStorage ของตัวเอง
+      studentId = String(studentId || localStorage.getItem("studentId") || "").trim();
+
+      if (studentId) {
+        try {
+          const res  = await fetch(
+            `${APPS_SCRIPT_URL}?action=getImages&studentId=${encodeURIComponent(studentId)}`
+          );
+          const data = await res.json();
+
+          if (data.status === "success") {
+            // รูปโปรไฟล์  (Code.gs ส่งกลับเป็น profileImageUrl)
+            const pImg = data.profileImageUrl || data.profileImage || "";
+            if (pImg) {
+              setAvatar(pImg);
+              // cache เฉพาะโปรไฟล์ตัวเอง
+              if (studentId === localStorage.getItem("studentId")) {
+                localStorage.setItem("tutorProfileImage", pImg);
+              }
+            }
+
+            // QR Code  (Code.gs ส่งกลับเป็น qrImageUrl)
+            const qImg = data.qrImageUrl || data.qrImage || "";
+            if (qImg) {
+              setQr(qImg);
+              if (studentId === localStorage.getItem("studentId")) {
+                localStorage.setItem("tutorQrCodeImage", qImg);
+              }
+            }
+            return; // ดึงจาก Sheets สำเร็จ ไม่ต้อง fallback
+          }
+        } catch (err) {
+          console.warn("ดึงรูปจาก Sheets ล้มเหลว, ใช้ localStorage แทน:", err);
+        }
+      }
+
+      // Fallback: ดึงจาก localStorage (เฉพาะโปรไฟล์ตัวเอง)
+      const pImg = localStorage.getItem("tutorProfileImage");
+      if (pImg) setAvatar(pImg);
+
+      const qImg = localStorage.getItem("tutorQrCodeImage");
+      if (qImg) setQr(qImg);
+    }
+
+    function setAvatar(src) {
+      const shape = document.getElementById("hexShape");
+      shape.innerHTML = `<img src="${src}" alt="รูปติวเตอร์">`;
+    }
+
+    function setQr(src) {
+      document.getElementById("qrPlaceholder").style.display = "none";
+      const img = document.getElementById("qrImg");
+      img.src = src;
+      img.style.display = "block";
+    }
+
+    /* ── Image upload handler (avatar only) ── */
+    function handleAvatar(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast("รูปต้องไม่เกิน 2MB", "error"); return; }
+      const r = new FileReader();
+      r.onload = ev => {
+        localStorage.setItem("tutorProfileImage", ev.target.result);
+        setAvatar(ev.target.result);
+        showToast("✓ อัปโหลดรูปโปรไฟล์สำเร็จ");
+      };
+      r.readAsDataURL(file);
+    }
+
+    /* ── Load subjects from Sheet ── */
+    async function loadTutorSubjects() {
+      const studentId = localStorage.getItem("studentId") || "";
+      const inp       = document.getElementById("subjects");
+      const badge     = document.getElementById("subjectCount");
+      if (!studentId) { inp.value = "ยังไม่มีวิชา"; return; }
+
+      try {
+        const res  = await fetch(
+          `${APPS_SCRIPT_URL}?action=getTutorSubjects&studentId=${encodeURIComponent(studentId)}`
+        );
+        const data = await res.json();
+        if (data.status === "success") {
+          inp.value         = data.display || "ยังไม่มีวิชา";
+          badge.textContent = data.count || "0";
+          localStorage.setItem("subjects", data.display || "");
+        } else {
+          inp.value = "ยังไม่มีวิชา";
+        }
+      } catch {
+        inp.value = localStorage.getItem("subjects") || "ยังไม่มีวิชา";
+      }
+    }
+
+    /* ── Faculty auto-save on change ── */
+    function setupFacultyAutoSave() {
+      document.getElementById("faculty").addEventListener("change", async function() {
+        const faculty   = this.value;
+        const studentId = localStorage.getItem("studentId") || "";
+        if (!faculty || !studentId) return;
+        try {
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "saveTutorFaculty", studentId, faculty })
+          });
+          localStorage.setItem("faculty", faculty);
+          showToast("✓ บันทึกคณะสำเร็จ");
+        } catch { /* silent */ }
+      });
+    }
+
+    /* ── Load profile ── */
+    function loadTutorData() {
+      // If coming from student.html (view mode), load the selected tutor's data
+      const viewId = localStorage.getItem("viewTutorId");
+      if (viewId !== null) {
+        // view mode: populate from viewTutor* keys, then clear them
+        const t = {
+          studentId:    viewId,
+          fullName:     localStorage.getItem("viewTutorName")     || "",
+          faculty:      localStorage.getItem("viewTutorFaculty")  || "",
+          subjects:     localStorage.getItem("viewTutorSubjects") || "",
+          style:        localStorage.getItem("viewTutorStyle")    || "",
+          specialty:    localStorage.getItem("viewTutorSpecialty")|| "",
+          location:     localStorage.getItem("viewTutorLocation") || "",
+          availability: localStorage.getItem("viewTutorAvail")    || "",
+          rating:       localStorage.getItem("viewTutorRating")   || "0",
+        };
+        // Clear view keys so own profile still works normally
+        ["viewTutorId","viewTutorName","viewTutorFaculty","viewTutorSubjects",
+         "viewTutorStyle","viewTutorSpecialty","viewTutorLocation","viewTutorAvail","viewTutorRating"]
+          .forEach(k => localStorage.removeItem(k));
+
+        fillForm(t);
+        // Show subjects directly
+        document.getElementById("subjects").value      = t.subjects || "ยังไม่มีวิชา";
+        document.getElementById("subjectCount").textContent =
+          t.subjects ? t.subjects.split(/[,،]+/).filter(s=>s.trim()).length : "0";
+
+        // Make editable fields readonly in view mode
+        ["availability","location","style","specialty"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.setAttribute("readonly", true);
+        });
+        document.getElementById("faculty").setAttribute("disabled", true);
+
+        // Hide upload button (view mode)
+        const uploadBtn = document.querySelector(".hex-upload-btn");
+        if (uploadBtn) uploadBtn.style.display = "none";
+        const hexWrap = document.getElementById("hexWrap");
+        if (hexWrap) hexWrap.style.cursor = "default";
+        hexWrap.onclick = null;
+
+        // ดึงรูปของติวเตอร์คนที่กำลังดู (ส่ง viewId เข้าไป)
+        loadSavedImages(viewId);
+        return;
+      }
+
+      // Own profile mode
+      const studentId = localStorage.getItem("studentId") || "";
+      document.getElementById("studentId").value = studentId;
+      document.getElementById("displayId").textContent = studentId || "รหัสนักศึกษา";
+
+      if (studentId) {
+        fetchFromSheet(studentId);
+      } else {
+        loadLocal();
+      }
+      // ดึงรูปของตัวเอง
+      loadSavedImages(studentId);
+    }
+
+    async function fetchFromSheet(studentId) {
+      try {
+        const res  = await fetch(
+          `${APPS_SCRIPT_URL}?action=getTutor&studentId=${encodeURIComponent(studentId)}`
+        );
+        const data = await res.json();
+        if (data.status === "success" && data.tutor) {
+          fillForm(data.tutor);
+        } else {
+          loadLocal();
+        }
+      } catch { loadLocal(); }
+    }
+
+    function loadLocal() {
+      ["fullName","faculty","specialty","availability","location","style"].forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = localStorage.getItem(k) || "";
+      });
+      document.getElementById("displayName").textContent =
+        localStorage.getItem("fullName") || "ชื่อติวเตอร์";
+      updateRating(parseFloat(localStorage.getItem("rating") || "0"));
+    }
+
+    function fillForm(t) {
+      const fields = { fullName: t.fullName, faculty: t.faculty,
+                       specialty: t.specialty, availability: t.availability,
+                       location: t.location, style: t.style };
+      Object.entries(fields).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || "";
+      });
+      document.getElementById("displayName").textContent = t.fullName || "ชื่อติวเตอร์";
+      document.getElementById("displayId").textContent   = t.studentId || "";
+      Object.entries({ ...fields, rating: t.rating || 0 })
+        .forEach(([k, v]) => localStorage.setItem(k, v));
+      updateRating(parseFloat(t.rating) || 0);
+    }
+
+    function updateRating(r) {
+      const f = Math.floor(r);
+      document.getElementById("ratingStars").textContent = "⭐".repeat(f) + "☆".repeat(5 - f);
+    }
+  </script>
+</body>
+</html>

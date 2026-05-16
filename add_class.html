@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>เพิ่มคอร์สใหม่</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+            background: #f4f5f7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+
+        /* ── CARD ── */
+        .add-card {
+            background: #fff;
+            border: 1.5px solid #e0e0de;
+            border-radius: 20px;
+            padding: 32px 28px 28px;
+            width: 100%;
+            max-width: 560px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ── TITLE ── */
+        .add-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 28px;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── GRID ── */
+        .add-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 24px;
+        }
+
+        /* ── FIELD GROUP ── */
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* ── CUSTOM SELECT / INPUT wrapper ── */
+        .field-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+            letter-spacing: 0.02em;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 11px 36px 11px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .custom-select:focus {
+            outline: none;
+            border-color: #C4A35A;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* ── TEXT INPUT ── */
+        .custom-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            color: #333;
+            transition: border-color 0.15s;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #C4A35A;
+        }
+
+        .custom-input::placeholder {
+            color: #bbb;
+        }
+
+        /* ── PRICE DISPLAY ── */
+        .price-display {
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-height: 48px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .price-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef3d8;
+            color: #a07830;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .price-tag .remove-tag {
+            cursor: pointer;
+            font-size: 11px;
+            opacity: 0.6;
+            line-height: 1;
+        }
+
+        .price-tag .remove-tag:hover {
+            opacity: 1;
+        }
+
+        /* add price input row */
+        .price-input-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .price-input-row input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .price-input-row input:focus {
+            outline: none;
+            border-color: #C4A35A;
+        }
+
+        .btn-add-price {
+            padding: 8px 14px;
+            background: #f0f0ee;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #555;
+            transition: background 0.15s;
+        }
+
+        .btn-add-price:hover {
+            background: #e4e4e0;
+        }
+
+        /* ── COUNT DISPLAY ── */
+        .count-display {
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-height: 48px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .count-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f4f8;
+            color: #2c7d9a;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* count stepper */
+        .count-stepper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .stepper-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1.5px solid #ddd;
+            background: #fafafa;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            transition: background 0.12s;
+        }
+
+        .stepper-btn:hover {
+            background: #f0f0ee;
+        }
+
+        .stepper-val {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* ── SUBJECT TAGS ── */
+        .subject-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .subject-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1.5px solid #ddd;
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #fff;
+            user-select: none;
+        }
+
+        .subject-tag:hover {
+            border-color: #C4A35A;
+            color: #a07830;
+        }
+
+        .subject-tag.selected {
+            background: #C4A35A;
+            border-color: #C4A35A;
+            color: #fff;
+        }
+
+        /* full-width field */
+        .field-group.full {
+            grid-column: 1 / -1;
+        }
+
+        /* ── CONFIRM ── */
+        .btn-confirm {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-confirm:hover {
+            background: #333;
+        }
+
+        .btn-confirm:active {
+            transform: scale(0.99);
+        }
+
+        /* ── SECTION DIVIDER ── */
+        .section-divider {
+            grid-column: 1 / -1;
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="add-card">
+        <button onclick="window.location.href='tutor-dashboard.html'"
+            style="display:flex;align-items:center;gap:6px;background:none;border:none;font-family:inherit;font-size:13px;color:#888;cursor:pointer;margin-bottom:16px;padding:0;">←
+            กลับ</button>
+        <div class="add-title">เพิ่มคอร์สใหม่</div>
+
+        <div class="add-grid">
+
+            <!-- วิชา -->
+            <div class="field-group">
+                <div class="field-label">เพิ่มวิชา</div>
+                <div class="subject-tags" id="subjectTags">
+                    <!-- วิชาจะถูกโหลดตามคณะของติวเตอร์ -->
+                </div>
+                <div id="facultyNotice" style="font-size:11px;color:#aaa;margin-top:4px;display:none;"></div>
+            </div>
+
+            <!-- ราคา -->
+            <div class="field-group">
+                <div class="field-label">ชั่วโมงละกี่บาท</div>
+                <div class="price-display" id="priceTags"></div>
+                <div class="price-input-row">
+                    <input type="number" id="priceInput" placeholder="ราคา เช่น 150" min="0" />
+                    <button class="btn-add-price" onclick="addPrice()">+ เพิ่ม</button>
+                </div>
+            </div>
+
+            <!-- จำนวนชั่วโมง -->
+            <div class="field-group" style="grid-column:1/-1">
+                <div class="field-label">จำนวนชั่วโมง (ต่อครั้ง)</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                    <button class="stepper-btn" onclick="changeHours(-0.5)">−</button>
+                    <span class="stepper-val" id="hoursVal">1</span>
+                    <span style="font-size:13px;color:#888">ชั่วโมง</span>
+                    <button class="stepper-btn" onclick="changeHours(0.5)">+</button>
+                </div>
+            </div>
+
+            <hr class="section-divider" />
+
+            <!-- จำนวนคน -->
+            <div class="field-group">
+                <div class="field-label">จำนวนคน</div>
+                <div class="count-stepper">
+                    <button class="stepper-btn" onclick="changeCount(-1)">−</button>
+                    <span class="stepper-val" id="countVal">1</span>
+                    <button class="stepper-btn" onclick="changeCount(1)">+</button>
+                </div>
+            </div>
+
+            <!-- วันและเวลา -->
+            <div class="field-group">
+                <div class="field-label">ใส่วันและเวลา</div>
+                <input type="datetime-local" id="dateTime" class="custom-input" />
+            </div>
+
+            <!-- สถานที่/ช่องทาง -->
+            <div class="field-group full">
+                <div class="field-label">ใส่เทมอ (สถานที่ / ช่องทาง)</div>
+                <input type="text" id="location" class="custom-input" placeholder="เช่น ห้อง 301, Zoom, Google Meet" />
+            </div>
+
+        </div>
+
+        <button class="btn-confirm" onclick="confirmCourse()">ยืนยัน</button>
+    </div>
+
+    <script>
+        // ── วิชาแต่ละคณะ ──
+        const FACULTY_SUBJECTS = {
+            "คณะวิศวกรรมศาสตร์": [
+                "คณิตศาสตร์วิศวกรรม (Engineering Mathematics)",
+                "ฟิสิกส์วิศวกรรม (Engineering Physics)",
+                "วงจรไฟฟ้า (Electric Circuits)",
+                "กลศาสตร์วัสดุ (Mechanics of Materials)",
+                "อุณหพลศาสตร์ (Thermodynamics)"
+            ],
+            "คณะครุศาสตร์อุตสาหกรรม": [
+                "จิตวิทยาการศึกษาและการแนะแนว",
+                "การวัดและประเมินผลการศึกษา",
+                "หลักสูตรและการสอน",
+                "เทคโนโลยีและสื่อการศึกษา",
+                "การวิจัยทางการศึกษา"
+            ],
+            "คณะเทคโนโลยีคหกรรมศาสตร์": [
+                "โภชนาการและการประกอบอาหาร",
+                "วิทยาศาสตร์การอาหาร (Food Science)",
+                "การจัดการงานคหกรรมศาสตร์",
+                "เคมีอาหาร (Food Chemistry)",
+                "การออกแบบและตกแต่งอาหาร"
+            ],
+            "คณะศิลปศาสตร์": [
+                "ภาษาอังกฤษเพื่อการสื่อสาร",
+                "ภาษาไทยเพื่อการสื่อสาร",
+                "การพูดและการนำเสนอ (Public Speaking)",
+                "ภาษาต่างประเทศที่ 2 (ญี่ปุ่น/จีน/เกาหลี)",
+                "สังคมและวัฒนธรรมศึกษา"
+            ],
+            "คณะวิทยาศาสตร์และเทคโนโลยี": [
+                "แคลคูลัส (Calculus)",
+                "เคมีทั่วไป (General Chemistry)",
+                "ชีววิทยาทั่วไป (General Biology)",
+                "สถิติและความน่าจะเป็น",
+                "โปรแกรมมิ่งเบื้องต้น (Introduction to Programming)"
+            ],
+            "คณะบริหารธุรกิจ": [
+                "การบัญชีการเงิน (Financial Accounting)",
+                "การตลาด (Marketing Principles)",
+                "การเงินธุรกิจ (Business Finance)",
+                "การจัดการองค์กร (Organizational Management)",
+                "สถิติธุรกิจ (Business Statistics)"
+            ],
+            "คณะอุตสาหกรรมสิ่งทอและออกแบบแฟชั่น": [
+                "วัสดุสิ่งทอ (Textile Materials)",
+                "การออกแบบแพทเทิร์น (Pattern Making)",
+                "เทคโนโลยีการทอผ้า",
+                "การตลาดแฟชั่น (Fashion Marketing)",
+                "คอมพิวเตอร์เพื่อการออกแบบแฟชั่น (CAD for Fashion)"
+            ],
+            "คณะสถาปัตยกรรมศาสตร์และการออกแบบ": [
+                "การเขียนแบบสถาปัตยกรรม (Architectural Drawing)",
+                "ประวัติศาสตร์สถาปัตยกรรม (Architectural History)",
+                "โครงสร้างอาคาร (Building Structure)",
+                "การออกแบบสถาปัตยกรรม (Architectural Design)",
+                "คอมพิวเตอร์เพื่อการออกแบบ (CAD/BIM)"
+            ]
+        };
+
+        // ── โหลดวิชาตามคณะ ──
+        function loadSubjectsByFaculty() {
+            const faculty = localStorage.getItem("faculty") || "";
+            const container = document.getElementById("subjectTags");
+            const notice = document.getElementById("facultyNotice");
+            const subjects = FACULTY_SUBJECTS[faculty];
+
+            if (!subjects) {
+                container.innerHTML = `<span style="font-size:12px;color:#e57373;">⚠️ ไม่พบข้อมูลคณะ กรุณาเข้าสู่ระบบใหม่</span>`;
+                notice.style.display = "none";
+                return;
+            }
+
+            notice.textContent = "แสดงวิชาของ" + faculty;
+            notice.style.display = "block";
+
+            container.innerHTML = subjects.map(s =>
+                `<span class="subject-tag" onclick="toggleSubject(this)">${s}</span>`
+            ).join("");
+        }
+
+        // ── วิชา ──
+        const selectedSubjects = new Set();
+
+        function toggleSubject(el) {
+            const val = el.textContent.trim();
+            if (selectedSubjects.has(val)) {
+                selectedSubjects.delete(val);
+                el.classList.remove("selected");
+            } else {
+                selectedSubjects.add(val);
+                el.classList.add("selected");
+            }
+        }
+
+        // โหลดวิชาทันทีที่หน้าเปิด
+        loadSubjectsByFaculty();
+
+        // ── ราคา ──
+        const prices = [];
+
+        function addPrice() {
+            const inp = document.getElementById("priceInput");
+            const val = parseInt(inp.value);
+            if (!val || val <= 0) { inp.focus(); return; }
+            if (!prices.includes(val)) {
+                prices.push(val);
+                prices.sort((a, b) => a - b);
+                renderPrices();
+            }
+            inp.value = "";
+        }
+
+        function removePrice(val) {
+            const idx = prices.indexOf(val);
+            if (idx > -1) prices.splice(idx, 1);
+            renderPrices();
+        }
+
+        function renderPrices() {
+            const container = document.getElementById("priceTags");
+            container.innerHTML = prices.map(p =>
+                `<span class="price-tag">${p} ฿
+          <span class="remove-tag" onclick="removePrice(${p})">✕</span>
+        </span>`
+            ).join("");
+        }
+
+        // Enter to add price
+        document.getElementById("priceInput").addEventListener("keydown", e => {
+            if (e.key === "Enter") addPrice();
+        });
+
+        // ── จำนวนชั่วโมง ──
+        let hours = 1;
+
+        function changeHours(delta) {
+            hours = Math.round((Math.max(0.5, Math.min(12, hours + delta))) * 2) / 2;
+            document.getElementById("hoursVal").textContent = hours % 1 === 0 ? hours : hours.toFixed(1);
+        }
+
+        // ── จำนวน ──
+        let count = 1;
+
+        function changeCount(delta) {
+            count = Math.max(1, Math.min(50, count + delta));
+            document.getElementById("countVal").textContent = count;
+        }
+
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrMajm3dISbsW8Ioc8ydH8EQwwKwcvYrHgai9IuGxKjouwcegEQN4uafrKUGYNjuEg/exec";
+
+        // ── ยืนยัน ──
+        async function confirmCourse() {
+            const subjects = [...selectedSubjects];
+            const dateTime = document.getElementById("dateTime").value;
+            const location = document.getElementById("location").value.trim();
+
+            if (subjects.length === 0) { alert("กรุณาเลือกวิชาอย่างน้อย 1 วิชา"); return; }
+            if (prices.length === 0) { alert("กรุณาใส่ราคาอย่างน้อย 1 ราคา"); return; }
+            if (!dateTime) { alert("กรุณาเลือกวันและเวลา"); return; }
+
+            const btn = document.querySelector(".btn-confirm");
+            btn.textContent = "⏳ กำลังบันทึก...";
+            btn.disabled = true;
+
+            const courseData = {
+                action: "saveClass",
+                studentId: localStorage.getItem("studentId") || "",
+                fullName: localStorage.getItem("fullName") || "",
+                subjects, prices, hours, count, dateTime, location
+            };
+
+            // บันทึก localStorage ก่อน
+            const existing = JSON.parse(localStorage.getItem("courses") || "[]");
+            existing.push(courseData);
+            localStorage.setItem("courses", JSON.stringify(existing));
+
+            // ส่งไป Google Sheets
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(courseData)
+                });
+                const result = await res.json();
+                if (result.status === "success") {
+                    alert("✓ บันทึกคลาสลง Google Sheets สำเร็จ!");
+                } else {
+                    alert("⚠️ บันทึก Sheets ล้มเหลว: " + (result.message || ""));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("⚠️ ไม่สามารถเชื่อมต่อ Sheets ได้(บันทึกใน localStorage เรียบร้อย)");
+      }
+
+            window.location.href = "tutor-dashboard.html";
+        }
+    </script>
+
+</body>
+
+</html>

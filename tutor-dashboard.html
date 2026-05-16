@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แดชบอร์ดติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <div class="dashboard-container">
+    <div class="dashboard-main">
+      <div class="dashboard-wrapper">
+
+        <!-- Action Buttons Section -->
+        <div class="dashboard-action-buttons">
+          <a href="tutor-dashboard.html" class="dashboard-action-btn active">หน้าหลัก</a>
+          <a href="Timetable.html" class="dashboard-action-btn">ตารางสอน</a>
+          <a href="tutor.html" class="dashboard-action-btn">PROFILE</a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="dashboard-header">
+          <div class="dashboard-greeting">
+            <div class="dashboard-title">สวัสดี ติวเตอร์</div>
+            <div class="dashboard-subtitle">คุณสามารถเพิ่มวิชาที่จะติวได้ที่นี้</div>
+          </div>
+          <button class="dashboard-add-btn" onclick="window.location.href='Add_class.html'">
+            <span class="dashboard-add-icon">+</span>
+            เพิ่มคอร์สใหม่
+          </button>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="stat-students">—</div>
+            <div class="stat-label">นักเรียนทั้งหมด</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-courses">—</div>
+            <div class="stat-label">คอร์สที่เปิดสอน</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-rating">—</div>
+            <div class="stat-label">⭐ คะแนนเฉลี่ย</div>
+          </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div class="dashboard-courses-section">
+          <div class="section-title">คอร์สที่สอน</div>
+          <div class="dashboard-courses" id="courseList">
+            <div class="loading-placeholder">⏳ กำลังโหลดคอร์ส...</div>
+          </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div class="dashboard-bookings-section">
+          <div class="section-title">การจอง</div>
+          <div class="dashboard-bookings" id="bookingList">
+            <div class="loading-placeholder">⏳ กำลังโหลดการจอง...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .loading-placeholder {
+      color: #999;
+      font-size: 14px;
+      padding: 20px 0;
+    }
+
+    .empty-placeholder {
+      color: #bbb;
+      font-size: 14px;
+      padding: 24px 0;
+      text-align: center;
+    }
+
+    .booking-student-name {
+      font-size: 13px;
+      color: #666;
+      margin-top: 3px;
+    }
+
+    .status-badge {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .status-badge.confirmed {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .status-badge.rejected {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .status-badge.pending {
+      background: #fef9c3;
+      color: #ca8a04;
+    }
+
+    .booking-item.is-confirmed {
+      border-color: #22c55e !important;
+      background: #f0fdf4 !important;
+    }
+
+    .booking-item.is-rejected {
+      border-color: #ef4444 !important;
+      background: #fef2f2 !important;
+      opacity: 0.7;
+    }
+
+    .saving-text {
+      color: #999;
+      font-size: 13px;
+    }
+
+    .error-text {
+      color: #ef4444;
+      font-size: 13px;
+    }
+  </style>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    // ─── ออกจากระบบ ───
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // ─── เริ่มต้น ───
+    document.addEventListener("DOMContentLoaded", () => {
+      const fullName = localStorage.getItem("fullName") || "ติวเตอร์";
+      document.querySelector(".dashboard-title").textContent = `สวัสดี ${fullName}`;
+      loadCourses();
+      loadBookings();
+    });
+
+    // ════════════════════════════════════════
+    //  โหลดคอร์สจาก Sheet "คลาส"
+    // ════════════════════════════════════════
+    async function loadCourses() {
+      const tutorId = localStorage.getItem("studentId") || "";
+      const courseList = document.getElementById("courseList");
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getClasses`);
+        const data = await res.json();
+
+        if (data.status !== "success" || !data.classes || data.classes.length === 0) {
+          courseList.innerHTML = '<div class="empty-placeholder">ยังไม่มีคอร์ส — กด "+ เพิ่มคอร์สใหม่" เพื่อเริ่ม</div>';
+          updateStats([], []);
+          return;
+        }
+
+        // กรองเฉพาะคอร์สของติวเตอร์คนนี้
+        const myCourses = tutorId
+          ? data.classes.filter(c => String(c.studentId).trim() === String(tutorId).trim())
+          : data.classes;
+
+        if (!myCourses.length) {
+          courseList.innerHTML = '<div class="empty-placeholder">ยังไม่มีคอร์ส — กด "+ เพิ่มคอร์สใหม่" เพื่อเริ่ม</div>';
+          updateStats([], []);
+          return;
+        }
+
+        courseList.innerHTML = myCourses.map(c => `
+          <div class="course-card">
+            <div class="course-header">
+              <div class="course-name">${c.subjects || '—'}</div>
+              <div class="course-info">ภาค <strong>${c.dateTime || '—'}</strong></div>
+              <div class="course-info">${c.prices ? c.prices + '฿/ชั่วโมง' : '—'}</div>
+              <div class="course-info">${c.count || 0}คน</div>
+            </div>
+          </div>
+        `).join('');
+
+        // อัพเดท stat card
+        const totalStudents = myCourses.reduce((sum, c) => sum + (parseInt(c.count) || 0), 0);
+        document.getElementById("stat-courses").textContent = myCourses.length;
+        document.getElementById("stat-students").textContent = totalStudents;
+
+      } catch (err) {
+        courseList.innerHTML = '<div class="error-text">❌ โหลดคอร์สไม่สำเร็จ</div>';
+        console.error(err);
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  โหลดการจองจาก Sheet "จอง"
+    // ════════════════════════════════════════
+    // ════════════════════════════════════════
+    //  โหลดการจองจาก Sheet "จอง"
+    // ════════════════════════════════════════
+    async function loadBookings() {
+      const tutorId = localStorage.getItem("studentId") || "";
+      const list = document.getElementById("bookingList");
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getBookings`);
+        const data = await res.json();
+
+        if (data.status !== "success" || !data.bookings || data.bookings.length === 0) {
+          list.innerHTML = '<div class="empty-placeholder">ไม่มีการจองในขณะนี้</div>';
+          document.getElementById("stat-students").textContent = "0";
+          return;
+        }
+
+        // กรองเฉพาะ booking ที่เป็นของติวเตอร์คนนี้
+        const myBookings = tutorId
+          ? data.bookings.filter(b => String(b.tutorId).trim() === String(tutorId).trim())
+          : data.bookings;
+
+        // ── นับจำนวนนักเรียนที่ไม่ซ้ำ ──
+        // (studentId ของนักเรียน ≠ tutorId ของติวเตอร์คนนี้)
+        const uniqueStudents = new Set(
+          myBookings
+            .map(b => String(b.studentId || "").trim())
+            .filter(id => id !== "" && id !== tutorId)
+        );
+        document.getElementById("stat-students").textContent = uniqueStudents.size;
+
+        if (!myBookings.length) {
+          list.innerHTML = '<div class="empty-placeholder">ไม่มีการจองในขณะนี้</div>';
+          return;
+        }
+
+        list.innerHTML = myBookings.map((b, i) => {
+          const isPending = !b.status || b.status === "รอตรวจสอบ" || b.status === "รอยืนยัน";
+          const isConfirm = b.status === "ยืนยัน";
+          const isReject = b.status === "ปฏิเสธ";
+
+          let itemClass = "booking-item";
+          if (isConfirm) itemClass += " is-confirmed";
+          if (isReject) itemClass += " is-rejected";
+
+          return `
+        <div class="${itemClass}" id="booking-${i}">
+          <div class="booking-info">
+            <div class="booking-course">${b.subjects || '—'}</div>
+            <div class="booking-student-name">👤 ${b.studentName || '—'}</div>
+            <div class="booking-date">📅 ${b.dateTime || '—'}</div>
+          </div>
+          <div class="booking-actions" id="actions-${i}">
+            ${isPending ? `
+              <button class="btn-confirm" onclick="updateStatus(${i}, ${b.rowIndex}, 'ยืนยัน')">
+                <span class="check-icon">✓</span> ยืนยัน
+              </button>
+              <button class="btn-reject" onclick="updateStatus(${i}, ${b.rowIndex}, 'ปฏิเสธ')">
+                <span class="check-icon">✕</span> ปฏิเสธ
+              </button>
+            ` : `
+              <span class="status-badge ${isConfirm ? 'confirmed' : isReject ? 'rejected' : 'pending'}">
+                ${b.status}
+              </span>
+            `}
+          </div>
+        </div>`;
+        }).join('');
+
+        loadRating(tutorId);
+
+      } catch (err) {
+        list.innerHTML = '<div class="error-text">❌ เกิดข้อผิดพลาดในการโหลดการจอง</div>';
+        document.getElementById("stat-students").textContent = "—";
+        console.error(err);
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  อัพเดทสถานะการจองใน Google Sheet
+    // ════════════════════════════════════════
+    async function updateStatus(index, rowIndex, status) {
+      const actions = document.getElementById(`actions-${index}`);
+      const item = document.getElementById(`booking-${index}`);
+
+      // แสดง loading
+      actions.innerHTML = '<span class="saving-text">⏳ กำลังบันทึก...</span>';
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "updateBookingStatus",
+            rowIndex: rowIndex,
+            status: status
+          })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const isConfirm = status === "ยืนยัน";
+
+          // อัพเดท class ของ card
+          item.classList.remove("is-confirmed", "is-rejected");
+          item.classList.add(isConfirm ? "is-confirmed" : "is-rejected");
+
+          // แสดง badge แทนปุ่ม
+          actions.innerHTML = `
+            <span class="status-badge ${isConfirm ? 'confirmed' : 'rejected'}">
+              ${status}
+            </span>`;
+        } else {
+          actions.innerHTML = '<span class="error-text">❌ เกิดข้อผิดพลาด กรุณาลองใหม่</span>';
+        }
+      } catch (err) {
+        actions.innerHTML = '<span class="error-text">❌ เกิดข้อผิดพลาด</span>';
+        console.error(err);
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  โหลดคะแนนติวเตอร์
+    // ════════════════════════════════════════
+    async function loadRating(tutorId) {
+  if (!tutorId) return;
+
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=getTutor&studentId=${tutorId}`);
+    const data = await res.json();
+
+    if (data.status === "success" && data.tutor) {
+      const rating = parseFloat(data.tutor.rating) || 0;
+
+      document.getElementById("stat-rating").textContent =
+        rating > 0 ? rating.toFixed(1) : "—";
+    }
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("stat-rating").textContent = "—";
+  }
+}
+    // async function loadRating(tutorId) {
+    // if (!tutorId) return;
+    // try {
+    // const res = await fetch(`${APPS_SCRIPT_URL}?action=getTutor&studentId=${tutorId}`);
+    // const data = await res.json();
+    // if (data.status === "success" && data.tutor) {
+    // const rating = parseFloat(data.tutor.rating);
+    // document.getElementById("stat-rating").textContent = rating > 0 ? rating.toFixed(1) : "—";
+    // }
+    // } catch (err) {
+    // console.error("โหลดคะแนนไม่สำเร็จ", err);
+    // }
+    // }
+
+    function updateStats(courses, bookings) {
+      document.getElementById("stat-courses").textContent = courses.length || "0";
+      document.getElementById("stat-students").textContent = "0";
+      document.getElementById("stat-rating").textContent = "—";
+    }
+  </script>
+</body>
+
+</html>

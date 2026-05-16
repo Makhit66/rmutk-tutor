@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รีวิวติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #c0152a;
+      --red-lt: #e8192c;
+      --gold:   #f5c518;
+      --bg:     #f0eeeb;
+      --card:   #ffffff;
+      --border: #d6d3ce;
+      --text:   #1a1a1a;
+      --muted:  #888;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* ══ MAIN CARD ══ */
+    .review-card {
+      background: var(--bg);
+      border: 2.5px solid var(--red);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 860px;
+      padding: 28px 32px 32px;
+      position: relative;
+    }
+
+    /* ── top-right badge ── */
+    .user-badge {
+      position: absolute;
+      top: -1px; right: -1px;
+      background: var(--red);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 0 16px 0 12px;
+    }
+
+    /* ── page title ── */
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 22px;
+    }
+
+    /* ── back link ── */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      margin-bottom: 24px;
+      transition: color 0.15s;
+    }
+    .btn-back:hover { color: var(--red); }
+    .btn-back svg { width: 18px; height: 18px; }
+
+    /* ── two-column layout ── */
+    .review-body {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── LEFT: tutor info ── */
+    .tutor-info {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tutor-photo-wrap {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      aspect-ratio: 3/4;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .tutor-photo-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .photo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .photo-placeholder svg {
+      width: 48px; height: 48px; opacity: 0.4;
+    }
+
+    .tutor-meta { font-size: 14px; color: var(--text); line-height: 2; }
+    .tutor-meta span { display: block; }
+    .tutor-meta .label { color: var(--muted); font-size: 12px; }
+
+    .note-text {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── RIGHT: rating form ── */
+    .rating-form { display: flex; flex-direction: column; gap: 20px; }
+
+    .form-title {
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    /* star grid: 2 columns */
+    .stars-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 24px;
+    }
+
+    .star-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .star-label {
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+      min-width: 96px;
+      text-align: right;
+    }
+    .star-input {
+      display: inline-flex;
+      flex-direction: row-reverse;
+      gap: 2px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      background: #fff;
+    }
+    .star-input input { display: none; }
+    .star-input label {
+      font-size: 22px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.1s;
+      line-height: 1;
+    }
+    /* highlight on hover/check going left (row-reverse trick) */
+    .star-input label:hover,
+    .star-input label:hover ~ label,
+    .star-input input:checked ~ label {
+      color: var(--gold);
+    }
+
+    /* text area */
+    .comment-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .comment-lbl { font-size: 13px; color: var(--text); font-weight: 500; }
+    .comment-area {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.15s;
+      background: #fff;
+    }
+    .comment-area:focus {
+      outline: none;
+      border-color: var(--red);
+    }
+
+    /* tag chips */
+    .tags-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .tags-lbl { font-size: 12px; color: var(--muted); }
+    .tags-lbl strong { color: var(--text); }
+    .tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tag-chip {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .tag-chip:hover { border-color: var(--red); color: var(--red); }
+    .tag-chip.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* submit */
+    .submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+    .btn-submit {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .btn-submit:hover {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: #2e7d32; color: #fff;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; opacity: 0;
+      transition: all 0.35s ease; z-index: 9999;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.error { background: #c62828; }
+
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      .review-body { grid-template-columns: 1fr; }
+      .stars-grid  { grid-template-columns: 1fr; }
+      .star-label  { min-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="review-card">
+
+  <!-- top-right user badge -->
+  <div class="user-badge" id="userBadge">นักศึกษา</div>
+
+  <!-- page title -->
+  <div class="page-title">รีวิวติวเตอร์</div>
+
+  <!-- back -->
+  <button class="btn-back" onclick="goBack()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    กลับ
+  </button>
+
+  <!-- body -->
+  <div class="review-body">
+
+    <!-- LEFT: tutor photo + info -->
+    <div class="tutor-info">
+      <div class="tutor-photo-wrap">
+        <div class="photo-placeholder" id="photoPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>รูปติวเตอร์</span>
+        </div>
+        <img id="tutorPhoto" src="" alt="" style="display:none" />
+      </div>
+
+      <div class="tutor-meta">
+        <span class="label">ชื่อ</span>
+        <span id="tutorName">—</span>
+        <span class="label" style="margin-top:8px">วิชา</span>
+        <span id="tutorSubjects">—</span>
+        <span class="label" style="margin-top:8px">บทเรียน</span>
+        <span id="tutorLesson">—</span>
+      </div>
+
+      <div class="note-text">ความคิดเห็นของคุณช่วยพัฒนาการสอนได้ดีขึ้น</div>
+    </div>
+
+    <!-- RIGHT: rating form -->
+    <div class="rating-form">
+
+      <div class="form-title">ให้คะแนนการสอน</div>
+
+      <!-- 4 star criteria in 2×2 grid -->
+      <div class="stars-grid">
+
+        <div class="star-row">
+          <span class="star-label">เนื้อหาเข้าใจง่าย</span>
+          <div class="star-input" id="stars-content">
+            <input type="radio" name="content" id="c5" value="5"><label for="c5">★</label>
+            <input type="radio" name="content" id="c4" value="4"><label for="c4">★</label>
+            <input type="radio" name="content" id="c3" value="3"><label for="c3">★</label>
+            <input type="radio" name="content" id="c2" value="2"><label for="c2">★</label>
+            <input type="radio" name="content" id="c1" value="1"><label for="c1">★</label>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <span class="star-label">เทคนิคการสอน</span>
+          <div class="star-input" id="stars-technique">
+            <input type="radio" name="technique" id="t5" value="5"><label for="t5">★</label>
+            <input type="radio" name="technique" id="t4" value="4"><label for="t4">★</label>
+            <input type="radio" name="technique" id="t3" value="3"><label for="t3">★</label>
+            <input type="radio" name="technique" id="t2" value="2"><label for="t2">★</label>
+            <input type="radio" name="technique" id="t1" value="1"><label for="t1">★</label>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <span class="star-label">ตรงต่อเวลา</span>
+          <div class="star-input" id="stars-punctual">
+            <input type="radio" name="punctual" id="p5" value="5"><label for="p5">★</label>
+            <input type="radio" name="punctual" id="p4" value="4"><label for="p4">★</label>
+            <input type="radio" name="punctual" id="p3" value="3"><label for="p3">★</label>
+            <input type="radio" name="punctual" id="p2" value="2"><label for="p2">★</label>
+            <input type="radio" name="punctual" id="p1" value="1"><label for="p1">★</label>
+          </div>
+        </div>
+
+        <div class="star-row">
+          <span class="star-label">ความคุ้มค่า</span>
+          <div class="star-input" id="stars-value">
+            <input type="radio" name="value" id="v5" value="5"><label for="v5">★</label>
+            <input type="radio" name="value" id="v4" value="4"><label for="v4">★</label>
+            <input type="radio" name="value" id="v3" value="3"><label for="v3">★</label>
+            <input type="radio" name="value" id="v2" value="2"><label for="v2">★</label>
+            <input type="radio" name="value" id="v1" value="1"><label for="v1">★</label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- comment -->
+      <div class="comment-wrap">
+        <div class="comment-lbl">บอกความประทับใจหรือสิ่งที่ควรปรับปรุง</div>
+        <textarea id="commentText" class="comment-area"
+          placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."></textarea>
+      </div>
+
+      <!-- quick tags -->
+      <div class="tags-wrap">
+        <div class="tags-lbl">แท็กแนะนำ <strong>〈 กดเลือกได้เลย 〉</strong></div>
+        <div class="tags-row">
+          <button class="tag-chip" onclick="toggleTag(this)">ตรงต่อเวลา</button>
+          <button class="tag-chip" onclick="toggleTag(this)">สอนดี</button>
+          <button class="tag-chip" onclick="toggleTag(this)">ความรู้เยอะ</button>
+          <button class="tag-chip" onclick="toggleTag(this)">สอนเข้าใจง่าย</button>
+          <button class="tag-chip" onclick="toggleTag(this)">ใจดี</button>
+          <button class="tag-chip" onclick="toggleTag(this)">อธิบายชัดเจน</button>
+        </div>
+      </div>
+
+      <!-- submit -->
+      <div class="submit-row">
+        <button class="btn-submit" onclick="submitReview()">ส่งรีวิวของคุณ</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ══ ใส่ URL Apps Script ที่ Deploy แล้วตรงนี้ ══
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+  /* ── Toast ── */
+  let _tt;
+  function showToast(msg, type = "success") {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "show" + (type !== "success" ? " " + type : "");
+    clearTimeout(_tt);
+    _tt = setTimeout(() => { t.className = ""; }, 3000);
+  }
+
+  /* ── Back ── */
+  function goBack() {
+    if (document.referrer && document.referrer.includes("profile_tutor")) {
+      window.location.href = "profile_tutor.html";
+    } else {
+      window.location.href = "student.html";
+    }
+  }
+
+  /* ── Tag toggle ── */
+  function toggleTag(el) {
+    el.classList.toggle("active");
+    const active = el.classList.contains("active");
+    const area   = document.getElementById("commentText");
+    const tag    = el.textContent.trim();
+    if (active) {
+      area.value = area.value ? area.value + " #" + tag : "#" + tag;
+    } else {
+      area.value = area.value.replace(new RegExp("\\s?#?" + tag, "g"), "").trim();
+    }
+  }
+
+  /* ── Load tutor data from localStorage ── */
+  function loadTutorInfo() {
+    // อ่านข้อมูลจาก history.html (review*) หรือจาก student.html (viewTutor*)
+    const name      = localStorage.getItem("reviewTutorName")  || localStorage.getItem("viewTutorName")     || localStorage.getItem("selectedTutorName") || "—";
+    const subjects  = localStorage.getItem("reviewSubjects")   || localStorage.getItem("viewTutorSubjects")  || "—";
+    const style     = localStorage.getItem("reviewStyle")      || localStorage.getItem("viewTutorStyle")     || "—";
+    const faculty   = localStorage.getItem("reviewFaculty")    || localStorage.getItem("viewTutorFaculty")   || "";
+    const specialty = localStorage.getItem("reviewSpecialty")  || localStorage.getItem("viewTutorSpecialty") || "";
+    const location  = localStorage.getItem("reviewLocation")   || localStorage.getItem("viewTutorLocation")  || "";
+    const user      = localStorage.getItem("fullName") || "นักศึกษา";
+
+    // แสดงชื่อ
+    document.getElementById("tutorName").textContent     = name;
+    // วิชา = วิชาที่รับติว
+    document.getElementById("tutorSubjects").textContent = subjects || "—";
+    // บทเรียน = สไตล์ / คณะ / สถานที่
+    const lessonText = [style, faculty, location].filter(Boolean).join(" · ") || "—";
+    document.getElementById("tutorLesson").textContent   = lessonText;
+    document.getElementById("userBadge").textContent     = user;
+
+    // โหลดรูปติวเตอร์จาก Sheet (base64) ผ่าน getImages
+    const tutorId = localStorage.getItem("reviewTutorId") || localStorage.getItem("viewTutorId") || "";
+    if (tutorId) {
+      loadTutorPhoto(tutorId);
+    } else {
+      const cached = localStorage.getItem("profileImageUrl") || localStorage.getItem("tutorProfileImage") || "";
+      if (cached) showTutorPhoto(cached);
+    }
+
+    console.log("Review info loaded:", { name, subjects, style, faculty, specialty, location });
+  }
+
+  /* ══ โหลดรูปติวเตอร์จาก API ══ */
+  async function loadTutorPhoto(tutorId) {
+    // ลอง cache ก่อน
+    const cached = localStorage.getItem("profileImageUrl_" + tutorId);
+    if (cached) { showTutorPhoto(cached); return; }
+    try {
+      const res  = await fetch(`${APPS_SCRIPT_URL}?action=getImages&studentId=${encodeURIComponent(tutorId)}`);
+      const data = await res.json();
+      if (data.status === "success" && data.profileImageUrl) {
+        localStorage.setItem("profileImageUrl_" + tutorId, data.profileImageUrl);
+        showTutorPhoto(data.profileImageUrl);
+      }
+    } catch (err) {
+      console.warn("loadTutorPhoto failed:", err);
+    }
+  }
+
+  /* ══ แสดงรูปติวเตอร์ ══ */
+  function showTutorPhoto(src) {
+    if (!src) return;
+    document.getElementById("photoPlaceholder").style.display = "none";
+    const img = document.getElementById("tutorPhoto");
+    img.src = src;
+    img.style.display = "block";
+  }
+
+  /* ── Get star value ── */
+  function getStars(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    return checked ? parseInt(checked.value) : 0;
+  }
+
+  /* ── Submit ── */
+  async function submitReview() {
+    const content   = getStars("content");
+    const technique = getStars("technique");
+    const punctual  = getStars("punctual");
+    const value     = getStars("value");
+    const comment   = document.getElementById("commentText").value.trim();
+
+    if (!content || !technique || !punctual || !value) {
+      showToast("⚠️ กรุณาให้คะแนนทุกหัวข้อ", "error");
+      return;
+    }
+
+    const avg  = ((content + technique + punctual + value) / 4).toFixed(1);
+    const tags = [...document.querySelectorAll(".tag-chip.active")].map(t => t.textContent.trim());
+
+    // ── ดึงข้อมูลติวเตอร์จาก localStorage ──
+    const payload = {
+      action:            "saveReview",
+      reviewerName:      localStorage.getItem("fullName")         || "",
+      reviewerStudentId: localStorage.getItem("studentId")        || "",
+      tutorId:           localStorage.getItem("reviewTutorId")    || localStorage.getItem("viewTutorId")    || "",
+      tutorName:         localStorage.getItem("reviewTutorName")  || localStorage.getItem("viewTutorName")  || "",
+      subjects:          localStorage.getItem("reviewSubjects")   || localStorage.getItem("viewTutorSubjects") || "",
+      style:             localStorage.getItem("reviewStyle")      || localStorage.getItem("viewTutorStyle")  || "",
+      faculty:           localStorage.getItem("reviewFaculty")    || localStorage.getItem("viewTutorFaculty") || "",
+      location:          localStorage.getItem("reviewLocation")   || localStorage.getItem("viewTutorLocation") || "",
+      rowIndex:          localStorage.getItem("reviewRowIndex")   || "",
+      scoreContent:      content,
+      scoreTechnique:    technique,
+      scorePunctual:     punctual,
+      scoreValue:        value,
+      avgScore:          parseFloat(avg),
+      comment,
+      tags
+    };
+
+    // ── ปิดปุ่มระหว่างส่ง ──
+    const btn = document.querySelector(".btn-submit");
+    btn.disabled   = true;
+    btn.textContent = "⏳ กำลังบันทึก...";
+
+    try {
+      // Apps Script ต้องใช้ no-cors (redirect) จึงใช้ fetch แบบ no-cors
+      // แล้วถือว่าสำเร็จเสมอ (response จะเป็น opaque)
+      await fetch(APPS_SCRIPT_URL, {
+        method:  "POST",
+        mode:    "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+
+      showToast(`✓ ส่งรีวิวสำเร็จ! คะแนนเฉลี่ย ${avg} ดาว`);
+
+      // เคลียร์ form
+      setTimeout(() => {
+        document.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
+        document.getElementById("commentText").value = "";
+        document.querySelectorAll(".tag-chip.active").forEach(c => c.classList.remove("active"));
+        btn.disabled    = false;
+        btn.textContent = "ส่งรีวิวของคุณ";
+        // กลับหน้า history หลัง 1.5 วิ
+        setTimeout(() => { window.location.href = "history.html"; }, 1500);
+      }, 1500);
+
+    } catch (err) {
+      console.error("Submit error:", err);
+      showToast("⚠️ เกิดข้อผิดพลาด กรุณาลองใหม่", "error");
+      btn.disabled    = false;
+      btn.textContent = "ส่งรีวิวของคุณ";
+    }
+  }
+
+  /* ── Init ── */
+  loadTutorInfo();
+</script>
+</body>
+</html>

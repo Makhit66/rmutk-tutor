@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ค้นหาติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--gray-400, #aaa);
+      gap: 14px;
+    }
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #eee;
+      border-top-color: var(--gold, #C4A35A);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-400, #aaa);
+      font-size: 14px;
+    }
+
+    .profile-card {
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.18s;
+    }
+    .profile-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+      transform: translateY(-2px);
+    }
+
+    .rating-stars { color: #C4A35A; font-size: 15px; letter-spacing: 2px; }
+    .rating-num   { font-size: 13px; color: #888; margin-left: 4px; }
+
+    .badge-style {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #f0f0ee;
+      color: #555;
+    }
+
+    .btn-book {
+      margin-top: 10px;
+      padding: 8px 20px;
+      background: var(--gold, #C4A35A);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-book:hover { background: #b89043; }
+
+    .profile-price {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold, #C4A35A);
+    }
+
+    /* search bar icon fix */
+    .search-bar {
+      padding-left: 36px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 10px center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <div class="student-container">
+
+    <!-- ─── TABS ─── -->
+    <div class="student-header">
+      <div class="student-tabs">
+        <a href="courses.html"  class="student-tab">รายวิชา</a>
+        <a href="schedule.html" class="student-tab">ตารางวัน</a>
+        <a href="student.html"  class="student-tab active">ดูติวเตอร์</a>
+        <a href="profile.html"  class="student-tab">PROFILE</a>
+        <a href="history.html"  class="student-tab">ประวัติ</a>
+      </div>
+    </div>
+
+    <!-- ─── SEARCH & FILTER ─── -->
+    <div class="search-filter-section">
+      <div class="search-filter-wrapper">
+        <input type="text" id="searchInput" class="search-bar"
+               placeholder="ค้นหาชื่อ, วิชา, คณะ..." oninput="applyFilters()" />
+
+        <div class="filter-container">
+          <div class="filter-group">
+            <label class="filter-label">คณะ</label>
+            <select id="filterFaculty" class="filter-select" onchange="applyFilters()">
+              <option value="">-- ทั้งหมด --</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">วิชาที่สอน</label>
+            <select id="filterSubject" class="filter-select" onchange="applyFilters()">
+              <option value="">-- ทั้งหมด --</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">สไตล์การสอน</label>
+            <select id="filterStyle" class="filter-select" onchange="applyFilters()">
+              <option value="">-- ทั้งหมด --</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">คะแนน</label>
+            <select id="filterRating" class="filter-select" onchange="applyFilters()">
+              <option value="">-- ทั้งหมด --</option>
+              <option value="4">4+ ดาว</option>
+              <option value="3">3+ ดาว</option>
+              <option value="2">2+ ดาว</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PROFILE CARDS ─── -->
+    <div class="profile-section">
+      <div class="profiles-container" id="cardsContainer">
+        <!-- Loading state -->
+        <div class="loading-state" id="loadingState" style="grid-column:1/-1">
+          <div class="loading-spinner"></div>
+          <div>กำลังโหลดข้อมูลติวเตอร์...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    let allTutors = [];   // raw data from sheet
+    let filtered  = [];   // after filter/search
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // ── FETCH via JSONP (หลีกเลี่ยง CORS redirect ของ Apps Script) ────
+    function fetchTutors() {
+      const timer = setTimeout(() => {
+        window.__tutorCallback = () => {};
+        console.error("JSONP timeout");
+        showError();
+      }, 10000);
+
+      window.__tutorCallback = function(json) {
+        clearTimeout(timer);
+        try {
+          if (json.status === "success" && Array.isArray(json.tutors)) {
+            allTutors = json.tutors;
+          } else if (Array.isArray(json)) {
+            allTutors = json;
+          } else {
+            throw new Error("Unexpected format: " + JSON.stringify(json));
+          }
+          populateFilterOptions();
+          applyFilters();
+        } catch(err) {
+          console.error("Parse error:", err);
+          showError();
+        }
+      };
+
+      const script = document.createElement("script");
+      script.onerror = () => { clearTimeout(timer); showError(); };
+      script.src = APPS_SCRIPT_URL + "?action=getTutors&callback=__tutorCallback";
+      document.head.appendChild(script);
+    }
+
+    // ── FILTER OPTIONS ─────────────────────────────────
+    function populateFilterOptions() {
+      const faculties = [...new Set(allTutors.map(t => t.faculty).filter(Boolean))];
+      const subjects  = [...new Set(allTutors.flatMap(t =>
+        (t.subjects || "").split(/[,، ]+/).map(s => s.trim())
+      ).filter(Boolean))];
+      const styles    = [...new Set(allTutors.map(t => t.style).filter(Boolean))];
+
+      fillSelect("filterFaculty", faculties);
+      fillSelect("filterSubject", subjects);
+      fillSelect("filterStyle",   styles);
+    }
+
+    function fillSelect(id, options) {
+      const sel = document.getElementById(id);
+      options.forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        sel.appendChild(el);
+      });
+    }
+
+    // ── FILTER LOGIC ───────────────────────────────────
+    function applyFilters() {
+      const search  = document.getElementById("searchInput").value.trim().toLowerCase();
+      const faculty = document.getElementById("filterFaculty").value;
+      const subject = document.getElementById("filterSubject").value;
+      const style   = document.getElementById("filterStyle").value;
+      const minRating = parseFloat(document.getElementById("filterRating").value) || 0;
+
+      filtered = allTutors.filter(t => {
+        if (faculty && t.faculty !== faculty) return false;
+        if (style   && t.style   !== style)   return false;
+        if (minRating && (parseFloat(t.rating) || 0) < minRating) return false;
+        if (subject && !(t.subjects || "").toLowerCase().includes(subject.toLowerCase())) return false;
+        if (search) {
+          const haystack = [t.fullName, t.faculty, t.subjects, t.specialty, t.style]
+            .join(" ").toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+
+      renderCards();
+    }
+
+    // ── RENDER ─────────────────────────────────────────
+    function renderCards() {
+      const container = document.getElementById("cardsContainer");
+      container.innerHTML = "";
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          ไม่พบติวเตอร์ที่ตรงกับเงื่อนไข</div>`;
+        return;
+      }
+
+      filtered.forEach(t => {
+        const rating = parseFloat(t.rating) || 0;
+        const stars  = renderStars(rating);
+        const price  = t.price ? `${t.price} ฿/ชม.` : (t.availability || "");
+
+        const card = document.createElement("div");
+        card.className = "profile-card";
+        card.style.cursor = "pointer";
+        card.addEventListener("click", () => {
+          // Store selected tutor data for profile_tutor.html to read
+          localStorage.setItem("viewTutorId",       t.studentId  || "");
+          localStorage.setItem("viewTutorName",     t.fullName   || "");
+          localStorage.setItem("viewTutorFaculty",  t.faculty    || "");
+          localStorage.setItem("viewTutorSubjects",  t.subjects   || "");
+          localStorage.setItem("viewTutorStyle",    t.style      || "");
+          localStorage.setItem("viewTutorSpecialty",t.specialty  || "");
+          localStorage.setItem("viewTutorLocation", t.location   || "");
+          localStorage.setItem("viewTutorAvail",    t.availability || t.price || "");
+          localStorage.setItem("viewTutorRating",   t.rating     || "0");
+          window.location.href = "profile_tutor.html";
+        });
+        card.innerHTML = `
+          <div class="profile-header">
+            <div class="profile-info-item">
+              <div class="profile-info-label">ชื่อ</div>
+              <div class="profile-info-value">${t.fullName || "-"}</div>
+            </div>
+            <div class="profile-info-item">
+              <div class="profile-info-label">คณะ</div>
+              <div class="profile-info-value">${t.faculty || "-"}</div>
+            </div>
+            <div class="profile-info-item">
+              <div class="profile-info-label">รหัส</div>
+              <div class="profile-info-value">${t.studentId || "-"}</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px">
+            <div class="profile-info-item">
+              <div class="profile-info-label">สไตล์การสอน</div>
+              <div class="profile-info-value">
+                <span class="badge-style">${t.style || "-"}</span>
+              </div>
+            </div>
+            <div class="profile-info-item">
+              <div class="profile-info-label">วิชาที่สอน</div>
+              <div class="profile-info-value" style="font-size:12px">${t.subjects || "-"}</div>
+            </div>
+          </div>
+
+          <div class="profile-divider"></div>
+
+          <div class="profile-body">
+            <div class="profile-details">
+              <div class="profile-details-item">
+                <span style="font-size:12px;color:var(--gray-400)">ความเชี่ยวชาญ:</span>
+                ${t.specialty || "-"}
+              </div>
+              <div class="profile-details-item">
+                <span style="font-size:12px;color:var(--gray-400)">สถานที่/ช่องทาง:</span>
+                ${t.location || "-"}
+              </div>
+
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">คะแนนรีวิว</div>
+              <div class="rating-stars">${stars}</div>
+              <div class="rating-num">${rating > 0 ? rating.toFixed(1) : "ยังไม่มีรีวิว"}</div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderStars(rating) {
+      const full  = Math.floor(rating);
+      const half  = rating - full >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(empty);
+    }
+
+    function bookTutor(studentId, name) {
+      // store selection and navigate to booking page
+      localStorage.setItem("selectedTutorId",   studentId);
+      localStorage.setItem("selectedTutorName", name);
+      alert(`เลือกติวเตอร์: ${name}\n(หน้าการจองอยู่ระหว่างพัฒนา)`);
+      // window.location.href = "booking.html";
+    }
+
+    function showError() {
+      document.getElementById("cardsContainer").innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          ⚠️ ไม่สามารถโหลดข้อมูลได้<br>
+          <small style="font-size:12px;margin-top:8px;display:block">กรุณาตรวจสอบการเชื่อมต่อหรือ Apps Script URL</small>
+          <button class="btn-book" onclick="fetchTutors()" style="margin-top:16px">ลองใหม่</button>
+        </div>`;
+    }
+
+    // ── INIT ───────────────────────────────────────────
+    fetchTutors();
+    if (localStorage.getItem("studentId")) document.getElementById("logoutBtn").style.display = "";
+  </script>
+
+</body>
+</html>

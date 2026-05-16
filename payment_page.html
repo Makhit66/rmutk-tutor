@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>หน้าชำระเงิน RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans Thai', sans-serif; background: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: #f0f0f0; }
+    .topbar-title { font-size: 22px; font-weight: 700; color: #222; }
+    .btn-logout { padding: 10px 22px; border: 2px solid #bbb; border-radius: 10px; background: #fff; color: #333; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; box-shadow: 2px 2px 0 #bbb; }
+    .btn-logout:hover { background: #f5f5f5; }
+
+    .content { flex: 1; display: grid; grid-template-columns: 280px 1fr 260px; gap: 24px; padding: 0 32px 32px; align-items: start; }
+
+    .left-panel { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
+    .btn-back { display: flex; align-items: center; gap: 8px; background: none; border: none; font-size: 15px; font-family: inherit; color: #333; cursor: pointer; margin-bottom: 18px; font-weight: 500; }
+    .btn-back:hover { color: #C4A35A; }
+    .info-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .info-label { font-size: 14px; color: #333; font-weight: 500; text-align: center; }
+    .info-box { background: #fff; border: 2px solid #bbb; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #222; font-family: inherit; box-shadow: 2px 2px 0 #bbb; min-height: 46px; width: 100%; }
+
+    .center-panel { display: flex; justify-content: center; }
+    .payment-card { background: #fff; border: 2px solid #888; border-radius: 16px; padding: 28px 32px 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 3px 3px 0 #bbb; }
+    .payment-card-title { font-size: 18px; font-weight: 700; color: #222; }
+
+    .qr-area { width: 220px; height: 220px; border: 2px solid #bbb; border-radius: 12px; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; overflow: hidden; }
+    .qr-area img { width: 100%; height: 100%; object-fit: contain; }
+    .qr-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #bbb; }
+    .qr-placeholder svg { width: 60px; height: 60px; }
+    .qr-placeholder span { font-size: 13px; }
+
+    .payment-time { font-size: 15px; color: #444; font-weight: 500; }
+    .countdown { font-size: 22px; font-weight: 700; color: #C4A35A; letter-spacing: 2px; }
+
+    .upload-area { width: 100%; border: 2px dashed #C4A35A; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; background: #fffdf5; transition: background 0.15s; }
+    .upload-area:hover { background: #fef9ef; }
+    .upload-area input { display: none; }
+    .upload-label { font-size: 13px; color: #a07830; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .upload-preview { margin-top: 8px; font-size: 12px; color: #888; }
+
+    .btn-cancel { padding: 11px 48px; border: 2px solid #bbb; border-radius: 10px; background: #fff; color: #555; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; box-shadow: 2px 2px 0 #bbb; }
+    .btn-cancel:hover { background: #f5f5f5; }
+
+    .right-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 8px; }
+    .tutor-hex-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .hex-container { width: 130px; height: 150px; }
+    .hex-shape { width: 130px; height: 150px; clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); background: linear-gradient(160deg,#b8dff5 40%,#6aaa3a 100%); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .hex-shape img { width: 100%; height: 100%; object-fit: cover; }
+    .hex-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #fff; }
+    .hex-placeholder svg { width: 40px; height: 40px; opacity: 0.8; }
+    .tutor-hex-label { font-size: 13px; color: #555; font-weight: 500; }
+
+    .price-summary { background: #fff; border: 2px solid #e0e0e0; border-radius: 12px; padding: 16px 20px; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .price-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #555; }
+    .price-row.total { border-top: 1px solid #eee; padding-top: 10px; font-size: 15px; font-weight: 700; color: #C4A35A; }
+
+    .btn-confirm { width: 100%; padding: 14px; background: #1a1a1a; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 2px 2px 0 #555; transition: background 0.15s; }
+    .btn-confirm:hover:not(:disabled) { background: #333; }
+    .btn-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222; color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s ease; z-index: 999; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.ok  { background: #2D6A4F; }
+    .toast.err { background: #C0392B; }
+
+    @media (max-width: 900px) {
+      .content { grid-template-columns: 1fr; }
+      .center-panel { order: -1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-title">หน้าชำระเงิน</div>
+    <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+  </div>
+
+  <div class="content">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <button class="btn-back" onclick="goBack()">← กลับ</button>
+
+      <div class="info-group">
+        <div class="info-label">ชื่อวิชา</div>
+        <div class="info-box" id="infoSubject">-</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">ชื่อติวเตอร์</div>
+        <div class="info-box" id="infoTutor">-</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">วันที่สอน</div>
+        <div class="info-box" id="infoDate">-</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">สถานที่ติว</div>
+        <div class="info-box" id="infoLocation">-</div>
+      </div>
+      <div class="info-group">
+        <div class="info-label">จำนวนชั่วโมง</div>
+        <div class="info-box" id="infoHours">-</div>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-panel">
+      <div class="payment-card">
+        <div class="payment-card-title">ชำระเงิน</div>
+
+        <div class="qr-area" id="qrArea">
+          <div class="qr-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="3" height="3"/>
+              <rect x="19" y="14" width="2" height="2"/>
+              <rect x="14" y="19" width="2" height="2"/>
+              <rect x="18" y="18" width="3" height="3"/>
+            </svg>
+            <span>QR Code PromptPay</span>
+          </div>
+        </div>
+
+        <div class="payment-time">เวลาที่เหลือ</div>
+        <div class="countdown" id="countdown">15:00</div>
+
+        <div class="upload-area" onclick="document.getElementById('slipInput').click()">
+          <input type="file" id="slipInput" accept="image/*" onchange="previewSlip(event)" />
+          <label class="upload-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4A35A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            แนบสลิปการโอนเงิน
+          </label>
+          <div class="upload-preview" id="slipName"></div>
+        </div>
+
+        <button class="btn-cancel" onclick="cancelPayment()">ยกเลิก</button>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="tutor-hex-wrap">
+        <div class="hex-container">
+          <div class="hex-shape" id="tutorHex">
+            <div class="hex-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="tutor-hex-label">รูปติวเตอร์</div>
+      </div>
+
+      <div class="price-summary">
+        <div style="font-size:14px;font-weight:700;color:#333;margin-bottom:4px;">สรุปค่าใช้จ่าย</div>
+        <div class="price-row"><span>ราคา/ชม.</span><span id="pricePerHour">-</span></div>
+        <div class="price-row"><span>จำนวนชั่วโมง</span><span id="priceHours">-</span></div>
+        <div class="price-row total"><span>ราคารวม</span><span id="priceTotal">-</span></div>
+      </div>
+
+      <button class="btn-confirm" id="btnConfirm" onclick="confirmPayment()">ยืนยัน</button>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    const booking = JSON.parse(localStorage.getItem("pendingBooking") || "{}");
+
+    function fmt(dt) {
+      if (!dt) return "-";
+      try {
+        return new Date(dt).toLocaleString("th-TH", {
+          year:"numeric", month:"short", day:"numeric",
+          hour:"2-digit", minute:"2-digit"
+        });
+      } catch { return dt; }
+    }
+
+    document.getElementById("infoSubject").textContent  = booking.subjects  || "-";
+    document.getElementById("infoTutor").textContent    = booking.fullName  || "-";
+    document.getElementById("infoDate").textContent     = fmt(booking.dateTime);
+    document.getElementById("infoLocation").textContent = booking.location  || "-";
+    document.getElementById("infoHours").textContent    = booking.hours ? `${booking.hours} ชม.` : "-";
+    document.getElementById("pricePerHour").textContent = booking.prices     ? `${booking.prices} ฿`     : "-";
+    document.getElementById("priceHours").textContent   = booking.hours      ? `${booking.hours} ชม.`    : "-";
+    document.getElementById("priceTotal").textContent   = booking.totalPrice ? `${booking.totalPrice} ฿` : "-";
+
+    // ดึงรูปติวเตอร์ + QR จาก Sheets (ใช้ tutorId หรือ studentId ของติวเตอร์)
+    async function loadTutorImages() {
+      const tutorId = booking.tutorId || booking.studentId || "";
+      if (!tutorId) return;
+
+      try {
+        const res  = await fetch(
+          `${APPS_SCRIPT_URL}?action=getImages&studentId=${encodeURIComponent(tutorId)}`
+        );
+        const data = await res.json();
+
+        if (data.status === "success") {
+          // รูปโปรไฟล์ติวเตอร์ (รองรับทั้ง profileImageUrl และ profileImage)
+          const pImg = data.profileImageUrl || data.profileImage || booking.tutorImage || "";
+          if (pImg) {
+            document.getElementById("tutorHex").innerHTML =
+              `<img src="${pImg}" alt="ติวเตอร์" style="width:100%;height:100%;object-fit:cover;">`;
+          }
+
+          // QR Code ของติวเตอร์ (รองรับทั้ง qrImageUrl และ qrImage)
+          const qImg = data.qrImageUrl || data.qrImage || booking.qrUrl || "";
+          if (qImg) {
+            document.getElementById("qrArea").innerHTML =
+              `<img src="${qImg}" alt="QR PromptPay" style="width:100%;height:100%;object-fit:contain;">`;
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn("ดึงรูปจาก Sheets ล้มเหลว, ใช้ localStorage แทน:", err);
+      }
+
+      // Fallback → ใช้ค่าจาก localStorage (pendingBooking)
+      if (booking.tutorImage) {
+        document.getElementById("tutorHex").innerHTML =
+          `<img src="${booking.tutorImage}" alt="ติวเตอร์" style="width:100%;height:100%;object-fit:cover;">`;
+      }
+      if (booking.qrUrl) {
+        document.getElementById("qrArea").innerHTML =
+          `<img src="${booking.qrUrl}" alt="QR" style="width:100%;height:100%;object-fit:contain;">`;
+      }
+    }
+
+    loadTutorImages();
+
+    // Countdown 15 นาที
+    let timeLeft = 15 * 60;
+    const countEl = document.getElementById("countdown");
+    const timer = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        countEl.textContent = "00:00";
+        countEl.style.color = "#e74c3c";
+        showToast("⏰ หมดเวลาชำระเงิน กรุณาเริ่มใหม่", "err");
+        document.getElementById("btnConfirm").disabled = true;
+        return;
+      }
+      const m = String(Math.floor(timeLeft/60)).padStart(2,"0");
+      const s = String(timeLeft%60).padStart(2,"0");
+      countEl.textContent = `${m}:${s}`;
+      if (timeLeft <= 60) countEl.style.color = "#e74c3c";
+    }, 1000);
+
+    function previewSlip(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById("slipName").innerHTML =
+        `<span style="color:#2D6A4F">✅ ${file.name}</span>`;
+    }
+
+    async function confirmPayment() {
+      const slip = document.getElementById("slipInput").files[0];
+      if (!slip) {
+        showToast("⚠️ กรุณาแนบสลิปการโอนเงินก่อน", "err");
+        return;
+      }
+
+      clearInterval(timer);
+      const btn = document.getElementById("btnConfirm");
+      btn.disabled = true;
+      btn.textContent = "⏳ กำลังบันทึก...";
+
+      // payload → action: saveBooking → Sheet "จอง"
+      const payload = {
+        action:       "saveBooking",
+        studentId:    localStorage.getItem("studentId") || "",
+        studentName:  localStorage.getItem("fullName")  || "",
+        tutorId:      booking.tutorId    || booking.studentId || "",
+        tutorName:    booking.fullName   || "",
+        subjects:     booking.subjects   || "",
+        pricePerHour: booking.prices     || "",
+        hours:        booking.hours      || "",
+        totalPrice:   booking.totalPrice || "",
+        dateTime:     booking.dateTime   || "",
+        location:     booking.location   || "",
+        slipName:     slip.name,
+        status:       "รอตรวจสอบ"
+      };
+
+      try {
+        // no-cors หลีกเลี่ยง CORS redirect ของ Apps Script
+        await fetch(APPS_SCRIPT_URL, {
+          method:  "POST",
+          mode:    "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(payload)
+        });
+
+        // บันทึก local ด้วย
+        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+        history.unshift({ ...payload, savedAt: new Date().toISOString() });
+        localStorage.setItem("bookingHistory", JSON.stringify(history));
+        localStorage.removeItem("pendingBooking");
+
+        showToast("✅ ยืนยันการชำระเงินสำเร็จ!", "ok");
+        setTimeout(() => { window.location.href = "courses.html"; }, 2000);
+
+      } catch (err) {
+        console.error(err);
+        showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่", "err");
+        btn.disabled = false;
+        btn.textContent = "ยืนยัน";
+      }
+    }
+
+    function cancelPayment() {
+      if (confirm("ต้องการยกเลิกการชำระเงินใช่ไหม?")) {
+        clearInterval(timer);
+        localStorage.removeItem("pendingBooking");
+        window.location.href = "courses.html";
+      }
+    }
+
+    function goBack() { clearInterval(timer); history.back(); }
+
+    function logout() {
+      clearInterval(timer);
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function showToast(msg, type = "") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+  </script>
+</body>
+</html>

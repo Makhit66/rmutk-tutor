@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โปรไฟล์ติวเตอร์ RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Avatar ── */
+    .tutor-avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .tutor-avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--gray-100, #f5f5f5);
+    }
+
+    .tutor-avatar-upload {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--gold, #C4A35A);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .tutor-avatar-upload:hover {
+      background: var(--gold-dark, #B89043);
+    }
+
+    /* ── QR ── */
+    .tutor-qr-container {
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+      font-size: 48px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .tutor-qr-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .tutor-qr-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .btn-tutor-qr-upload {
+      background: var(--gold, #C4A35A);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      white-space: nowrap;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .btn-tutor-qr-upload:hover {
+      background: var(--gold-dark, #B89043);
+    }
+
+    .btn-tutor-qr-upload:active {
+      transform: scale(0.98);
+    }
+
+    /* ── Form ── */
+    .tutor-form-input[readonly] {
+      background: var(--gray-100, #f5f5f5);
+      color: var(--gray-500, #888);
+      cursor: not-allowed;
+    }
+
+    /* ── Subject badge ── */
+    .subject-badge {
+      background: #C4A35A;
+      color: white;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px;
+      margin-left: 8px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+
+    .subject-hint {
+      color: #999;
+      font-size: 11px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ── Rating breakdown ── */
+    .rating-breakdown-wrap {
+      width: 100%;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .rb-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .rb-row-label {
+      font-size: 11px;
+      color: #888;
+      width: 115px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rb-track {
+      flex: 1;
+      height: 5px;
+      background: #e8e8e8;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rb-fill {
+      height: 100%;
+      background: #C4A35A;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.7s ease;
+    }
+
+    .rb-score-val {
+      font-size: 11px;
+      color: #888;
+      width: 26px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .rating-count-label {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 4px;
+      display: block;
+      text-align: center;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.35s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #2e7d32; }
+    #toast.error { background: #c62828; }
+    #toast.warning { background: #e65100; }
+  </style>
+</head>
+
+<body>
+
+  <div id="toast"></div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ACTION BUTTONS -->
+  <div class="dashboard-action-buttons">
+    <a href="tutor-dashboard.html" class="dashboard-action-btn">หน้าหลัก</a>
+    <a href="Timetable.html" class="dashboard-action-btn">ตารางสอน</a>
+    <a href="tutor.html" class="dashboard-action-btn active">PROFILE</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="tutor-container">
+    <div class="tutor-main">
+      <div class="tutor-content-wrapper">
+
+        <div class="tutor-header-top">
+          <div class="tutor-title-section">
+            <span class="tutor-title">โปรไฟล์ติวเตอร์《PROFILE》</span>
+          </div>
+        </div>
+
+        <div class="tutor-layout">
+
+          <!-- ════ LEFT ════ -->
+          <div class="tutor-left">
+            <div class="tutor-avatar-section">
+              <div class="tutor-avatar-wrapper" id="avatarWrapper">
+                <img id="tutorProfileImage" class="tutor-avatar-img"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='%23d4d4d4'%3E%3Ccircle cx='100' cy='100' r='100'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%23f5f5f5'/%3E%3Cpath d='M 50 150 Q 100 180 150 150' fill='%23f5f5f5'/%3E%3C/svg%3E"
+                  alt="Tutor Profile">
+                <label class="tutor-avatar-upload" title="คลิกเพื่ออัปโหลดรูป" onclick="event.stopPropagation()">
+                  <input type="file" id="tutorProfileImageInput" accept="image/*" style="display:none">
+                  <span>📷</span>
+                </label>
+              </div>
+              <div class="tutor-basic-info">
+                <div class="tutor-name" id="displayName">⏳ กำลังโหลด...</div>
+                <div class="tutor-info-row">
+                  <strong id="displayStudentId">รหัสนักศึกษา</strong>
+                </div>
+                <div id="imageStatusBadge" style="display:none; margin-top:6px; font-size:12px; padding:3px 10px; border-radius:20px; font-weight:600;"></div>
+              </div>
+            </div>
+
+            <!-- ★ RATING SECTION ★ -->
+            <div class="tutor-rating-section">
+              <div style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                <div class="tutor-rating-stars" id="ratingStars">☆☆☆☆☆</div>
+                <span id="ratingAvgNum">0.0</span>
+              </div>
+
+              <div class="rating-breakdown-wrap" id="ratingBreakdown">
+                <div class="rb-row">
+                  <span class="rb-row-label">📖 เนื้อหาเข้าใจง่าย</span>
+                  <div class="rb-track"><div class="rb-fill" id="rbBar0"></div></div>
+                  <span class="rb-score-val" id="rbVal0">-</span>
+                </div>
+                <div class="rb-row">
+                  <span class="rb-row-label">🎯 เทคนิคการสอน</span>
+                  <div class="rb-track"><div class="rb-fill" id="rbBar1"></div></div>
+                  <span class="rb-score-val" id="rbVal1">-</span>
+                </div>
+                <div class="rb-row">
+                  <span class="rb-row-label">⏰ ตรงต่อเวลา</span>
+                  <div class="rb-track"><div class="rb-fill" id="rbBar2"></div></div>
+                  <span class="rb-score-val" id="rbVal2">-</span>
+                </div>
+                <div class="rb-row">
+                  <span class="rb-row-label">💰 ความคุ้มค่า</span>
+                  <div class="rb-track"><div class="rb-fill" id="rbBar3"></div></div>
+                  <span class="rb-score-val" id="rbVal3">-</span>
+                </div>
+              </div>
+
+              <small id="reviewScore" style="display:block;text-align:center;margin-top:8px;">
+                คะแนนรีวิว: ⭐ 0.0
+              </small>
+              <span id="reviewCountLabel" class="rating-count-label"></span>
+            </div>
+          </div>
+
+          <!-- ════ MIDDLE ════ -->
+          <div class="tutor-middle">
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">ชื่อ-นามสกุล</label>
+              <input type="text" id="fullName" class="tutor-form-input" placeholder="ระบุชื่อเต็ม" readonly />
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">รหัสนักศึกษา</label>
+              <input type="text" id="studentId" class="tutor-form-input" placeholder="เช่น 6401234567" maxlength="10" readonly />
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">คณะที่สังกัดอยู่</label>
+              <select id="faculty" class="tutor-form-input">
+                <option value="">-- เลือกคณะ --</option>
+                <option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option>
+                <option value="คณะเทคโนโลยีอุตสาหกรรม">คณะเทคโนโลยีอุตสาหกรรม</option>
+                <option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option>
+                <option value="คณะศึกษาศาสตร์">คณะศึกษาศาสตร์</option>
+                <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
+                <option value="คณะอุตสาหกรรมสิ่งทอ">คณะอุตสาหกรรมสิ่งทอ</option>
+                <option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option>
+              </select>
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">
+                วิชาที่รับติว
+                <span class="subject-badge" id="subjectCount">0 วิชา</span>
+              </label>
+              <input type="text" id="subjects" class="tutor-form-input" placeholder="⏳ กำลังโหลด..." readonly />
+              <small class="subject-hint">📋 ดึงจากคลาสที่เปิดสอนอัตโนมัติ แก้ไขที่ตารางสอน</small>
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">เอกวิชา</label>
+              <input type="text" id="specialty" class="tutor-form-input" placeholder="เอกวิชาของคุณ" />
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">วันและเวลาที่ว่าง</label>
+              <input type="text" id="availability" class="tutor-form-input" placeholder="⏳ กำลังโหลด..." readonly />
+              <small class="subject-hint">📋 ดึงจากคลาสที่เปิดสอนอัตโนมัติ (เฉพาะที่ยังไม่เลยวันที่)</small>
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">สถานที่รับติว</label>
+              <input type="text" id="location" class="tutor-form-input" placeholder="⏳ กำลังโหลด..." readonly />
+              <small class="subject-hint">📋 ดึงจากคลาสที่เปิดสอนอัตโนมัติ</small>
+            </div>
+
+            <div class="tutor-form-group">
+              <label class="tutor-form-label">สไตล์การติว</label>
+              <input type="text" id="style" class="tutor-form-input" placeholder="เช่น ตัวต่อตัว, กลุ่ม" />
+            </div>
+
+          </div>
+
+          <!-- ════ RIGHT ════ -->
+          <div class="tutor-right">
+            <div class="tutor-qr-section">
+              <div class="tutor-qr-label">QR CODE</div>
+              <div class="tutor-qr-container" id="qrCodeContainer">
+                <img id="qrCodeImage" class="tutor-qr-image" alt="QR Code" style="display:none">
+                <span id="qrCodePlaceholder" class="tutor-qr-placeholder">📱</span>
+              </div>
+              <input type="file" id="tutorQrCodeInput" accept="image/*" style="display:none">
+              <label for="tutorQrCodeInput" class="btn-tutor-qr-upload">
+                📤 อัปโหลด QR Code
+              </label>
+            </div>
+
+            <div class="tutor-actions">
+              <button class="btn-tutor-confirm" id="btnSave">💾 บันทึก</button>
+              <button class="btn-tutor-cancel" id="btnCancel">ยกเลิก</button>
+            </div>
+          </div>
+
+        </div><!-- end tutor-layout -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbwMOmsaq2NECQUU7NAB4dIbahNuch08FrB3HiEHL7BQHFNdjdX4WezhUb8m1jxafDUJ/exec";
+
+    /* ══ TOAST ══ */
+    let _toastTimer;
+    function showToast(msg, type = "success") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "show " + type;
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => { t.className = ""; }, 3000);
+    }
+
+    /* ══ LOGOUT ══ */
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    /* ══ INIT ══ */
+    document.addEventListener("DOMContentLoaded", () => {
+      setupImageUploadHandlers();
+      setupFacultyAutoSave();
+      loadTutorData();
+      loadTutorSubjects();
+      loadTutorClassInfo();
+
+      const sid = localStorage.getItem("studentId") || "";
+      if (sid) {
+        loadImagesFromDrive(sid);
+        loadTutorRating(sid);
+      } else {
+        loadSavedImages();
+      }
+
+      document.getElementById("btnSave").addEventListener("click", saveTutorData);
+      document.getElementById("btnCancel").addEventListener("click", () => history.back());
+    });
+
+    /* ══ โหลด วันเวลา + สถานที่ จาก Sheet "คลาส" ══ */
+    async function loadTutorClassInfo() {
+      const studentId     = localStorage.getItem("studentId") || "";
+      const availInput    = document.getElementById("availability");
+      const locationInput = document.getElementById("location");
+      if (!studentId) {
+        if (availInput)    availInput.value    = "ยังไม่มีข้อมูล";
+        if (locationInput) locationInput.value = "ยังไม่มีข้อมูล";
+        return;
+      }
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + "?action=getTutorClassInfo&studentId=" + encodeURIComponent(studentId));
+        const data = await res.json();
+        console.log("📅 getTutorClassInfo:", data);
+        if (data.status === "success") {
+          if (availInput)    availInput.value    = data.availability || "ยังไม่มีคลาสที่จะมาถึง";
+          if (locationInput) locationInput.value = data.location     || "ยังไม่มีข้อมูล";
+          localStorage.setItem("availability", data.availability || "");
+          localStorage.setItem("location",     data.location     || "");
+        } else {
+          if (availInput)    availInput.value    = localStorage.getItem("availability") || "ยังไม่มีข้อมูล";
+          if (locationInput) locationInput.value = localStorage.getItem("location")     || "ยังไม่มีข้อมูล";
+        }
+      } catch (err) {
+        console.error("❌ loadTutorClassInfo:", err);
+        if (availInput)    availInput.value    = localStorage.getItem("availability") || "ยังไม่มีข้อมูล";
+        if (locationInput) locationInput.value = localStorage.getItem("location")     || "ยังไม่มีข้อมูล";
+      }
+    }
+
+    /* ══ LOAD RATING ══ */
+    async function loadTutorRating(studentId) {
+      if (!studentId) return;
+      try {
+        const res = await fetch(APPS_SCRIPT_URL + "?action=getReviews&tutorId=" + encodeURIComponent(studentId));
+        const data = await res.json();
+        console.log("⭐ getReviews:", data);
+
+        if (data.status !== "success") { updateRatingDisplay(0, 0); return; }
+
+        const reviews = data.reviews || [];
+        const count = reviews.length;
+        if (count === 0) { updateRatingDisplay(0, 0); return; }
+
+        let sumContent = 0, sumTechnique = 0, sumPunctual = 0, sumValue = 0;
+        reviews.forEach(r => {
+          sumContent   += parseFloat(r["เนื้อหาเข้าใจง่าย"]) || 0;
+          sumTechnique += parseFloat(r["เทคนิคการสอน"])      || 0;
+          sumPunctual  += parseFloat(r["ตรงต่อเวลา"])         || 0;
+          sumValue     += parseFloat(r["ความคุ้มค่า"])        || 0;
+        });
+
+        const avgContent   = sumContent   / count;
+        const avgTechnique = sumTechnique / count;
+        const avgPunctual  = sumPunctual  / count;
+        const avgValue     = sumValue     / count;
+        const overall = (avgContent + avgTechnique + avgPunctual + avgValue) / 4;
+
+        updateRatingDisplay(overall, count);
+
+        const breakdown = document.getElementById("ratingBreakdown");
+        if (breakdown) breakdown.style.display = "block";
+
+        [avgContent, avgTechnique, avgPunctual, avgValue].forEach((v, i) => {
+          setTimeout(() => {
+            const bar = document.getElementById("rbBar" + i);
+            const lbl = document.getElementById("rbVal" + i);
+            if (bar) bar.style.width = (v / 5 * 100).toFixed(1) + "%";
+            if (lbl) lbl.textContent = v.toFixed(1);
+          }, 150 + i * 130);
+        });
+
+      } catch (err) {
+        console.error("❌ loadTutorRating:", err);
+        updateRatingDisplay(parseFloat(localStorage.getItem("rating") || "0"), 0);
+      }
+    }
+
+    /* ══ UPDATE RATING DISPLAY ══ */
+    function updateRatingDisplay(avg, count) {
+      const rounded = Math.round(avg * 10) / 10;
+      const full = Math.floor(rounded);
+      const half = (rounded - full) >= 0.5;
+
+      let starStr = "";
+      for (let i = 1; i <= 5; i++) {
+        if (i <= full) starStr += "⭐";
+        else if (i === full + 1 && half) starStr += "✨";
+        else starStr += "☆";
+      }
+      const starsEl = document.getElementById("ratingStars");
+      if (starsEl) starsEl.textContent = starStr;
+
+      const numEl = document.getElementById("ratingAvgNum");
+      if (numEl) numEl.textContent = rounded.toFixed(1);
+
+      const scoreEl = document.getElementById("reviewScore");
+      if (scoreEl) scoreEl.textContent = `คะแนนรีวิว: ⭐ ${rounded.toFixed(1)}`;
+
+      const countEl = document.getElementById("reviewCountLabel");
+      if (countEl) countEl.textContent = count > 0 ? `(${count} รีวิว)` : "(ยังไม่มีรีวิว)";
+
+      localStorage.setItem("rating", rounded.toString());
+    }
+
+    /* ══ IMAGE UPLOAD HANDLERS ══ */
+    function setupImageUploadHandlers() {
+      const profileInput = document.getElementById("tutorProfileImageInput");
+      if (profileInput) profileInput.addEventListener("change", handleProfileImageChange);
+
+      document.getElementById("avatarWrapper").addEventListener("click", () => {
+        document.getElementById("tutorProfileImageInput").click();
+      });
+
+      const qrInput = document.getElementById("tutorQrCodeInput");
+      if (qrInput) qrInput.addEventListener("change", handleQrCodeChange);
+    }
+
+    function handleProfileImageChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast("รูปภาพต้องไม่เกิน 2MB", "error"); return; }
+      if (!file.type.startsWith("image/")) { showToast("กรุณาเลือกไฟล์รูปภาพ", "error"); return; }
+      const r = new FileReader();
+      r.onload = ev => {
+        localStorage.setItem("tutorProfileImage", ev.target.result);
+        document.getElementById("tutorProfileImage").src = ev.target.result;
+        showToast("✓ เลือกรูปโปรไฟล์แล้ว (กด บันทึก เพื่ออัปโหลด)");
+      };
+      r.readAsDataURL(file);
+    }
+
+    function handleQrCodeChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast("รูป QR ต้องไม่เกิน 2MB", "error"); return; }
+      if (!file.type.startsWith("image/")) { showToast("กรุณาเลือกไฟล์รูปภาพ", "error"); return; }
+      const r = new FileReader();
+      r.onload = ev => {
+        localStorage.setItem("tutorQrCodeImage", ev.target.result);
+        const img = document.getElementById("qrCodeImage");
+        img.src = ev.target.result;
+        img.style.display = "block";
+        const ph = document.getElementById("qrCodePlaceholder");
+        if (ph) ph.style.display = "none";
+        showToast("✓ เลือก QR Code แล้ว (กด บันทึก เพื่ออัปโหลด)");
+      };
+      r.readAsDataURL(file);
+    }
+
+    function loadSavedImages() {
+      // ✅ ตรวจสถานะก่อน — แสดงรูปเฉพาะเมื่อ "อนุมัติ" เท่านั้น
+      const imgStatus = localStorage.getItem("imageStatus") || "";
+      const approved  = imgStatus === "อนุมัติ";
+
+      if (approved) {
+        const pImg = localStorage.getItem("profileImageUrl") || localStorage.getItem("tutorProfileImage");
+        if (pImg) document.getElementById("tutorProfileImage").src = pImg;
+
+        const qImg = localStorage.getItem("qrImageUrl") || localStorage.getItem("tutorQrCodeImage");
+        if (qImg) {
+          const img = document.getElementById("qrCodeImage");
+          img.src = qImg;
+          img.style.display = "block";
+          const ph = document.getElementById("qrCodePlaceholder");
+          if (ph) ph.style.display = "none";
+        }
+      }
+    }
+
+    /* ══ FACULTY AUTO-SAVE ══ */
+    function setupFacultyAutoSave() {
+      const el = document.getElementById("faculty");
+      if (!el) return;
+      el.addEventListener("change", async () => {
+        const faculty   = el.value;
+        const studentId = localStorage.getItem("studentId") || "";
+        if (!faculty || !studentId) return;
+        try {
+          const res = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },  // ✅ แก้จาก application/json
+            body: JSON.stringify({ action: "saveTutorFaculty", studentId, faculty })
+          });
+          const result = await res.json();
+          if (result.status === "success") {
+            localStorage.setItem("faculty", faculty);
+            showToast("✓ บันทึกคณะสำเร็จ");
+          }
+        } catch (err) {
+          console.error("บันทึกคณะล้มเหลว:", err);
+        }
+      });
+    }
+
+    /* ══ LOAD SUBJECTS ══ */
+    async function loadTutorSubjects() {
+      const studentId    = localStorage.getItem("studentId") || "";
+      const subjectsInput = document.getElementById("subjects");
+      const countBadge   = document.getElementById("subjectCount");
+      if (!studentId) {
+        if (subjectsInput) subjectsInput.value = "ยังไม่มีวิชา";
+        return;
+      }
+      if (subjectsInput) subjectsInput.value = "⏳ กำลังโหลด...";
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + "?action=getTutorSubjects&studentId=" + encodeURIComponent(studentId));
+        const data = await res.json();
+        console.log("📚 getTutorSubjects:", data);
+        if (data.status === "success") {
+          subjectsInput.value     = data.display || "ยังไม่มีวิชา";
+          countBadge.textContent  = data.count + " วิชา";
+          localStorage.setItem("subjects", data.display || "");
+        } else {
+          subjectsInput.value    = "ยังไม่มีวิชา";
+          countBadge.textContent = "0 วิชา";
+        }
+      } catch (err) {
+        console.error("❌ โหลดวิชาล้มเหลว:", err);
+        subjectsInput.value    = localStorage.getItem("subjects") || "ยังไม่มีวิชา";
+        countBadge.textContent = "- วิชา";
+      }
+    }
+
+    /* ══ LOAD PROFILE ══ */
+    function loadTutorData() {
+      const studentId = localStorage.getItem("studentId") || "";
+      document.getElementById("studentId").value          = studentId;
+      document.getElementById("displayStudentId").textContent = studentId || "รหัสนักศึกษา";
+      document.getElementById("displayName").textContent  = "⏳ กำลังโหลด...";
+      studentId ? fetchTutorDataFromSheet(studentId) : loadFromLocalStorage();
+    }
+
+    async function fetchTutorDataFromSheet(studentId) {
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + "?action=getTutor&studentId=" + encodeURIComponent(studentId));
+        const data = await res.json();
+        console.log("📥 getTutor:", data);
+        if (data.status === "success" && data.tutor) {
+          populateTutorForm(data.tutor);
+        } else {
+          loadFromLocalStorage();
+        }
+      } catch (err) {
+        console.error("❌ getTutor error:", err);
+        loadFromLocalStorage();
+      }
+    }
+
+    function loadFromLocalStorage() {
+      ["fullName", "faculty", "specialty", "availability", "location", "style"].forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = localStorage.getItem(k) || "";
+      });
+      document.getElementById("displayName").textContent = localStorage.getItem("fullName") || "ชื่อติวเตอร์";
+      updateRatingDisplay(parseFloat(localStorage.getItem("rating") || "0"), 0);
+    }
+
+    function populateTutorForm(tutor) {
+      console.log("🔍 populateTutorForm:", tutor);
+      const map = {
+        fullName:     tutor.fullName     || "",
+        studentId:    tutor.studentId    || "",
+        faculty:      tutor.faculty      || "",
+        specialty:    tutor.specialty    || "",
+        availability: tutor.availability || "",
+        location:     tutor.location     || "",
+        style:        tutor.style        || ""
+      };
+      Object.entries(map).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+      });
+      document.getElementById("displayName").textContent      = tutor.fullName  || "ชื่อติวเตอร์";
+      document.getElementById("displayStudentId").textContent = tutor.studentId || "รหัสนักศึกษา";
+      Object.entries(map).forEach(([k, v]) => localStorage.setItem(k, v));
+    }
+
+    /* ══ SAVE ══ */
+    async function saveTutorData() {
+      const studentId = document.getElementById("studentId").value.trim();
+      if (!studentId) {
+        showToast("⚠️ ไม่พบรหัสนักศึกษา กรุณาล็อกอินใหม่", "warning");
+        return;
+      }
+
+      const payload = {
+        action:       "saveTutor",
+        studentId,
+        fullName:     document.getElementById("fullName").value.trim(),
+        faculty:      document.getElementById("faculty").value,
+        specialty:    document.getElementById("specialty").value.trim(),
+        availability: document.getElementById("availability").value.trim(),
+        location:     document.getElementById("location").value.trim(),
+        style:        document.getElementById("style").value.trim()
+      };
+
+      Object.entries(payload).forEach(([k, v]) => { if (k !== "action") localStorage.setItem(k, v); });
+      document.getElementById("displayName").textContent = payload.fullName || "ชื่อติวเตอร์";
+
+      const btn = document.getElementById("btnSave");
+      btn.disabled    = true;
+      btn.textContent = "⏳ กำลังบันทึก...";
+
+      try {
+        // ── Step 1: บันทึกข้อมูลโปรไฟล์ ──
+        // ใช้ no-cors เพราะไม่ต้องอ่าน response
+        fetch(APPS_SCRIPT_URL, {
+          method:  "POST",
+          mode:    "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(payload)
+        });
+
+        // ── Step 2: อัปโหลดรูปไป Google Drive (ถ้ามี) ──
+        const profileFile = document.getElementById("tutorProfileImageInput")?.files[0];
+        const qrFile      = document.getElementById("tutorQrCodeInput")?.files[0];
+
+        if (profileFile || qrFile) {
+          btn.textContent = "⏳ กำลังอัปโหลดรูป...";
+
+          // ✅ helper แปลงไฟล์เป็น base64
+          const toBase64 = file => new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload  = () => res(r.result.split(",")[1]);
+            r.onerror = rej;
+            r.readAsDataURL(file);
+          });
+
+          const imgPayload = { action: "saveImages", studentId };
+          if (profileFile) {
+            imgPayload.profileImage     = await toBase64(profileFile);
+            imgPayload.profileImageType = profileFile.type;
+          }
+          if (qrFile) {
+            imgPayload.qrImage     = await toBase64(qrFile);
+            imgPayload.qrImageType = qrFile.type;
+          }
+
+          try {
+            // ✅ แก้หลัก: ต้องใช้ Content-Type: text/plain เท่านั้น
+            //    และ redirect: "follow" เพื่อรองรับ Apps Script redirect
+            const imgRes  = await fetch(APPS_SCRIPT_URL, {
+              method:   "POST",
+              redirect: "follow",
+              headers:  { "Content-Type": "text/plain" },
+              body:     JSON.stringify(imgPayload)
+            });
+            const imgData = await imgRes.json();
+            console.log("📸 saveImages response:", imgData);
+
+            if (imgData.status === "success") {
+              // ✅ รูปอัปโหลดสำเร็จ → ตั้งสถานะ "รออนุมัติ"
+              //    ยังไม่แสดงรูป จนกว่า Admin จะอนุมัติ
+              localStorage.setItem("imageStatus", "รออนุมัติ");
+              localStorage.removeItem("profileImageUrl");
+              localStorage.removeItem("qrImageUrl");
+              localStorage.removeItem("tutorProfileImage");
+              localStorage.removeItem("tutorQrCodeImage");
+
+              // รีเซ็ต UI กลับเป็น placeholder
+              const img = document.getElementById("qrCodeImage");
+              if (img) img.style.display = "none";
+              const ph = document.getElementById("qrCodePlaceholder");
+              if (ph) ph.style.display = "flex";
+
+              updateImageStatusBadge("รออนุมัติ");
+              showToast("✅ อัปโหลดรูปสำเร็จ! รอ Admin อนุมัติก่อนรูปจะแสดง");
+            } else {
+              showToast("⚠️ บันทึกสำเร็จ แต่อัปโหลดรูปไม่สำเร็จ: " + (imgData.message || ""), "warning");
+            }
+          } catch (imgErr) {
+            console.error("❌ upload image error:", imgErr);
+            showToast("⚠️ อัปโหลดรูปไม่สำเร็จ กรุณาลองใหม่", "warning");
+          }
+        } else {
+          showToast("✅ บันทึกข้อมูลสำเร็จ!");
+        }
+
+        setTimeout(() => window.location.href = "tutor-dashboard.html", 1800);
+
+      } catch (err) {
+        console.error("❌ Save error:", err);
+        showToast("⚠️ ไม่สามารถเชื่อมต่อ Sheets (บันทึก localStorage แล้ว)", "warning");
+        setTimeout(() => window.location.href = "tutor-dashboard.html", 1800);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = "💾 บันทึก";
+      }
+    }
+
+    /* ══ IMAGE STATUS BADGE ══ */
+    function updateImageStatusBadge(status) {
+      const badge = document.getElementById("imageStatusBadge");
+      if (!badge) return;
+      if (!status) { badge.style.display = "none"; return; }
+      badge.style.display = "inline-block";
+      if (status === "รออนุมัติ") {
+        badge.textContent = "🕐 รูปภาพ: รออนุมัติ";
+        badge.style.background = "#fff3cd";
+        badge.style.color = "#856404";
+        badge.style.border = "1px solid #ffc107";
+      } else if (status === "อนุมัติ") {
+        badge.textContent = "✅ รูปภาพ: อนุมัติแล้ว";
+        badge.style.background = "#d4edda";
+        badge.style.color = "#155724";
+        badge.style.border = "1px solid #28a745";
+      } else if (status === "ไม่อนุมัติ") {
+        badge.textContent = "❌ รูปภาพ: ไม่อนุมัติ";
+        badge.style.background = "#f8d7da";
+        badge.style.color = "#721c24";
+        badge.style.border = "1px solid #dc3545";
+      } else {
+        badge.textContent = "📷 รูปภาพ: " + status;
+        badge.style.background = "#e2e3e5";
+        badge.style.color = "#383d41";
+        badge.style.border = "1px solid #d6d8db";
+      }
+    }
+
+    /* ══ LOAD IMAGES จาก Sheet (base64) ══ */
+    async function loadImagesFromDrive(studentId) {
+      if (!studentId) return;
+      try {
+        const res  = await fetch(`${APPS_SCRIPT_URL}?action=getImages&studentId=${encodeURIComponent(studentId)}`);
+        const data = await res.json();
+        console.log("\u{1F5BC}\uFE0F getImages:", data);
+        if (data.status === "success") {
+          // ✅ ตรวจสถานะจาก Sheet ก่อนเสมอ
+          const imgStatus = data.imageStatus || data.memberStatus || "";
+          if (imgStatus) localStorage.setItem("imageStatus", imgStatus);
+          updateImageStatusBadge(imgStatus || localStorage.getItem("imageStatus") || "");
+
+          // ✅ แสดงรูปเฉพาะเมื่อสถานะ "อนุมัติ" เท่านั้น
+          const approved = imgStatus === "\u{0E2D}\u{0E19}\u{0E38}\u{0E21}\u{0E31}\u{0E15}\u{0E34}";
+
+          if (approved && data.profileImageUrl) {
+            const el = document.getElementById("tutorProfileImage");
+            if (el) el.src = data.profileImageUrl;
+            localStorage.setItem("profileImageUrl", data.profileImageUrl);
+          }
+
+          if (approved && data.qrImageUrl) {
+            const img = document.getElementById("qrCodeImage");
+            if (img) {
+              img.src           = data.qrImageUrl;
+              img.style.display = "block";
+            }
+            const ph = document.getElementById("qrCodePlaceholder");
+            if (ph) ph.style.display = "none";
+            localStorage.setItem("qrImageUrl", data.qrImageUrl);
+          }
+
+          // ถ้ายังไม่อนุมัติ รีเซ็ต UI ให้แสดง placeholder และล้าง cache
+          if (!approved) {
+            localStorage.removeItem("profileImageUrl");
+            localStorage.removeItem("qrImageUrl");
+            const img = document.getElementById("qrCodeImage");
+            if (img) img.style.display = "none";
+            const ph = document.getElementById("qrCodePlaceholder");
+            if (ph) ph.style.display = "flex";
+          }
+        } else {
+          updateImageStatusBadge(localStorage.getItem("imageStatus") || "");
+        }
+      } catch (err) {
+        console.warn("loadImagesFromDrive failed:", err);
+        updateImageStatusBadge(localStorage.getItem("imageStatus") || "");
+      }
+    }
+  </script>
+</body>
+
+</html>

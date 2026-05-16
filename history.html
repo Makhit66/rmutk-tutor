@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ประวัติการติว RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #f2f2f0; font-family: 'Noto Sans Thai', sans-serif; }
+    .page-wrap { padding-top: 64px; min-height: 100vh; }
+
+    .content-area {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 40px 60px;
+    }
+
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .btn-back {
+      width: 36px; height: 36px;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      font-size: 18px; font-weight: 700;
+      cursor: pointer; color: #444;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-back:hover { border-color: #C4A35A; color: #C4A35A; }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border: 2.5px solid #1a1a1a;
+      padding: 6px 18px;
+      border-radius: 10px;
+    }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background: #fff;
+      border: 1.5px solid #e5e3dc;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .filter-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .filter-bar input[type="text"],
+    .filter-bar select {
+      padding: 9px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      background: #fafaf8;
+      color: #1a1a1a;
+      appearance: none;
+      transition: border-color .15s;
+      cursor: pointer;
+    }
+    .filter-bar input[type="text"] { min-width: 220px; }
+    .filter-bar select { min-width: 160px; padding-right: 32px; }
+    .filter-bar input[type="text"]:focus,
+    .filter-bar select:focus {
+      outline: none;
+      border-color: #C4A35A;
+    }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: "▾";
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: #aaa; pointer-events: none; font-size: 12px;
+    }
+
+    /* ── Summary strip ── */
+    .summary-strip {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .summary-card {
+      background: #fff;
+      border: 1.5px solid #e5e3dc;
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .summary-card .s-num {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .summary-card .s-lbl {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px;
+    }
+    .summary-card.gold .s-num { color: #C4A35A; }
+
+    /* ── History list ── */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .history-card {
+      background: #fff;
+      border: 1.5px solid #e5e3dc;
+      border-radius: 14px;
+      padding: 18px 22px;
+      transition: border-color .15s;
+    }
+    .history-card:hover { border-color: #C4A35A; }
+
+    .hcard-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .hcard-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .hcard-subject {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-faculty {
+      background: #fff8ec;
+      color: #a07830;
+      border: 1px solid #f0d98a;
+    }
+    .badge-style {
+      background: #f0f4ff;
+      color: #3a5ccc;
+      border: 1px solid #c5d0f5;
+    }
+    .badge-past {
+      background: #f2f2f0;
+      color: #888;
+      border: 1px solid #ddd;
+    }
+
+    .hcard-date {
+      font-size: 12px;
+      color: #bbb;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hcard-row2 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hcard-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .hcard-info-item {
+      font-size: 13px;
+      color: #666;
+    }
+    .hcard-info-item span {
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    .rating-stars {
+      font-size: 15px;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rating-score-text {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .hcard-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #888;
+      border-top: 1px dashed #eee;
+      padding-top: 8px;
+    }
+
+    .btn-review {
+      padding: 8px 18px;
+      background: #fff;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #1a1a1a;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .btn-review:hover {
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .btn-review.reviewed {
+      border-color: #C4A35A;
+      color: #C4A35A;
+      cursor: default;
+    }
+    .btn-review.reviewed:hover {
+      background: #fff;
+      color: #C4A35A;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #bbb;
+      font-size: 15px;
+      display: none;
+    }
+    .empty-state .e-icon { font-size: 40px; margin-bottom: 12px; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #333; color: #fff;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; z-index: 9999;
+      opacity: 0; transition: all .35s ease;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #2e7d32; }
+
+    @media (max-width: 700px) {
+      .content-area { padding: 20px 16px 40px; }
+      .filter-bar { flex-direction: column; }
+      .filter-bar input[type="text"], .filter-bar select { min-width: unset; width: 100%; }
+      .hcard-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-badge">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    จับคู่ติวเตอร์ RMUTK
+  </a>
+  <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ══ TAB NAV ══ -->
+  <div style="background:#fff; border-bottom:2px solid #e5e3dc; display:flex; align-items:center; gap:0; padding:0 32px; position:sticky; top:64px; z-index:90;">
+    <a href="courses.html"  style="padding:14px 20px; font-size:13px; font-weight:500; color:#888; text-decoration:none; border-bottom:3px solid transparent; white-space:nowrap; transition:color .2s;">รายวิชา</a>
+    <a href="schedule.html" style="padding:14px 20px; font-size:13px; font-weight:500; color:#888; text-decoration:none; border-bottom:3px solid transparent; white-space:nowrap; transition:color .2s;">ตารางวัน</a>
+    <a href="student.html"  style="padding:14px 20px; font-size:13px; font-weight:500; color:#888; text-decoration:none; border-bottom:3px solid transparent; white-space:nowrap; transition:color .2s;">ดูติวเตอร์</a>
+    <a href="profile.html"  style="padding:14px 20px; font-size:13px; font-weight:500; color:#888; text-decoration:none; border-bottom:3px solid transparent; white-space:nowrap; transition:color .2s;">PROFILE</a>
+    <a href="history.html"  style="padding:14px 20px; font-size:13px; font-weight:600; color:#1a1a1a; text-decoration:none; border-bottom:3px solid #C4A35A; white-space:nowrap;">ประวัติ</a>
+  </div>
+
+  <!-- ─── LOGIN GATE ─── -->
+  <div id="loginGate" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 64px);gap:20px;text-align:center;padding:48px 24px;">
+    <div style="font-size:56px;line-height:1;">🔒</div>
+    <div style="font-size:22px;font-weight:700;color:#1a1a1a;">กรุณาเข้าสู่ระบบก่อน</div>
+    <div style="font-size:14px;color:#888;max-width:320px;line-height:1.7;">คุณต้องเข้าสู่ระบบเพื่อดูประวัติการเรียนของคุณ</div>
+    <a href="index.html" style="display:inline-block;padding:13px 36px;background:#1a1a1a;color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#C4A35A'" onmouseout="this.style.background='#1a1a1a'">ไปหน้าเข้าสู่ระบบ →</a>
+  </div>
+
+  <div class="content-area">
+
+    <!-- Title -->
+    <div class="page-title-row">
+      <div class="page-title">ประวัติการติว《HISTORY》</div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-strip" id="summaryStrip">
+      <div class="summary-card">
+        <div class="s-num" id="sumTotal">0</div>
+        <div class="s-lbl">คลาสทั้งหมด</div>
+      </div>
+      <div class="summary-card gold">
+        <div class="s-num" id="sumRated">0</div>
+        <div class="s-lbl">ได้รับรีวิวแล้ว</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-num" id="sumAvgRating">-</div>
+        <div class="s-lbl">คะแนนเฉลี่ย</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-num" id="sumSubjects">0</div>
+        <div class="s-lbl">วิชาที่สอน</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group" style="flex:1; min-width:200px;">
+        <div class="filter-lbl">ค้นหา</div>
+        <input type="text" id="searchInput" placeholder="🔍  ชื่อวิชา, ติวเตอร์, คณะ..." oninput="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">คณะ</div>
+        <div class="select-wrap">
+          <select id="filterFaculty" onchange="applyFilters()">
+            <option value="">ทั้งหมด</option>
+            <option value="คณะวิศวกรรมศาสตร์">วิศวกรรมศาสตร์</option>
+            <option value="คณะเทคโนโลยีอุตสาหกรรม">เทคโนโลยีอุตสาหกรรม</option>
+            <option value="คณะสถาปัตยกรรมศาสตร์">สถาปัตยกรรมศาสตร์</option>
+            <option value="คณะวิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+            <option value="คณะบริหารธุรกิจ">บริหารธุรกิจ</option>
+            <option value="คณะศิลปศาสตร์">ศิลปศาสตร์</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">สไตล์</div>
+        <div class="select-wrap">
+          <select id="filterStyle" onchange="applyFilters()">
+            <option value="">ทั้งหมด</option>
+            <option value="ตัวต่อตัว">ตัวต่อตัว</option>
+            <option value="กลุ่ม">กลุ่ม</option>
+            <option value="ออนไลน์">ออนไลน์</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-lbl">คะแนน</div>
+        <div class="select-wrap">
+          <select id="filterRating" onchange="applyFilters()">
+            <option value="">ทั้งหมด</option>
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4+)</option>
+            <option value="3">⭐⭐⭐ (3+)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="history-list" id="historyList"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="e-icon">📭</div>
+      ไม่พบประวัติการติวที่ตรงกับเงื่อนไข
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+  let allRecords = [];
+
+  let _tt;
+  function showToast(msg, type = "success") {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "show " + type;
+    clearTimeout(_tt);
+    _tt = setTimeout(() => { t.className = ""; }, 3000);
+  }
+
+  function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+  function renderStars(r) {
+    const f = Math.floor(r);
+    return "⭐".repeat(f) + "☆".repeat(5 - f);
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString("th-TH", { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  /* ── เปิดหน้า tutor_review พร้อมส่งข้อมูลผ่าน localStorage ── */
+  function openReview(rec) {
+    localStorage.setItem("reviewTutorId",       rec.tutorId      || "");
+    localStorage.setItem("reviewTutorName",     rec.tutorName    || "");
+    localStorage.setItem("reviewSubjects",      rec.subjectName  || "");
+    localStorage.setItem("reviewStyle",         rec.style        || "");
+    localStorage.setItem("reviewFaculty",       rec.faculty      || "");
+    localStorage.setItem("reviewSpecialty",     rec.specialty    || "");
+    localStorage.setItem("reviewLocation",      rec.location     || "");
+    localStorage.setItem("reviewRowIndex",      rec.rowIndex     || "");
+    window.location.href = "tutor_review.html";
+  }
+
+  function buildCard(rec) {
+    const rated = rec.rating && parseFloat(rec.rating) > 0;
+    const r     = rated ? parseFloat(rec.rating) : 0;
+    const reviewedKey   = `reviewed_${rec.rowIndex}`;
+    const localReviewed = localStorage.getItem(reviewedKey) === "1";
+    const isReviewed    = rated || localReviewed;
+
+    const priceInfo = rec.pricePerHour
+      ? `฿${rec.pricePerHour}/ชม. × ${rec.hours || '-'} ชม. = ฿${rec.totalPrice || '-'}`
+      : "";
+
+    const card = document.createElement("div");
+    card.className = "history-card";
+    card.dataset.id = rec.rowIndex || "";
+
+    card.innerHTML = `
+      <div class="hcard-top">
+        <div class="hcard-meta">
+          <span class="hcard-subject">${rec.subjectName || 'ไม่ระบุวิชา'}</span>
+          ${rec.faculty ? `<span class="badge badge-faculty">${rec.faculty}</span>` : ''}
+          ${rec.style   ? `<span class="badge badge-style">${rec.style}</span>`     : ''}
+          <span class="badge badge-past">📅 ผ่านไปแล้ว</span>
+        </div>
+        <div class="hcard-date">🗓 ${formatDate(rec.sessionDate)}</div>
+      </div>
+      <div class="hcard-row2">
+        <div class="hcard-info">
+          <div class="hcard-info-item">ติวเตอร์: <span>${rec.tutorName || '-'}</span></div>
+          ${rec.specialty ? `<div class="hcard-info-item">เอก: <span>${rec.specialty}</span></div>` : ''}
+          <div class="hcard-info-item">สถานที่: <span>${rec.location || '-'}</span></div>
+          ${priceInfo ? `<div class="hcard-info-item">ค่าติว: <span>${priceInfo}</span></div>` : ''}
+        </div>
+        <div class="rating-stars">
+          ${isReviewed && rated ? renderStars(r) : '☆☆☆☆☆'}
+          <span class="rating-score-text">${isReviewed && rated ? r.toFixed(1) : 'ยังไม่มีคะแนน'}</span>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+        <button class="btn-review ${isReviewed ? 'reviewed' : ''}" data-row="${rec.rowIndex}">
+          ${isReviewed ? '✓ รีวิวแล้ว' : 'รีวิวติวเตอร์'}
+        </button>
+      </div>
+    `;
+
+    /* ผูก event listener ที่ปุ่ม — ไม่ใช้ inline onclick เพื่อหลีกเลี่ยงปัญหา escaping */
+    const btn = card.querySelector(".btn-review");
+    if (!isReviewed) {
+      btn.addEventListener("click", () => {
+        /* บันทึกสถานะรีวิวใน localStorage */
+        localStorage.setItem(`reviewed_${rec.rowIndex}`, "1");
+        /* ส่งข้อมูลติวเตอร์แล้วไปหน้า tutor_review */
+        openReview(rec);
+      });
+    }
+
+    return card;
+  }
+
+  function applyFilters() {
+    const q       = document.getElementById("searchInput").value.toLowerCase();
+    const faculty = document.getElementById("filterFaculty").value;
+    const style   = document.getElementById("filterStyle").value;
+    const minRat  = parseFloat(document.getElementById("filterRating").value) || 0;
+
+    const filtered = allRecords.filter(r => {
+      const text = `${r.subjectName} ${r.tutorName} ${r.faculty} ${r.specialty} ${r.location}`.toLowerCase();
+      if (q && !text.includes(q)) return false;
+      if (faculty && r.faculty !== faculty) return false;
+      if (style && r.style !== style) return false;
+      if (minRat && (parseFloat(r.rating) || 0) < minRat) return false;
+      return true;
+    });
+
+    const list  = document.getElementById("historyList");
+    const empty = document.getElementById("emptyState");
+    list.innerHTML = "";
+
+    if (filtered.length === 0) {
+      empty.style.display = "block";
+    } else {
+      filtered.forEach(rec => list.appendChild(buildCard(rec)));
+      empty.style.display = "none";
+    }
+  }
+
+  function updateSummary() {
+    const total    = allRecords.length;
+    const rated    = allRecords.filter(r => r.rating && parseFloat(r.rating) > 0);
+    const avgR     = rated.length
+      ? (rated.reduce((s, r) => s + parseFloat(r.rating), 0) / rated.length).toFixed(1)
+      : "-";
+    const subjects = [...new Set(allRecords.map(r => r.subjectName).filter(Boolean))].length;
+
+    document.getElementById("sumTotal").textContent    = total;
+    document.getElementById("sumRated").textContent    = rated.length;
+    document.getElementById("sumAvgRating").textContent = avgR;
+    document.getElementById("sumSubjects").textContent  = subjects;
+  }
+
+  /* ── แปลง booking → record format ── */
+  function bookingToRecord(b) {
+    return {
+      id:          b.rowIndex,
+      rowIndex:    b.rowIndex,
+      subjectName: b.subjects    || "ไม่ระบุวิชา",
+      tutorName:   b.tutorName   || "-",
+      tutorId:     b.tutorId     || "",
+      location:    b.location    || "-",
+      sessionDate: b.dateTime    || "",
+      rating:      b.rating      || "0",
+      style:       b.style       || "",
+      faculty:     b.faculty     || "",
+      specialty:   b.specialty   || "",
+      pricePerHour: b.pricePerHour || "",
+      hours:       b.hours       || "",
+      totalPrice:  b.totalPrice  || "",
+      description: ""
+    };
+  }
+
+  function isPast(dateTimeStr) {
+    if (!dateTimeStr) return false;
+    const d = new Date(dateTimeStr);
+    if (isNaN(d.getTime())) {
+      const m = dateTimeStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+      if (m) {
+        const year = parseInt(m[3]) > 2400 ? parseInt(m[3]) - 543 : parseInt(m[3]);
+        const parsed = new Date(`${year}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`);
+        if (!isNaN(parsed.getTime())) return parsed < new Date();
+      }
+      return false;
+    }
+    return d < new Date();
+  }
+
+  async function loadHistory() {
+    const studentId = localStorage.getItem("studentId") || "";
+    const role      = localStorage.getItem("role") || "นักเรียน";
+    const listEl    = document.getElementById("historyList");
+    const emptyEl   = document.getElementById("emptyState");
+
+    listEl.innerHTML = `<div style="text-align:center;padding:40px;color:#bbb;font-size:14px;">⏳ กำลังโหลด...</div>`;
+    emptyEl.style.display = "none";
+
+    if (!studentId) {
+      document.getElementById("historyList").innerHTML = "";
+      document.getElementById("loginGate").style.display = "flex";
+      return;
+    }
+
+    const idParam = role === "ติวเตอร์"
+      ? `tutorId=${encodeURIComponent(studentId)}`
+      : `studentId=${encodeURIComponent(studentId)}`;
+
+    try {
+      const res  = await fetch(`${APPS_SCRIPT_URL}?action=getBookings&${idParam}`);
+      const data = await res.json();
+
+      if (data.status === "success" && Array.isArray(data.bookings)) {
+        const past = data.bookings.filter(b =>
+          String(b.status).trim() === "ยืนยัน" && isPast(b.dateTime)
+        );
+        allRecords = past.length > 0 ? past.map(bookingToRecord) : [];
+      } else {
+        allRecords = [];
+      }
+    } catch {
+      loadMockData();
+    }
+
+    updateSummary();
+    applyFilters();
+  }
+
+  function loadMockData() {
+    const today = new Date();
+    function pastDate(daysAgo, hr = 15) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - daysAgo);
+      d.setHours(hr, 0, 0, 0);
+      return d.toISOString();
+    }
+    allRecords = [
+      {
+        id: "2", rowIndex: 2, subjectName: "แคลคูลัส 1", faculty: "คณะวิศวกรรมศาสตร์",
+        tutorName: "สมชาย ใจดี", tutorId: "64010001", specialty: "วิศวกรรมไฟฟ้า",
+        style: "ตัวต่อตัว", location: "ห้องสมุดกลาง",
+        sessionDate: pastDate(5), rating: "4",
+        pricePerHour: "200", hours: "2", totalPrice: "400", description: ""
+      },
+      {
+        id: "3", rowIndex: 3, subjectName: "ฟิสิกส์ทั่วไป", faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
+        tutorName: "วิภา รักเรียน", tutorId: "64010002", specialty: "ฟิสิกส์",
+        style: "กลุ่ม", location: "อาคาร B ห้อง 201",
+        sessionDate: pastDate(12), rating: "5",
+        pricePerHour: "150", hours: "3", totalPrice: "450", description: ""
+      },
+      {
+        id: "4", rowIndex: 4, subjectName: "โปรแกรมมิ่งเบื้องต้น", faculty: "คณะวิศวกรรมศาสตร์",
+        tutorName: "ธนกร โค้ดเก่ง", tutorId: "64010003", specialty: "วิศวกรรมคอมพิวเตอร์",
+        style: "ออนไลน์", location: "Google Meet",
+        sessionDate: pastDate(20), rating: "0",
+        pricePerHour: "180", hours: "2", totalPrice: "360", description: ""
+      },
+    ];
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("studentId")) document.getElementById("logoutBtn").style.display = "";
+    loadHistory();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ตารางวัน RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .schedule-container { min-height: 100vh; padding-top: 64px; }
+
+    .schedule-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky; top: 64px; z-index: 50;
+    }
+
+    .schedule-tabs {
+      display: flex; gap: 0; padding: 0 48px;
+      height: 60px; align-items: center;
+      max-width: 1400px; margin: 0 auto;
+    }
+
+    .schedule-tab {
+      padding: 8px 24px;
+      border: 2px solid transparent;
+      border-bottom: 3px solid transparent;
+      cursor: pointer; font-size: 14px; font-weight: 500;
+      color: var(--gray-600); background: none;
+      transition: all var(--transition);
+      border-radius: 8px 8px 0 0;
+      text-decoration: none; font-family: inherit;
+    }
+    .schedule-tab:hover { color: var(--black); background: var(--gray-100); }
+    .schedule-tab.active {
+      color: var(--black);
+      border-color: var(--gold);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .search-filter-section {
+      background: var(--white);
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .search-filter-wrapper {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+    }
+
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 12px; font-weight: 500; color: var(--gray-600); letter-spacing: 0.03em; }
+
+    .filter-select, .search-bar {
+      padding: 10px 14px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      font-family: inherit; font-size: 14px;
+      background: var(--white); cursor: pointer;
+      transition: border-color var(--transition);
+      min-width: 140px;
+    }
+    .filter-select:focus, .search-bar:focus { outline: none; border-color: var(--black); }
+    .search-bar::placeholder { color: var(--gray-400); }
+
+    .week-nav { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .week-btn {
+      width: 34px; height: 34px;
+      border: 2px solid var(--gray-200); border-radius: 8px;
+      background: var(--white); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #555; transition: border-color 0.15s;
+    }
+    .week-btn:hover { border-color: #C4A35A; color: #C4A35A; }
+    .week-label { font-size: 13px; font-weight: 600; color: #333; white-space: nowrap; }
+    .btn-today {
+      padding: 8px 16px; background: #1a1a1a; color: #fff;
+      border: none; border-radius: 8px;
+      font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .btn-today:hover { background: #333; }
+
+    .debug-panel {
+      max-width: 1400px; margin: 0 auto 0;
+      padding: 12px 48px;
+      background: #fffbf0; border-bottom: 1px solid #f0d98a; display: none;
+    }
+    .debug-panel.show { display: block; }
+    .debug-title { font-size: 12px; font-weight: 700; color: #a07830; margin-bottom: 6px; }
+    .debug-list {
+      font-size: 11px; color: #555;
+      max-height: 120px; overflow-y: auto;
+      font-family: monospace; line-height: 1.6;
+    }
+
+    .status-bar {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: #999; padding: 10px 48px;
+    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+    .status-dot.loading { background: #f59e0b; animation: blink 1s infinite; }
+    .status-dot.error   { background: #ef4444; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .schedule-section { padding: 24px 48px 60px; background: var(--white); }
+    .schedule-wrapper { max-width: 1400px; margin: 0 auto; }
+
+    .schedule-table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      table-layout: fixed;
+    }
+
+    .schedule-table th {
+      background: var(--gray-100);
+      border-bottom: 2px solid var(--gray-200);
+      padding: 14px 12px; text-align: center;
+      font-size: 13px; font-weight: 600; color: var(--black);
+    }
+    .schedule-table th:first-child { width: 90px; }
+    .schedule-table th.today-col   { background: #fffbf0; color: #C4A35A; }
+
+    .schedule-table td {
+      padding: 12px; border-bottom: 1px solid var(--gray-200);
+      font-size: 13px; color: var(--gray-600); vertical-align: top;
+    }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .schedule-table tbody tr:hover   { background: #fafaf6; }
+
+    .time-cell {
+      font-weight: 600; color: var(--black);
+      text-align: center; background: var(--gray-100);
+      font-size: 12px; white-space: nowrap;
+    }
+    .today-col { background: #fffdf5 !important; }
+
+    .class-card {
+      background: #fef9ee;
+      border: 1.5px solid #f0d98a;
+      border-left: 4px solid #C4A35A;
+      border-radius: 8px; padding: 9px 11px; margin-bottom: 5px;
+      transition: box-shadow 0.15s; cursor: pointer;
+    }
+    .class-card:last-child { margin-bottom: 0; }
+    .class-card:hover { box-shadow: 0 2px 8px rgba(196,163,90,0.25); }
+
+    .schedule-course-name  { font-weight: 700; color: #1a1a1a; font-size: 13px; margin-bottom: 3px; }
+    .schedule-course-room  { font-size: 11px; color: #888; margin-bottom: 2px; }
+    .schedule-course-tutor { font-size: 11px; color: #a07830; font-weight: 500; }
+    .schedule-course-time  { font-size: 10px; color: #bbb; margin-top: 3px; }
+
+    .table-msg td { text-align: center; color: #bbb; padding: 56px; font-size: 14px; }
+
+    .all-bookings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-top: 4px;
+    }
+
+    .booking-full-card {
+      background: #fff; border: 1.5px solid #e5e5e5;
+      border-left: 4px solid #C4A35A; border-radius: 10px;
+      padding: 14px 16px; transition: box-shadow 0.15s;
+    }
+    .booking-full-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .bfc-subject { font-weight: 700; color: #1a1a1a; font-size: 14px; margin-bottom: 6px; }
+    .bfc-row { font-size: 12px; color: #666; margin-bottom: 3px; }
+    .bfc-row span { color: #333; font-weight: 500; }
+    .bfc-status {
+      display: inline-block; margin-top: 8px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 600;
+      background: #dcfce7; color: #16a34a;
+    }
+
+    .schedule-legend {
+      display: flex; gap: 24px; margin-top: 24px;
+      justify-content: center; flex-wrap: wrap;
+      padding: 16px 20px; background: var(--gray-100);
+      border-radius: var(--radius-lg);
+      font-size: 13px; color: var(--gray-600);
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-color { width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--gray-200); }
+    .legend-color.confirmed { background: linear-gradient(135deg,#fef9ee,#fde68a); }
+
+    .view-toggle { display: flex; gap: 8px; margin-left: 12px; }
+    .toggle-btn {
+      padding: 8px 14px; border: 2px solid var(--gray-200);
+      border-radius: 8px; background: var(--white);
+      font-family: inherit; font-size: 12px; font-weight: 500;
+      color: #555; cursor: pointer; transition: all 0.15s;
+    }
+    .toggle-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+    @media (max-width: 1024px) {
+      .schedule-tabs, .search-filter-section,
+      .schedule-section, .status-bar, .debug-panel { padding-left: 24px; padding-right: 24px; }
+    }
+    @media (max-width: 768px) {
+      .schedule-tabs { overflow-x: auto; padding: 0 16px; }
+      .search-filter-wrapper { flex-direction: column; gap: 12px; }
+      .week-nav, .view-toggle { margin-left: 0; }
+      .schedule-section, .status-bar { padding-left: 16px; padding-right: 16px; }
+      .schedule-table th, .schedule-table td { padding: 8px 6px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+  </nav>
+
+  <div class="schedule-container">
+
+    <div class="schedule-header">
+      <div class="schedule-tabs">
+        <a href="courses.html"  class="schedule-tab">รายวิชา</a>
+        <a href="schedule.html" class="schedule-tab active">ตารางวัน</a>
+        <a href="student.html"  class="schedule-tab">ดูติวเตอร์</a>
+        <a href="profile.html"  class="schedule-tab">PROFILE</a>
+        <a href="history.html"  class="schedule-tab">ประวัติ</a>
+      </div>
+    </div>
+
+    <div class="search-filter-section">
+      <div class="search-filter-wrapper">
+
+        <div class="filter-group">
+          <label class="filter-label">ค้นหาวิชา / ติวเตอร์</label>
+          <input type="text" class="search-bar" id="searchInput"
+                 placeholder="🔍 พิมพ์เพื่อค้นหา..." oninput="applyFilters()" />
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">วิชา</label>
+          <select class="filter-select" id="filterSubject" onchange="applyFilters()">
+            <option value="">-- ทั้งหมด --</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">ติวเตอร์</label>
+          <select class="filter-select" id="filterTutor" onchange="applyFilters()">
+            <option value="">-- ทั้งหมด --</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">มุมมอง</label>
+          <div class="view-toggle">
+            <button class="toggle-btn active" id="btnWeek" onclick="setView('week')">📅 ตาราง</button>
+            <button class="toggle-btn"        id="btnAll"  onclick="setView('all')">📋 ทั้งหมด</button>
+          </div>
+        </div>
+
+        <div class="week-nav" id="weekNavArea">
+          <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+          <span class="week-label" id="weekLabel">—</span>
+          <button class="week-btn" onclick="changeWeek(1)">›</button>
+          <button class="btn-today" onclick="goToday()">สัปดาห์นี้</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="debug-panel" id="debugPanel">
+      <div class="debug-title">🔍 ข้อมูล Debug</div>
+      <div class="debug-list" id="debugList"></div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot loading" id="statusDot"></div>
+      <span id="statusText">กำลังโหลดข้อมูล...</span>
+      <span style="margin-left:auto;font-size:11px;color:#ccc;cursor:pointer;"
+            onclick="toggleDebug()">🐛 debug</span>
+    </div>
+
+    <!-- ─── LOGIN GATE ─── -->
+    <div id="loginGate" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 64px);gap:20px;text-align:center;padding:48px 24px;">
+      <div style="font-size:56px;line-height:1;">🔒</div>
+      <div style="font-size:22px;font-weight:700;color:#1a1a1a;">กรุณาเข้าสู่ระบบก่อน</div>
+      <div style="font-size:14px;color:#888;max-width:320px;line-height:1.7;">คุณต้องเข้าสู่ระบบเพื่อดูตารางเรียนของคุณ</div>
+      <a href="index.html" style="display:inline-block;padding:13px 36px;background:#1a1a1a;color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='#C4A35A'" onmouseout="this.style.background='#1a1a1a'">ไปหน้าเข้าสู่ระบบ →</a>
+    </div>
+
+    <div class="schedule-section">
+      <div class="schedule-wrapper">
+
+        <div id="weekView">
+          <table class="schedule-table">
+            <thead>
+              <tr id="tableHead">
+                <th>เวลา</th>
+                <th>จันทร์</th><th>อังคาร</th><th>พุธ</th>
+                <th>พฤหัสบดี</th><th>ศุกร์</th><th>เสาร์</th><th>อาทิตย์</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr class="table-msg"><td colspan="8">⏳ กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="allView" style="display:none;">
+          <div class="all-bookings-grid" id="allGrid"></div>
+        </div>
+
+        <div class="schedule-legend" id="legendArea">
+          <div class="legend-item">
+            <div class="legend-color confirmed"></div>
+            <span>การจองที่ยืนยันแล้ว</span>
+          </div>
+          <div class="legend-item" style="color:#ccc;">
+            <span id="legendNote">แสดงเฉพาะสัปดาห์ที่เลือก · เฉพาะสถานะ "ยืนยัน"</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+
+    const DAY_TH   = ["จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์","อาทิตย์"];
+    const MON_TH   = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
+                      "ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    const ALL_SLOTS = ["08:00","09:00","10:00","11:00","12:00","13:00",
+                       "14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+
+    let weekOffset  = 0;
+    let allBookings = [];
+    let rawBookings = [];
+    let filtered    = [];
+    let currentView = "week";
+    let debugOpen   = false;
+
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const studentId = localStorage.getItem("studentId") || "";
+      if (!studentId) {
+        document.getElementById("loginGate").style.display = "flex";
+        return;
+      }
+      document.getElementById("logoutBtn").style.display = "";
+      renderHeader();
+      loadBookings();
+    });
+
+    /* ── VIEW TOGGLE ── */
+    function setView(v) {
+      currentView = v;
+      document.getElementById("btnWeek").classList.toggle("active", v === "week");
+      document.getElementById("btnAll").classList.toggle("active",  v === "all");
+      document.getElementById("weekView").style.display    = v === "week" ? "" : "none";
+      document.getElementById("allView").style.display     = v === "all"  ? "" : "none";
+      document.getElementById("weekNavArea").style.display = v === "week" ? "" : "none";
+      document.getElementById("legendNote").textContent =
+        v === "week"
+          ? 'แสดงเฉพาะสัปดาห์ที่เลือก · เฉพาะสถานะ "ยืนยัน"'
+          : 'แสดงทุกการจอง · เฉพาะสถานะ "ยืนยัน"';
+      if (v === "week") renderTable();
+      else renderAllCards();
+    }
+
+    function toggleDebug() {
+      debugOpen = !debugOpen;
+      document.getElementById("debugPanel").classList.toggle("show", debugOpen);
+    }
+
+    function updateDebug() {
+      const list = document.getElementById("debugList");
+      if (!rawBookings.length) { list.innerHTML = "<div>ไม่มีข้อมูล</div>"; return; }
+      list.innerHTML = rawBookings.map((b, i) => {
+        const parsed = parseDate(b.dateTime);
+        return `[${i+1}] status="${b.status}" | dateTime="${b.dateTime}" → ${parsed ? parsed.toLocaleString("th-TH") : "❌ null"} | tutor=${b.tutorName} | subj=${b.subjects}`;
+      }).join("<br>");
+    }
+
+    /* ── DATE HELPERS ── */
+    function getMonday(offset = 0) {
+      const t    = new Date();
+      const d    = t.getDay();
+      const diff = d === 0 ? -6 : 1 - d;
+      const m    = new Date(t);
+      m.setDate(t.getDate() + diff + offset * 7);
+      m.setHours(0, 0, 0, 0);
+      return m;
+    }
+
+    function getWeekDays(monday) {
+      return Array.from({length: 7}, (_, i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        return d;
+      });
+    }
+
+    function isToday(d) {
+      const t = new Date();
+      return d.getDate()     === t.getDate()     &&
+             d.getMonth()    === t.getMonth()    &&
+             d.getFullYear() === t.getFullYear();
+    }
+
+    function fmt(d) { return `${d.getDate()} ${MON_TH[d.getMonth()]}`; }
+
+    function weekLabel(days) {
+      return `${fmt(days[0])} – ${fmt(days[6])} ${days[6].getFullYear() + 543}`;
+    }
+
+    function parseDate(str) {
+      if (!str || str === "undefined" || str === "null") return null;
+      str = str.trim();
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(str)) {
+        const d = new Date(str); return isNaN(d) ? null : d;
+      }
+      const m2 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+      if (m2) {
+        let y = parseInt(m2[3]); if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m2[2])-1, parseInt(m2[1]), parseInt(m2[4]), parseInt(m2[5]));
+      }
+      const m3 = str.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})/);
+      if (m3) {
+        let y = parseInt(m3[1]); if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m3[2])-1, parseInt(m3[3]), parseInt(m3[4]), parseInt(m3[5]));
+      }
+      const m4 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m4) {
+        let y = parseInt(m4[3]); if (y > 2500) y -= 543;
+        return new Date(y, parseInt(m4[2])-1, parseInt(m4[1]), 8, 0);
+      }
+      const fallback = new Date(str);
+      return isNaN(fallback) ? null : fallback;
+    }
+
+    function getSlot(date) {
+      const total = date.getHours() * 60 + date.getMinutes();
+      for (let i = ALL_SLOTS.length - 1; i >= 0; i--) {
+        const [h, m] = ALL_SLOTS[i].split(":").map(Number);
+        if (total >= h * 60) return ALL_SLOTS[i];
+      }
+      return ALL_SLOTS[0];
+    }
+
+    function slotEnd(slot) {
+      const [h] = slot.split(":").map(Number);
+      return `${String(h + 1).padStart(2, "0")}:00`;
+    }
+
+    /* ════════════════════════════════════════
+       DEDUPLICATION
+       key = subjects + tutorName + dateTime (ตัด วินาที ออก)
+       ถ้าซ้ำกัน → เก็บแค่รายการแรก
+    ════════════════════════════════════════ */
+    function deduplicateBookings(bookings) {
+      const seen = new Set();
+      return bookings.filter(b => {
+        // normalize dateTime เอาแค่ วัน+เวลา (ไม่เอาวินาที)
+        const dt    = parseDate(b.dateTime);
+        const dtKey = dt
+          ? `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}-${dt.getHours()}-${dt.getMinutes()}`
+          : (b.dateTime || "");
+
+        const key = [
+          (b.subjects  || "").trim().toLowerCase(),
+          (b.tutorName || "").trim().toLowerCase(),
+          dtKey
+        ].join("|");
+
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    /* ── LOAD BOOKINGS ── */
+    async function loadBookings() {
+      setStatus("loading", "กำลังโหลดข้อมูล...");
+      try {
+        const res  = await fetch(`${APPS_SCRIPT_URL}?action=getBookings`);
+        const data = await res.json();
+        if (data.status !== "success") throw new Error(data.message || "API Error");
+
+        rawBookings = data.bookings || [];
+
+        // กรองเฉพาะ "ยืนยัน" แล้ว dedup
+        const confirmed = rawBookings.filter(b =>
+          String(b.status || "").trim() === "ยืนยัน"
+        );
+        allBookings = deduplicateBookings(confirmed);
+
+        const dupCount = confirmed.length - allBookings.length;
+        updateDebug();
+        buildFilters(allBookings);
+
+        let msg = `โหลดสำเร็จ — พบการจองที่ยืนยันแล้ว ${allBookings.length} รายการ`;
+        if (dupCount > 0) msg += ` (ตัดซ้ำออก ${dupCount} รายการ)`;
+        if (allBookings.length === 0) msg = `โหลดสำเร็จ — ยังไม่มีการจองที่ยืนยัน (raw: ${rawBookings.length})`;
+        setStatus("ok", msg);
+        applyFilters();
+
+      } catch (err) {
+        setStatus("error", "โหลดไม่สำเร็จ: " + err.message);
+        document.getElementById("tableBody").innerHTML =
+          `<tr class="table-msg"><td colspan="8">❌ ไม่สามารถโหลดข้อมูลได้</td></tr>`;
+      }
+    }
+
+    /* ── BUILD FILTERS ── */
+    function buildFilters(bookings) {
+      const subjects = [...new Set(bookings.map(b => b.subjects).filter(Boolean))].sort();
+      const tutors   = [...new Set(bookings.map(b => b.tutorName).filter(Boolean))].sort();
+
+      const subSel = document.getElementById("filterSubject");
+      subSel.innerHTML = '<option value="">-- ทั้งหมด --</option>';
+      subjects.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s; subSel.appendChild(o); });
+
+      const tutSel = document.getElementById("filterTutor");
+      tutSel.innerHTML = '<option value="">-- ทั้งหมด --</option>';
+      tutors.forEach(t => { const o = document.createElement("option"); o.value = t; o.textContent = t; tutSel.appendChild(o); });
+    }
+
+    /* ── APPLY FILTERS ── */
+    function applyFilters() {
+      const q    = document.getElementById("searchInput").value.toLowerCase();
+      const subj = document.getElementById("filterSubject").value;
+      const tut  = document.getElementById("filterTutor").value;
+
+      filtered = allBookings.filter(b => {
+        const matchQ = !q ||
+          (b.subjects  || "").toLowerCase().includes(q) ||
+          (b.tutorName || "").toLowerCase().includes(q) ||
+          (b.location  || "").toLowerCase().includes(q);
+        const matchS = !subj || b.subjects  === subj;
+        const matchT = !tut  || b.tutorName === tut;
+        return matchQ && matchS && matchT;
+      });
+
+      if (currentView === "week") renderTable();
+      else renderAllCards();
+    }
+
+    /* ── WEEK NAV ── */
+    function changeWeek(d) { weekOffset += d; renderHeader(); renderTable(); }
+    function goToday()     { weekOffset  = 0; renderHeader(); renderTable(); }
+
+    function renderHeader() {
+      const monday = getMonday(weekOffset);
+      const days   = getWeekDays(monday);
+      document.getElementById("weekLabel").textContent = weekLabel(days);
+      const head = document.getElementById("tableHead");
+      head.innerHTML = `<th>เวลา</th>` + days.map((d, i) => `
+        <th class="${isToday(d) ? "today-col" : ""}">
+          ${DAY_TH[i]}
+          <div style="font-size:11px;font-weight:400;color:#aaa;margin-top:2px;">${fmt(d)}</div>
+        </th>
+      `).join("");
+    }
+
+    /* ── RENDER TABLE ── */
+    function renderTable() {
+      const monday    = getMonday(weekOffset);
+      const days      = getWeekDays(monday);
+      const weekStart = new Date(monday);
+      const weekEnd   = new Date(monday);
+      weekEnd.setDate(monday.getDate() + 7);
+
+      const grid = {};
+      ALL_SLOTS.forEach(s => {
+        grid[s] = {};
+        days.forEach((_, i) => { grid[s][i] = []; });
+      });
+
+      filtered.forEach(b => {
+        const date = parseDate(b.dateTime);
+        if (!date) return;
+        if (date < weekStart || date >= weekEnd) return;
+
+        const jsDay = date.getDay();
+        const di    = jsDay === 0 ? 6 : jsDay - 1;
+        const slot  = getSlot(date);
+
+        if (grid[slot] && grid[slot][di] !== undefined) {
+          grid[slot][di].push(b);
+        }
+      });
+
+      const activeSlots = ALL_SLOTS.filter(s =>
+        days.some((_, di) => grid[s][di].length > 0)
+      );
+
+      const tbody = document.getElementById("tableBody");
+
+      if (activeSlots.length === 0) {
+        tbody.innerHTML = `
+          <tr class="table-msg">
+            <td colspan="8">
+              📭 ไม่มีการสอนในสัปดาห์นี้<br>
+              <span style="font-size:12px;color:#ddd;">ลองกด 📋 ทั้งหมด เพื่อดูการจองทุกสัปดาห์</span>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = activeSlots.map(slot => {
+        const cells = days.map((d, di) => {
+          const bookings = grid[slot][di];
+          const tc = isToday(d) ? "today-col" : "";
+          if (!bookings.length) return `<td class="${tc}"></td>`;
+
+          const cards = bookings.map(b => `
+            <div class="class-card" title="${b.tutorName} · ${b.subjects}">
+              <div class="schedule-course-name">${b.subjects || "—"}</div>
+              <div class="schedule-course-room">📍 ${b.location || "—"}</div>
+              <div class="schedule-course-tutor">👤 ${b.tutorName || "—"}</div>
+              <div class="schedule-course-time">
+                ${b.hours ? b.hours + " ชม." : ""}
+                ${b.totalPrice ? "· ฿" + b.totalPrice : ""}
+              </div>
+            </div>
+          `).join("");
+
+          return `<td class="${tc}">${cards}</td>`;
+        }).join("");
+
+        return `
+          <tr>
+            <td class="time-cell">
+              ${slot}
+              <span style="color:#ccc;font-weight:400;">–${slotEnd(slot)}</span>
+            </td>
+            ${cells}
+          </tr>`;
+      }).join("");
+    }
+
+    /* ── RENDER ALL CARDS ── */
+    function renderAllCards() {
+      const grid = document.getElementById("allGrid");
+      if (!filtered.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#bbb;padding:48px;font-size:14px;">📭 ไม่พบการจองที่ยืนยันแล้ว</div>`;
+        return;
+      }
+
+      const sorted = [...filtered].sort((a, b) => {
+        const da = parseDate(a.dateTime);
+        const db = parseDate(b.dateTime);
+        if (!da && !db) return 0; if (!da) return 1; if (!db) return -1;
+        return da - db;
+      });
+
+      grid.innerHTML = sorted.map(b => {
+        const date = parseDate(b.dateTime);
+        const dateStr = date
+          ? date.toLocaleString("th-TH", {
+              timeZone:"Asia/Bangkok", year:"numeric", month:"short",
+              day:"numeric", hour:"2-digit", minute:"2-digit"
+            })
+          : b.dateTime || "—";
+
+        return `
+          <div class="booking-full-card">
+            <div class="bfc-subject">📚 ${b.subjects || "—"}</div>
+            <div class="bfc-row">👤 ติวเตอร์: <span>${b.tutorName || "—"}</span></div>
+            <div class="bfc-row">🎓 นักเรียน: <span>${b.studentName || "—"}</span></div>
+            <div class="bfc-row">📅 วันที่:   <span>${dateStr}</span></div>
+            <div class="bfc-row">📍 สถานที่:  <span>${b.location || "—"}</span></div>
+            <div class="bfc-row">⏱ ชั่วโมง:  <span>${b.hours || "—"} ชม.</span></div>
+            <div class="bfc-row">💰 ราคารวม: <span>฿${b.totalPrice || "—"}</span></div>
+            <div class="bfc-status">✅ ${b.status}</div>
+          </div>`;
+      }).join("");
+    }
+
+    /* ── STATUS BAR ── */
+    function setStatus(type, text) {
+      const dot = document.getElementById("statusDot");
+      dot.className = "status-dot" + (type !== "ok" ? " " + type : "");
+      document.getElementById("statusText").textContent = text;
+    }
+  </script>
+</body>
+</html>

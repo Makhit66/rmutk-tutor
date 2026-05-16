@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รายวิชา RMUTK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--gray-400, #aaa);
+      gap: 14px;
+      grid-column: 1 / -1;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #eee;
+      border-top-color: var(--gold, #C4A35A);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-400, #aaa);
+      font-size: 14px;
+      grid-column: 1 / -1;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: box-shadow 0.18s, transform 0.18s;
+    }
+
+    .profile-card:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.10);
+      transform: translateY(-2px);
+    }
+
+    .card-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 0 10px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 500;
+    }
+
+    .card-value {
+      font-size: 13px;
+      color: #222;
+      font-weight: 500;
+    }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .card-divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 8px 0;
+    }
+
+    .rating-stars {
+      color: #C4A35A;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .rating-num {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #fef3d8;
+      color: #a07830;
+    }
+
+    /* ── ปุ่มจอง ── */
+    .btn-book {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px 0;
+      background: linear-gradient(135deg, #C4A35A, #a07830);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 8px rgba(196, 163, 90, 0.25);
+    }
+
+    .btn-book:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(196, 163, 90, 0.35);
+    }
+
+    .btn-book:active {
+      transform: translateY(0);
+    }
+
+    .btn-book svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+      animation: modalIn 0.22s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        transform: scale(0.93) translateY(12px);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 4px;
+    }
+
+    .modal-sub {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .modal-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      margin-bottom: 20px;
+    }
+
+    .modal-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .modal-info-label {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .modal-info-value {
+      font-size: 13px;
+      color: #222;
+      font-weight: 600;
+    }
+
+    .modal-divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 0 0 18px;
+    }
+
+    .modal-note {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 18px;
+      background: #fef9ef;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border-left: 3px solid #C4A35A;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-btn-cancel {
+      flex: 1;
+      padding: 10px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      background: #fff;
+      color: #888;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .modal-btn-cancel:hover {
+      background: #f5f5f5;
+    }
+
+    .modal-btn-confirm {
+      flex: 2;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #C4A35A, #a07830);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      box-shadow: 0 2px 8px rgba(196, 163, 90, 0.3);
+    }
+
+    .modal-btn-confirm:hover {
+      opacity: 0.88;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-badge">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L3 8l9 5 9-5-9-5z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M3 16l9 5 9-5M3 12l9 5 9-5" stroke="white" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      จับคู่ติวเตอร์ RMUTK
+    </a>
+    <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+  </nav>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <div class="student-container">
+
+    <!-- TABS -->
+    <div class="student-header">
+      <div class="student-tabs">
+        <a href="courses.html" class="student-tab active">รายวิชา</a>
+        <a href="schedule.html" class="student-tab">ตารางวัน</a>
+        <a href="student.html" class="student-tab">ดูติวเตอร์</a>
+        <a href="profile.html" class="student-tab">PROFILE</a>
+        <a href="history.html" class="student-tab">ประวัติ</a>
+      </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="search-filter-section">
+      <div class="search-filter-wrapper">
+        <input type="text" id="searchInput" class="search-bar" placeholder="ค้นหารหัสวิชา, ชื่อวิชา, ติวเตอร์..."
+          oninput="applyFilters()" />
+
+        <div class="filter-container">
+          <div class="filter-group">
+            <label class="filter-label">คณะ</label>
+            <select id="filterFaculty" class="filter-select" onchange="applyFilters()">
+              <option value="">-- เลือกทั้งหมด --</option>
+              <option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option>
+              <option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option>
+              <option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option>
+              <option value="คณะศึกษาศาสตร์">คณะศึกษาศาสตร์</option>
+              <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
+              <option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option>
+              <option value="คณะอุตสาหกรรมเทคโนโลยี">คณะอุตสาหกรรมเทคโนโลยี</option>
+              <option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">เอก</label>
+            <select id="filterSubject" class="filter-select" onchange="applyFilters()">
+              <option value="">-- เลือกทั้งหมด --</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">ติวเตอร์</label>
+            <select id="filterTutor" class="filter-select" onchange="applyFilters()">
+              <option value="">-- เลือกทั้งหมด --</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">สไตล์</label>
+            <select id="filterStyle" class="filter-select" onchange="applyFilters()">
+              <option value="">-- เลือกทั้งหมด --</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">ราคา</label>
+            <select id="filterPrice" class="filter-select" onchange="applyFilters()">
+              <option value="">-- เลือกทั้งหมด --</option>
+              <option value="0-100">0–100 ฿</option>
+              <option value="100-200">100–200 ฿</option>
+              <option value="200-300">200–300 ฿</option>
+              <option value="300+">300 ฿ขึ้นไป</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="profile-section">
+      <div class="profiles-container" id="cardsContainer">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <div>กำลังโหลดข้อมูลรายวิชา...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════ MODAL ยืนยันจอง ══════════════ -->
+  <div class="modal-overlay" id="bookingModal" onclick="closeModalOutside(event)">
+    <div class="modal-box">
+      <div class="modal-title">📚 ยืนยันการจองคลาสเรียน</div>
+      <div class="modal-sub">กรุณาตรวจสอบข้อมูลก่อนไปชำระเงิน</div>
+
+      <div class="modal-info-grid">
+        <div class="modal-info-item">
+          <div class="modal-info-label">ชื่อวิชา</div>
+          <div class="modal-info-value" id="mSubject">-</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">ติวเตอร์</div>
+          <div class="modal-info-value" id="mTutor">-</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">วันเวลา</div>
+          <div class="modal-info-value" id="mDate">-</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">สถานที่</div>
+          <div class="modal-info-value" id="mLocation">-</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">ชั่วโมง</div>
+          <div class="modal-info-value" id="mHours">-</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">ราคารวม</div>
+          <div class="modal-info-value" id="mTotal" style="color:#C4A35A;">-</div>
+        </div>
+      </div>
+
+      <hr class="modal-divider" />
+      <div class="modal-note">
+        💳 กดยืนยันเพื่อไปหน้าชำระเงิน<br>
+        ระบบจะพาคุณไปยังหน้า QR Code PromptPay
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" onclick="closeModal()">ยกเลิก</button>
+        <button class="modal-btn-confirm" id="btnConfirm" onclick="confirmBooking()">
+          💳 ไปชำระเงิน
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LOGIN ALERT MODAL ══ -->
+  <div class="modal-overlay" id="loginAlertModal" onclick="if(event.target.id==='loginAlertModal') document.getElementById('loginAlertModal').classList.remove('active')">
+    <div class="modal-box" style="max-width:360px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+      <div class="modal-title" style="margin-bottom:8px;">กรุณาเข้าสู่ระบบก่อน</div>
+      <div style="font-size:13px;color:#888;margin-bottom:24px;line-height:1.7;">คุณต้องเข้าสู่ระบบเพื่อจองคลาสเรียน</div>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" onclick="document.getElementById('loginAlertModal').classList.remove('active')">ปิด</button>
+        <button class="modal-btn-confirm" onclick="window.location.href='index.html'">ไปหน้าเข้าสู่ระบบ →</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsgUJi0Vfdbq0-Jyh1acn05Y-bW9SsTzg5Zf3DU0VJsbOilfyY5kM2F4glWvTKVCyt/exec";
+
+    let allClasses = [];
+    let filtered = [];
+    let pendingBooking = null;
+    // map key: "tutorId::วิชา" → { avg, count }
+    let subjectRatingMap = {};
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // ── FETCH CLASSES + REVIEWS พร้อมกัน ────────────
+    async function fetchClasses() {
+      try {
+        const [classesResult, reviewsData] = await Promise.all([
+          fetchClassesJsonp(),
+          fetchReviews()
+        ]);
+        allClasses = classesResult.filter(c => c.status === "อนุมัติ");
+        buildSubjectRatingMap(reviewsData);
+        populateFilters();
+        applyFilters();
+      } catch (err) {
+        console.error(err);
+        showError();
+      }
+    }
+
+    // JSONP wrapper สำหรับ getClasses
+    function fetchClassesJsonp() {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          window.__classCallback = () => {};
+          reject(new Error("timeout"));
+        }, 10000);
+
+        window.__classCallback = function (json) {
+          clearTimeout(timer);
+          if (json.status === "success" && Array.isArray(json.classes)) {
+            resolve(json.classes);
+          } else if (Array.isArray(json)) {
+            resolve(json);
+          } else {
+            reject(new Error(JSON.stringify(json)));
+          }
+        };
+
+        const script = document.createElement("script");
+        script.onerror = () => { clearTimeout(timer); reject(new Error("script error")); };
+        script.src = APPS_SCRIPT_URL + "?action=getClasses&callback=__classCallback";
+        document.head.appendChild(script);
+      });
+    }
+
+    // ดึง reviews ทั้งหมดจาก sheet รีวิว
+    async function fetchReviews() {
+      try {
+        const res = await fetch(APPS_SCRIPT_URL + "?action=getReviews");
+        const data = await res.json();
+        if (data.status === "success" && Array.isArray(data.reviews)) {
+          return data.reviews;
+        }
+      } catch (e) {
+        console.warn("fetchReviews failed:", e);
+      }
+      return [];
+    }
+
+    // สร้าง map: "tutorId::วิชา" → { avg, count }
+    // header ของ sheet รีวิว: รหัสติวเตอร์=col[3], วิชา=col[5], คะแนนเฉลี่ย=col[14]
+    function buildSubjectRatingMap(reviews) {
+      const buckets = {};
+      reviews.forEach(r => {
+        const tutorId = String(r["รหัสติวเตอร์"] || "").trim();
+        const subject  = String(r["วิชา"] || "").trim();
+        const score    = parseFloat(r["คะแนนเฉลี่ย"]);
+        if (!tutorId || !subject || isNaN(score) || score <= 0) return;
+        const key = tutorId + "::" + subject;
+        if (!buckets[key]) buckets[key] = { sum: 0, count: 0 };
+        buckets[key].sum   += score;
+        buckets[key].count += 1;
+      });
+      subjectRatingMap = {};
+      Object.entries(buckets).forEach(([key, val]) => {
+        subjectRatingMap[key] = {
+          avg:   val.sum / val.count,
+          count: val.count
+        };
+      });
+    }
+
+    // ดึงคะแนนของ card นี้จาก map
+    function getSubjectRating(c) {
+      const key = String(c.studentId || "").trim() + "::" + String(c.subjects || "").trim();
+      return subjectRatingMap[key] || null;
+    }
+
+    // ── FILTERS ─────────────────────────────────────
+    function populateFilters() {
+      const subjects = [...new Set(allClasses.map(c => c.subjects).filter(Boolean))];
+      const tutors = [...new Set(allClasses.map(c => c.fullName).filter(Boolean))];
+      const styles = [...new Set(allClasses.map(c => c.style).filter(Boolean))];
+      fillSelect("filterSubject", subjects);
+      fillSelect("filterTutor", tutors);
+      fillSelect("filterStyle", styles);
+    }
+
+    function fillSelect(id, options) {
+      const sel = document.getElementById(id);
+      while (sel.options.length > 1) sel.remove(1);
+      options.forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt; el.textContent = opt;
+        sel.appendChild(el);
+      });
+    }
+
+    function applyFilters() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const faculty = document.getElementById("filterFaculty").value;
+      const subject = document.getElementById("filterSubject").value;
+      const tutor = document.getElementById("filterTutor").value;
+      const style = document.getElementById("filterStyle").value;
+      const price = document.getElementById("filterPrice").value;
+
+      filtered = allClasses.filter(c => {
+        if (faculty && c.faculty !== faculty) return false;
+        if (subject && c.subjects !== subject) return false;
+        if (tutor && c.fullName !== tutor) return false;
+        if (style && c.style !== style) return false;
+        if (price) {
+          const p = parseFloat((c.prices || "").split(",")[0]) || 0;
+          if (price === "0-100" && !(p <= 100)) return false;
+          if (price === "100-200" && !(p > 100 && p <= 200)) return false;
+          if (price === "200-300" && !(p > 200 && p <= 300)) return false;
+          if (price === "300+" && !(p > 300)) return false;
+        }
+        if (search) {
+          const hay = [c.subjects, c.fullName, c.faculty, c.location].join(" ").toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      renderCards();
+    }
+
+    // ── RENDER ──────────────────────────────────────
+    function renderCards() {
+      const container = document.getElementById("cardsContainer");
+      container.innerHTML = "";
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state">ไม่พบรายวิชาที่ตรงกับเงื่อนไข</div>`;
+        return;
+      }
+
+      // buildStars helper
+      function buildStars(r) {
+        let s = "";
+        for (let i = 1; i <= 5; i++) {
+          if (r >= i) s += "★";
+          else if (r >= i - 0.5) s += "½";
+          else s += "☆";
+        }
+        return s;
+      }
+
+      filtered.forEach((c, idx) => {
+        // ดึงคะแนนจาก map ที่คำนวณเฉพาะวิชานั้นๆ ของติวเตอร์คนนั้น
+        const ratingInfo = getSubjectRating(c);
+        const rating  = ratingInfo ? ratingInfo.avg   : 0;
+        const rCount  = ratingInfo ? ratingInfo.count : 0;
+        const stars   = buildStars(rating);
+        const totalText = c.totalPrice ? `${c.totalPrice} ฿` : "-";
+
+        const card = document.createElement("div");
+        card.className = "profile-card";
+        card.innerHTML = `
+          <div class="card-row">
+            <div class="card-label">ชื่อวิชา</div>
+            <div class="card-value">${c.subjects || "-"}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-label">ติวเตอร์</div>
+            <div class="card-value">${c.fullName || "-"}</div>
+          </div>
+          <div class="card-row">
+            <div class="card-label">สถานที่ / ช่องทาง</div>
+            <div class="card-value">${c.location || "-"}</div>
+          </div>
+
+          <div class="card-grid-2">
+            <div class="card-row">
+              <div class="card-label">คณะ</div>
+              <div class="card-value">${c.faculty || "-"}</div>
+            </div>
+            <div class="card-row">
+              <div class="card-label">สไตล์การสอน</div>
+              <div class="card-value"><span class="badge">${c.style || "-"}</span></div>
+            </div>
+          </div>
+
+          <hr class="card-divider" />
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:12px;color:#aaa;">
+                ราคา: <strong style="color:#C4A35A;">${c.prices || "-"} ฿/ชม.</strong>
+              </div>
+              <div style="font-size:12px;color:#aaa;">
+                ชั่วโมง: <strong style="color:#222;">${c.hours || "-"} ชม.</strong>
+              </div>
+              <div style="font-size:12px;color:#aaa;">
+                ราคารวม: <strong style="color:#C4A35A;">${totalText}</strong>
+              </div>
+              <div style="font-size:12px;color:#aaa;">
+                วันเวลา: <strong style="color:#222;">${formatDate(c.dateTime)}</strong>
+              </div>
+              <div style="font-size:12px;color:#aaa;">
+                จำนวน: <strong style="color:#222;">${c.count || "-"} คน</strong>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:#aaa;margin-bottom:4px;">คะแนนรีวิว</div>
+              <div class="rating-stars">${stars}</div>
+              <div class="rating-num">${rating > 0 ? rating.toFixed(1) : "ยังไม่มีรีวิว"}</div>
+              <div style="font-size:10px;color:#bbb;margin-top:2px;">${rCount > 0 ? "("+rCount+" รีวิว)" : ""}</div>
+            </div>
+          </div>
+
+          <!-- ปุ่มจอง -->
+          <button class="btn-book" onclick="openModal(${idx})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8"  y1="2" x2="8"  y2="6"/>
+              <line x1="3"  y1="10" x2="21" y2="10"/>
+              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+            </svg>
+            จองคลาสนี้
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // ── MODAL ────────────────────────────────────────
+    function openModal(idx) {
+      const c = filtered[idx];
+      if (!c) return;
+
+      if (!localStorage.getItem("studentId")) {
+        document.getElementById("loginAlertModal").classList.add("active");
+        return;
+      }
+
+      pendingBooking = c;
+
+      document.getElementById("mSubject").textContent = c.subjects || "-";
+      document.getElementById("mTutor").textContent = c.fullName || "-";
+      document.getElementById("mDate").textContent = formatDate(c.dateTime);
+      document.getElementById("mLocation").textContent = c.location || "-";
+      document.getElementById("mHours").textContent = c.hours ? `${c.hours} ชม.` : "-";
+      document.getElementById("mTotal").textContent = c.totalPrice ? `${c.totalPrice} ฿` : "-";
+
+      document.getElementById("bookingModal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("bookingModal").classList.remove("active");
+      pendingBooking = null;
+    }
+
+    function closeModalOutside(e) {
+      if (e.target.id === "bookingModal") closeModal();
+    }
+
+    // ✅ ยืนยัน → บันทึก localStorage → ไปหน้า payment
+    function confirmBooking() {
+      if (!pendingBooking) return;
+
+      const btn = document.getElementById("btnConfirm");
+      btn.textContent = "⏳ กำลังโหลด...";
+      btn.disabled = true;
+
+      // บันทึกข้อมูลการจองทั้งหมดลง localStorage
+      localStorage.setItem("pendingBooking", JSON.stringify(pendingBooking));
+
+      // ไปหน้าชำระเงิน
+      setTimeout(() => {
+        window.location.href = "payment_page.html";
+      }, 400);
+    }
+
+    // ── UTILS ─────────────────────────────────────────
+    function formatDate(dt) {
+      if (!dt) return "-";
+      try {
+        return new Date(dt).toLocaleString("th-TH", {
+          year: "numeric", month: "short", day: "numeric",
+          hour: "2-digit", minute: "2-digit"
+        });
+      } catch { return dt; }
+    }
+
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), duration);
+    }
+
+    function showError() {
+      document.getElementById("cardsContainer").innerHTML = `
+        <div class="empty-state">
+          ⚠️ ไม่สามารถโหลดข้อมูลได้
+          <small style="font-size:12px;margin-top:8px;display:block">
+            กรุณาตรวจสอบการเชื่อมต่อหรือ Apps Script
+          </small>
+          <button onclick="fetchClasses()"
+            style="margin-top:16px;padding:8px 20px;background:#C4A35A;
+                   color:#fff;border:none;border-radius:8px;
+                   cursor:pointer;font-family:inherit;">
+            ลองใหม่
+          </button>
+        </div>`;
+    }
+
+    if (localStorage.getItem("studentId")) document.getElementById("logoutBtn").style.display = "";
+    fetchClasses();
+  </script>
+
+</body>
+
+</html>
