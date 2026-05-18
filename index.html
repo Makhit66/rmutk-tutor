@@ -128,8 +128,8 @@
 
         <div class="form-group">
           <label class="form-label" for="email">อีเมลมหาวิทยาลัย <span>*</span></label>
-          <input class="form-input" type="email" id="email" placeholder="student@rmutk.ac.th" autocomplete="email" />
-          <div class="form-error" id="errEmail">กรุณาใช้อีเมล @rmutk.ac.th เท่านั้น</div>
+          <input class="form-input" type="email" id="email" placeholder="student@mail.rmutk.ac.th" autocomplete="email" />
+          <div class="form-error" id="errEmail">กรุณาใช้อีเมล @mail.rmutk.ac.th เท่านั้น</div>
         </div>
 
         <div class="form-group">
@@ -154,6 +154,14 @@
               ✏️ ติวเตอร์
             </button>
           </div>
+        </div>
+
+        <div class="form-error-box" id="errRegisterGeneral" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+            <circle cx="12" cy="12" r="10" stroke="#C0392B" stroke-width="1.6"/>
+            <path d="M12 8v4M12 16h.01" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="errRegisterGeneralText">เกิดข้อผิดพลาด</span>
         </div>
 
         <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
@@ -321,7 +329,7 @@
   <!-- ══════════════ JAVASCRIPT ══════════════ -->
   <script>
     // ⚠️ วาง exec URL ที่นี่
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0K-gG8x3F9hE2AwmMplBpWUczzvx-lqHWXIeRXigIPp-zyin69lwYG0GHW2CrSweQ/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQJAC5KkQi3HE4y4q6xpC8vwQDKR1h9JCa6r4gM8ju77b3K3liYgGzsCMbbvvC6-8/exec";
     let selectedRole = "นักเรียน";
 
     // ════ REGISTER MODAL ════
@@ -367,6 +375,7 @@
       ["errFullName","errStudentId","errEmail","errPassword","errConfirm"].forEach(id => {
         document.getElementById(id).classList.remove("show");
       });
+      document.getElementById("errRegisterGeneral").style.display = "none";
       document.getElementById("modalForm").classList.remove("hide");
       document.getElementById("modalSuccess").classList.remove("show");
       const btn = document.getElementById("submitBtn");
@@ -388,7 +397,7 @@
       if (!fullName) ok = false;
       showErr("errStudentId", !/^\d{12}$/.test(studentId));
       if (!/^\d{12}$/.test(studentId)) ok = false;
-      const emailValid = /^[^\s@]+@rmutk\.ac\.th$/.test(email);
+      const emailValid = /^[^\s@]+@mail\.rmutk\.ac\.th$/.test(email);
       showErr("errEmail", !emailValid);
       if (!emailValid) ok = false;
       showErr("errPassword", password.length < 8);
@@ -406,35 +415,68 @@
       btn.classList.add("loading");
       btn.disabled = true;
 
-      const payload = {
-        action: "register",
-        fullName:  document.getElementById("fullName").value.trim(),
-        studentId: document.getElementById("studentId").value.trim(),
-        email:     document.getElementById("email").value.trim(),
-        password:  document.getElementById("password").value,
-        role:      selectedRole
-      };
+      // ซ่อน error box ก่อน
+      document.getElementById("errRegisterGeneral").style.display = "none";
+
+      const studentId = document.getElementById("studentId").value.trim();
+      const email     = document.getElementById("email").value.trim();
+      const fullName  = document.getElementById("fullName").value.trim();
+      const password  = document.getElementById("password").value;
 
       const isValidUrl = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
 
       if (!isValidUrl) {
         await new Promise(r => setTimeout(r, 1200));
-        showSuccess(payload.fullName, payload.role);
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        showSuccess(fullName, selectedRole);
         return;
       }
 
       try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+        const data = await new Promise((resolve, reject) => {
+          const cbName = "reg_cb_" + Date.now();
+          const script = document.createElement("script");
+          const timeout = setTimeout(() => {
+            delete window[cbName];
+            document.body.removeChild(script);
+            reject(new Error("timeout"));
+          }, 15000);
+          window[cbName] = (res) => {
+            clearTimeout(timeout);
+            delete window[cbName];
+            document.body.removeChild(script);
+            resolve(res);
+          };
+          const url = APPS_SCRIPT_URL
+            + "?action=register"
+            + "&callback=" + encodeURIComponent(cbName)
+            + "&fullName="  + encodeURIComponent(fullName)
+            + "&studentId=" + encodeURIComponent(studentId)
+            + "&email="     + encodeURIComponent(email)
+            + "&password="  + encodeURIComponent(password)
+            + "&role="      + encodeURIComponent(selectedRole);
+          script.src = url;
+          document.body.appendChild(script);
         });
-        showSuccess(payload.fullName, payload.role);
+
+        btn.classList.remove("loading");
+        btn.disabled = false;
+
+        if (data.status === "success") {
+          showSuccess(fullName, selectedRole);
+        } else {
+          // แสดง error ซ้ำ
+          document.getElementById("errRegisterGeneralText").textContent =
+            "⚠️ " + (data.message || "เกิดข้อผิดพลาด กรุณาลองใหม่");
+          document.getElementById("errRegisterGeneral").style.display = "flex";
+        }
       } catch (err) {
         btn.classList.remove("loading");
         btn.disabled = false;
-        alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+        document.getElementById("errRegisterGeneralText").textContent =
+          "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+        document.getElementById("errRegisterGeneral").style.display = "flex";
       }
     }
 
