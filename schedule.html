@@ -223,7 +223,13 @@
       </div>
       จับคู่ติวเตอร์ RMUTK
     </a>
-    <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="userBadge" onclick="window.location.href='profile.html'" style="display:none;align-items:center;gap:8px;background:#1a1a1a;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;transition:opacity 0.15s;" onmouseenter="this.style.opacity='0.8'" onmouseleave="this.style.opacity='1'">
+        <div id="userAvatar" style="width:28px;height:28px;border-radius:50%;background:#C4A35A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">?</div>
+        <span id="userNameDisplay" style="color:#fff;font-size:13px;font-weight:500;white-space:nowrap;">...</span>
+      </div>
+      <button class="btn-nav" id="logoutBtn" onclick="logout()" style="display:none;">ออกจากระบบ</button>
+    </div>
   </nav>
 
   <div class="schedule-container">
@@ -233,7 +239,6 @@
         <a href="courses.html"  class="schedule-tab">รายวิชา</a>
         <a href="schedule.html" class="schedule-tab active">ตารางวัน</a>
         <a href="student.html"  class="schedule-tab">ดูติวเตอร์</a>
-        <a href="profile.html"  class="schedule-tab">PROFILE</a>
         <a href="history.html"  class="schedule-tab">ประวัติ</a>
       </div>
     </div>
@@ -338,7 +343,7 @@
 
   <script>
     const APPS_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbwgLelS7YqlpU16K2Oi7AVpfZ9A65CmysAIXc-qDsLLnXqUIkMIarYnLkajjnNGxTgx/exec";
+      "https://script.google.com/macros/s/AKfycbxAfZ08vAQYtIjFg4D0lj708AU9NfIDKd8SLlodvEnNJNW4aD0loCQC66Z4gLI1aUtn/exec";
 
     const DAY_TH   = ["จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์","อาทิตย์"];
     const MON_TH   = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
@@ -362,6 +367,17 @@
         return;
       }
       document.getElementById("logoutBtn").style.display = "";
+      // แสดง user badge
+      const _fn = localStorage.getItem("fullName") || "";
+      const _sid = localStorage.getItem("studentId") || "";
+      if (_sid) {
+        const badge = document.getElementById("userBadge");
+        if (badge) { badge.style.display = "flex"; }
+      }
+      const _av = document.getElementById("userAvatar");
+      const _nm = document.getElementById("userNameDisplay");
+      if (_av) _av.textContent = _fn ? _fn.charAt(0).toUpperCase() : "?";
+      if (_nm) _nm.textContent = _fn || "ผู้ใช้";
       renderHeader();
       loadBookings();
     });
