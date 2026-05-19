@@ -234,6 +234,7 @@
 
         <div class="login-footer-link">
           ยังไม่มีบัญชี? <a href="#" onclick="switchToRegister(); return false;">สมัครสมาชิก</a>
+          &nbsp;·&nbsp; <a href="#" onclick="openForgotModal('นักเรียน'); return false;">ลืมรหัสผ่าน?</a>
         </div>
       </div>
 
@@ -306,6 +307,7 @@
 
         <div class="login-footer-link">
           ยังไม่มีบัญชี? <a href="#" onclick="switchToRegisterTutor(); return false;">สมัครสมาชิก</a>
+          &nbsp;·&nbsp; <a href="#" onclick="openForgotModal('ติวเตอร์'); return false;">ลืมรหัสผ่าน?</a>
         </div>
       </div>
 
@@ -326,10 +328,103 @@
     </div>
   </div>
 
+  <!-- ══════════════ FORGOT PASSWORD MODAL ══════════════ -->
+  <div class="modal-overlay" id="forgotOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+
+      <div class="modal-header">
+        <div class="modal-header-inner">
+          <div class="modal-role-badge" id="forgotBadge">🔑 ลืมรหัสผ่าน</div>
+          <div class="modal-title" id="forgotTitle">รีเซ็ตรหัสผ่าน</div>
+        </div>
+        <button class="modal-close" id="closeForgotBtn" aria-label="ปิด">✕</button>
+      </div>
+
+      <div class="modal-form" id="forgotForm">
+        <p style="font-size:13px;color:#6B7280;margin:0 0 16px;line-height:1.6;">
+          กรอกรหัสนักศึกษา อีเมล และรหัสผ่านใหม่ที่ต้องการ<br/>ระบบจะเปลี่ยนรหัสผ่านให้ทันที
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="forgotStudentId">รหัสนักศึกษา <span>*</span></label>
+          <input class="form-input" type="text" id="forgotStudentId" placeholder="เช่น 640123456789" maxlength="12"
+            onkeydown="if(event.key==='Enter') document.getElementById('forgotEmail').focus()" />
+          <div class="form-error" id="errForgotStudentId">กรุณากรอกรหัสนักศึกษา</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="forgotEmail">อีเมลมหาวิทยาลัย <span>*</span></label>
+          <input class="form-input" type="email" id="forgotEmail" placeholder="student@mail.rmutk.ac.th"
+            onkeydown="if(event.key==='Enter') document.getElementById('forgotNewPassword').focus()" />
+          <div class="form-error" id="errForgotEmail">กรุณากรอกอีเมล @mail.rmutk.ac.th</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="forgotNewPassword">รหัสผ่านใหม่ <span>*</span></label>
+          <div class="input-password-wrap">
+            <input class="form-input" type="password" id="forgotNewPassword" placeholder="อย่างน้อย 8 ตัวอักษร"
+              onkeydown="if(event.key==='Enter') document.getElementById('forgotConfirmPassword').focus()" />
+            <button class="toggle-pw" type="button" onclick="togglePw('forgotNewPassword', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error" id="errForgotNewPassword">รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="forgotConfirmPassword">ยืนยันรหัสผ่านใหม่ <span>*</span></label>
+          <div class="input-password-wrap">
+            <input class="form-input" type="password" id="forgotConfirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง"
+              onkeydown="if(event.key==='Enter') handleForgotPassword()" />
+            <button class="toggle-pw" type="button" onclick="togglePw('forgotConfirmPassword', this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error" id="errForgotConfirmPassword">รหัสผ่านไม่ตรงกัน</div>
+        </div>
+
+        <div class="form-error-box" id="errForgotGeneral" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+            <circle cx="12" cy="12" r="10" stroke="#C0392B" stroke-width="1.6"/>
+            <path d="M12 8v4M12 16h.01" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="errForgotGeneralText">เกิดข้อผิดพลาด</span>
+        </div>
+
+        <button class="btn-submit" id="forgotBtn" onclick="handleForgotPassword()">
+          <div class="spinner"></div>
+          <span class="btn-label">ยืนยันเปลี่ยนรหัสผ่าน</span>
+        </button>
+
+        <div class="login-footer-link">
+          <a href="#" onclick="closeForgotAndBackToLogin(); return false;">← กลับไปหน้าเข้าสู่ระบบ</a>
+        </div>
+      </div>
+
+      <div class="modal-success" id="forgotSuccess">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="#2D6A4F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">เปลี่ยนรหัสผ่านสำเร็จ! 🔑</div>
+        <div class="success-desc" id="forgotSuccessDesc">รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว<br/>กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่</div>
+        <button class="btn-close-success" onclick="closeForgotAndBackToLogin()">ไปยังหน้าเข้าสู่ระบบ</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ══════════════ JAVASCRIPT ══════════════ -->
   <script>
     // ⚠️ วาง exec URL ที่นี่
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAfZ08vAQYtIjFg4D0lj708AU9NfIDKd8SLlodvEnNJNW4aD0loCQC66Z4gLI1aUtn/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxquLiU3V66oNiJfV4Y6M80kr_DlrmlKcAZGDBtO0ILBONZO50dpy-x5tK8gvhpNoo9/exec";
     let selectedRole = "นักเรียน";
 
     // ════ REGISTER MODAL ════
@@ -766,6 +861,133 @@
     function switchToRegisterTutor() {
       closeTutorLoginModal();
       setTimeout(() => openModal("ติวเตอร์"), 300);
+    }
+
+    // ════ FORGOT PASSWORD MODAL ════
+    let forgotRole = "นักเรียน";
+
+    function openForgotModal(role) {
+      forgotRole = role || "นักเรียน";
+      resetForgotForm();
+      const badge = document.getElementById("forgotBadge");
+      if (role === "ติวเตอร์") {
+        badge.textContent = "✏️ ติวเตอร์";
+        badge.classList.add("tutor-badge");
+      } else {
+        badge.textContent = "🎓 นักเรียน";
+        badge.classList.remove("tutor-badge");
+      }
+      document.getElementById("forgotOverlay").classList.add("active");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => document.getElementById("forgotStudentId").focus(), 300);
+    }
+
+    function closeForgotModal() {
+      document.getElementById("forgotOverlay").classList.remove("active");
+      document.body.style.overflow = "";
+      setTimeout(resetForgotForm, 300);
+    }
+
+    function closeForgotAndBackToLogin() {
+      closeForgotModal();
+      setTimeout(() => {
+        if (forgotRole === "ติวเตอร์") openTutorLoginModal();
+        else openLoginModal();
+      }, 300);
+    }
+
+    document.getElementById("forgotOverlay").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) closeForgotModal();
+    });
+    document.getElementById("closeForgotBtn").addEventListener("click", closeForgotModal);
+
+    function resetForgotForm() {
+      ["forgotStudentId", "forgotEmail", "forgotNewPassword", "forgotConfirmPassword"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      ["errForgotStudentId", "errForgotEmail", "errForgotNewPassword", "errForgotConfirmPassword"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+      });
+      document.getElementById("errForgotGeneral").style.display = "none";
+      document.getElementById("forgotForm").classList.remove("hide");
+      document.getElementById("forgotSuccess").classList.remove("show");
+      const btn = document.getElementById("forgotBtn");
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+
+    async function handleForgotPassword() {
+      const studentId   = document.getElementById("forgotStudentId").value.trim();
+      const email       = document.getElementById("forgotEmail").value.trim();
+      const newPassword = document.getElementById("forgotNewPassword").value;
+      const confirmPw   = document.getElementById("forgotConfirmPassword").value;
+
+      let ok = true;
+      const showErr = (id, show) => document.getElementById(id).classList.toggle("show", show);
+
+      showErr("errForgotStudentId", !studentId);
+      if (!studentId) ok = false;
+
+      const emailValid = /^[^\s@]+@mail\.rmutk\.ac\.th$/.test(email);
+      showErr("errForgotEmail", !emailValid);
+      if (!emailValid) ok = false;
+
+      showErr("errForgotNewPassword", newPassword.length < 8);
+      if (newPassword.length < 8) ok = false;
+
+      showErr("errForgotConfirmPassword", newPassword !== confirmPw);
+      if (newPassword !== confirmPw) ok = false;
+
+      if (!ok) return;
+
+      document.getElementById("errForgotGeneral").style.display = "none";
+
+      const btn = document.getElementById("forgotBtn");
+      btn.classList.add("loading");
+      btn.disabled = true;
+
+      const isValidUrl = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+
+      if (!isValidUrl) {
+        await new Promise(r => setTimeout(r, 1200));
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("forgotSuccessDesc").innerHTML =
+          `[Demo] รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว`;
+        document.getElementById("forgotForm").classList.add("hide");
+        document.getElementById("forgotSuccess").classList.add("show");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          APPS_SCRIPT_URL +
+          "?action=resetPassword" +
+          "&studentId="   + encodeURIComponent(studentId) +
+          "&email="       + encodeURIComponent(email) +
+          "&newPassword=" + encodeURIComponent(newPassword) +
+          "&role="        + encodeURIComponent(forgotRole)
+        );
+        const data = await res.json();
+        btn.classList.remove("loading");
+        btn.disabled = false;
+
+        if (data.status === "success") {
+          document.getElementById("forgotSuccessDesc").innerHTML =
+            `รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว<br/><span style="font-size:12px;color:#6B7280;">กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่</span>`;
+          document.getElementById("forgotForm").classList.add("hide");
+          document.getElementById("forgotSuccess").classList.add("show");
+        } else {
+          document.getElementById("errForgotGeneralText").textContent =
+            "⚠️ " + (data.message || "ไม่พบข้อมูลในระบบ กรุณาตรวจสอบอีกครั้ง");
+          document.getElementById("errForgotGeneral").style.display = "flex";
+        }
+      } catch (err) {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("errForgotGeneralText").textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+        document.getElementById("errForgotGeneral").style.display = "flex";
+      }
     }
 
     // ════ LIVE STATS ════
