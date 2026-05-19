@@ -84,6 +84,39 @@
       background-repeat: no-repeat;
       background-position: 10px center;
     }
+  
+    /* ── UNIFIED TABS ── */
+    .student-tabs {
+      display: flex; gap: 0; padding: 0 48px;
+      height: 56px; align-items: center;
+      max-width: 1400px; margin: 0 auto;
+    }
+    .student-tab {
+      padding: 8px 24px;
+      border: 2px solid transparent;
+      border-bottom: 3px solid transparent;
+      cursor: pointer; font-size: 14px; font-weight: 500;
+      color: #888; background: none;
+      transition: all 0.2s;
+      border-radius: 8px 8px 0 0;
+      text-decoration: none; font-family: inherit;
+      white-space: nowrap;
+    }
+    .student-tab:hover { color: #1a1a1a; background: #f5f5f5; }
+    .student-tab.active {
+      color: #1a1a1a;
+      border-color: #C4A35A;
+      border-bottom: 3px solid #C4A35A;
+    }
+    .student-header {
+      background: #fff;
+      border-bottom: 2px solid #e5e3dc;
+      position: sticky; top: 64px; z-index: 90;
+    }
+    @media (max-width: 768px) {
+      .student-tabs { padding: 0 16px; overflow-x: auto; }
+      .student-tab { padding: 8px 14px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
@@ -112,7 +145,7 @@
   <div class="student-container">
 
     <!-- ─── TABS ─── -->
-    <div class="student-header">
+        <div class="student-header">
       <div class="student-tabs">
         <a href="courses.html"  class="student-tab">รายวิชา</a>
         <a href="schedule.html" class="student-tab">ตารางวัน</a>
@@ -176,7 +209,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAfZ08vAQYtIjFg4D0lj708AU9NfIDKd8SLlodvEnNJNW4aD0loCQC66Z4gLI1aUtn/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaurVVCTbR5zojcuKJr5bAVeCOsUhSsVohu1Bi8OOsQH5pJDYUIr5m7faUAT5mSdMl/exec";
 
     let allTutors = [];   // raw data from sheet
     let filtered  = [];   // after filter/search
@@ -186,36 +219,24 @@
       window.location.href = "index.html";
     }
 
-    // ── FETCH via JSONP (หลีกเลี่ยง CORS redirect ของ Apps Script) ────
-    function fetchTutors() {
-      const timer = setTimeout(() => {
-        window.__tutorCallback = () => {};
-        console.error("JSONP timeout");
-        showError();
-      }, 10000);
-
-      window.__tutorCallback = function(json) {
-        clearTimeout(timer);
-        try {
-          if (json.status === "success" && Array.isArray(json.tutors)) {
-            allTutors = json.tutors;
-          } else if (Array.isArray(json)) {
-            allTutors = json;
-          } else {
-            throw new Error("Unexpected format: " + JSON.stringify(json));
-          }
-          populateFilterOptions();
-          applyFilters();
-        } catch(err) {
-          console.error("Parse error:", err);
-          showError();
+    // ── FETCH TUTORS ────
+    async function fetchTutors() {
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL + "?action=getTutors");
+        const json = await res.json();
+        if (json.status === "success" && Array.isArray(json.tutors)) {
+          allTutors = json.tutors;
+        } else if (Array.isArray(json)) {
+          allTutors = json;
+        } else {
+          throw new Error("Unexpected format: " + JSON.stringify(json));
         }
-      };
-
-      const script = document.createElement("script");
-      script.onerror = () => { clearTimeout(timer); showError(); };
-      script.src = APPS_SCRIPT_URL + "?action=getTutors&callback=__tutorCallback";
-      document.head.appendChild(script);
+        populateFilterOptions();
+        applyFilters();
+      } catch(err) {
+        console.error("fetchTutors error:", err);
+        showError();
+      }
     }
 
     // ── FILTER OPTIONS ─────────────────────────────────
