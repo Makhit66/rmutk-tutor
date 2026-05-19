@@ -296,14 +296,21 @@
     let allMembers = [];
     let pendingDelete = null;
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    function logout() { sessionStorage.clear(); window.location.href = "admin.html"; }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const name = localStorage.getItem("fullName") || "Admin";
-      document.getElementById("adminNameDisplay").textContent = name;
-      document.getElementById("adminAvatar").textContent = name.charAt(0).toUpperCase();
-      loadMembers();
-    });
+        document.addEventListener("DOMContentLoaded", () => {
+            const adminLoggedIn = sessionStorage.getItem("adminLoggedIn");
+            const name = sessionStorage.getItem("adminName") || "Admin";
+
+            if (adminLoggedIn !== "true") {
+                window.location.href = "admin.html";
+                return;
+            }
+
+            document.getElementById("adminNameDisplay").textContent = name;
+            document.getElementById("adminAvatar").textContent = name.charAt(0).toUpperCase();
+            loadMembers();
+        });
 
     function normalizeStatus(raw) {
       const s = String(raw || "").trim();
