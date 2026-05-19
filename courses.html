@@ -301,6 +301,39 @@
     .toast.show {
       opacity: 1;
     }
+  
+    /* ── UNIFIED TABS ── */
+    .student-tabs {
+      display: flex; gap: 0; padding: 0 48px;
+      height: 56px; align-items: center;
+      max-width: 1400px; margin: 0 auto;
+    }
+    .student-tab {
+      padding: 8px 24px;
+      border: 2px solid transparent;
+      border-bottom: 3px solid transparent;
+      cursor: pointer; font-size: 14px; font-weight: 500;
+      color: #888; background: none;
+      transition: all 0.2s;
+      border-radius: 8px 8px 0 0;
+      text-decoration: none; font-family: inherit;
+      white-space: nowrap;
+    }
+    .student-tab:hover { color: #1a1a1a; background: #f5f5f5; }
+    .student-tab.active {
+      color: #1a1a1a;
+      border-color: #C4A35A;
+      border-bottom: 3px solid #C4A35A;
+    }
+    .student-header {
+      background: #fff;
+      border-bottom: 2px solid #e5e3dc;
+      position: sticky; top: 64px; z-index: 90;
+    }
+    @media (max-width: 768px) {
+      .student-tabs { padding: 0 16px; overflow-x: auto; }
+      .student-tab { padding: 8px 14px; font-size: 13px; }
+    }
   </style>
 </head>
 
@@ -331,12 +364,12 @@
   <div class="student-container">
 
     <!-- TABS -->
-    <div class="student-header">
+        <div class="student-header">
       <div class="student-tabs">
-        <a href="courses.html" class="student-tab active">รายวิชา</a>
+        <a href="courses.html"  class="student-tab active">รายวิชา</a>
         <a href="schedule.html" class="student-tab">ตารางวัน</a>
-        <a href="student.html" class="student-tab">ดูติวเตอร์</a>
-        <a href="history.html" class="student-tab">ประวัติ</a>
+        <a href="student.html"  class="student-tab">ดูติวเตอร์</a>
+        <a href="history.html"  class="student-tab">ประวัติ</a>
       </div>
     </div>
 
