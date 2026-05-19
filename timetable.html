@@ -491,7 +491,7 @@
        CONFIG
     ════════════════════════════════════════ */
     const APPS_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbxWnOqzJNSn7IkBs54DGEitYvbVdPQgEjKRHvj2Sl9isp6K8k0CnPK9h_h3Fmbdbg7y/exec";
+      "https://script.google.com/macros/s/AKfycbwgLelS7YqlpU16K2Oi7AVpfZ9A65CmysAIXc-qDsLLnXqUIkMIarYnLkajjnNGxTgx/exec";
 
     const DAY_TH = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
     const MON_TH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
@@ -516,6 +516,11 @@
     function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
     document.addEventListener("DOMContentLoaded", () => {
+      const studentId = localStorage.getItem("studentId") || "";
+      if (!studentId) {
+        window.location.href = "index.html";
+        return;
+      }
       renderHeader();
       loadBookings();
     });
@@ -633,7 +638,9 @@
     async function loadBookings() {
       setStatus("loading", "กำลังโหลดข้อมูลจาก Sheets...");
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?action=getBookings`);
+        const studentId = localStorage.getItem("studentId") || "";
+        const role      = localStorage.getItem("role") || "ติวเตอร์";
+        const res = await fetch(`${APPS_SCRIPT_URL}?action=getBookings&studentId=${encodeURIComponent(studentId)}&role=${encodeURIComponent(role)}`);
         const data = await res.json();
         if (data.status !== "success") throw new Error(data.message || "API Error");
 
