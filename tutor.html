@@ -231,14 +231,28 @@
       </div>
       จับคู่ติวเตอร์ RMUTK
     </a>
-    <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="userBadge" style="
+        display:flex;align-items:center;gap:8px;
+        background:#1a1a1a;border-radius:999px;
+        padding:6px 14px 6px 6px;cursor:default;
+      ">
+        <div id="userAvatar" style="
+          width:28px;height:28px;border-radius:50%;
+          background:#C4A35A;color:#fff;
+          display:flex;align-items:center;justify-content:center;
+          font-size:13px;font-weight:700;flex-shrink:0;
+        ">?</div>
+        <span id="userNameDisplay" style="color:#fff;font-size:13px;font-weight:500;white-space:nowrap;">...</span>
+      </div>
+      <button class="btn-nav" onclick="logout()">ออกจากระบบ</button>
+    </div>
   </nav>
 
   <!-- ACTION BUTTONS -->
   <div class="dashboard-action-buttons">
     <a href="tutor-dashboard.html" class="dashboard-action-btn">หน้าหลัก</a>
-    <a href="timetable.html" class="dashboard-action-btn">ตารางสอน</a>
-    <a href="tutor.html" class="dashboard-action-btn active">PROFILE</a>
+    <a href="Timetable.html" class="dashboard-action-btn">ตารางสอน</a>
   </div>
 
   <!-- MAIN -->
@@ -400,7 +414,7 @@
 
   <script>
     const APPS_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbwMOmsaq2NECQUU7NAB4dIbahNuch08FrB3HiEHL7BQHFNdjdX4WezhUb8m1jxafDUJ/exec";
+      "https://script.google.com/macros/s/AKfycbxAfZ08vAQYtIjFg4D0lj708AU9NfIDKd8SLlodvEnNJNW4aD0loCQC66Z4gLI1aUtn/exec";
 
     /* ══ TOAST ══ */
     let _toastTimer;
@@ -420,6 +434,11 @@
 
     /* ══ INIT ══ */
     document.addEventListener("DOMContentLoaded", () => {
+      // แสดงชื่อผู้ใช้ใน badge
+      const fullName = localStorage.getItem("fullName") || "ผู้ใช้";
+      document.getElementById("userNameDisplay").textContent = fullName;
+      document.getElementById("userAvatar").textContent = fullName.charAt(0).toUpperCase();
+
       setupImageUploadHandlers();
       setupFacultyAutoSave();
       loadTutorData();
